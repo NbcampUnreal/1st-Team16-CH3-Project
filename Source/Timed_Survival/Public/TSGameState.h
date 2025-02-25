@@ -30,4 +30,6 @@ public:
 	// about UI Function 
 	FTimerHandle HUDUpdateTimerHandle;
 	void UpdateHUD();
+
+	void IncreaseTime(float Value);
 };

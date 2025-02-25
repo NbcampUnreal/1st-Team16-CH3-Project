@@ -114,4 +114,3 @@ FName ATSBaseItem::GetItemType() const
 {
 	return ItemType;
 }
-

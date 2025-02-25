@@ -52,3 +52,11 @@ void ATSGameState::UpdateHUD()
 {
 
 }
+
+
+
+// 증가함수
+void ATSGameState::IncreaseTime(float Value)
+{
+	
+}
