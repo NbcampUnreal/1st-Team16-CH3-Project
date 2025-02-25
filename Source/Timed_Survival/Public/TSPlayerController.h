@@ -58,7 +58,7 @@ public:
 	UUserWidget* ClearScoreWidgetInstance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Opening")
-	TSubclassOf<UUserWidget> OpeningWidgetClass;
+	TSubclassOf<UUserWidget> OpeningWidgetClass; // Opening
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Opening")
 	UUserWidget* OpeningWidgetInstance;
 
