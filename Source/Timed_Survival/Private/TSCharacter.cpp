@@ -22,6 +22,8 @@ ATSCharacter::ATSCharacter()
 	SprintSpeed = 1000.0f;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	bUseControllerRotationYaw = false;
 }
 
 
@@ -93,18 +95,33 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ATSCharacter::Move(const FInputActionValue& value)
 {
-	if (!Controller) return; 
-	const FVector2D MoveInput = value.Get<FVector2D>(); 
+	if (!Controller) return;
+	const FVector2D MoveInput = value.Get<FVector2D>();
 
-	if (!FMath::IsNearlyZero(MoveInput.X))
+	if (FMath::IsNearlyZero(MoveInput.X) && FMath::IsNearlyZero(MoveInput.Y))
 	{
-		AddMovementInput(GetActorForwardVector(), MoveInput.X);
+		return;
 	}
-	if (!FMath::IsNearlyZero(MoveInput.Y))
-	{
-		AddMovementInput(GetActorRightVector(), MoveInput.Y);
-	}
+
+	FRotator ControlRotation = Controller->GetControlRotation();
+	FRotator YawRotation(0, ControlRotation.Yaw, 0); 
+
+	FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y); 
+
+	FVector MoveDirection = (Forward * MoveInput.X) + (Right * MoveInput.Y);
+	MoveDirection = MoveDirection.GetSafeNormal();
+
+	FRotator TargetRotation = MoveDirection.Rotation();
+	TargetRotation.Pitch = 0.0f; 
+	TargetRotation.Roll = 0.0f;
+
+	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), 10.0f);
+	SetActorRotation(NewRotation);
+
+	AddMovementInput(MoveDirection, 1.0f);
 }
+
 
 
 void ATSCharacter::StartJump(const FInputActionValue& value)
