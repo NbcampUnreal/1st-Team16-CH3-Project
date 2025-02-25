@@ -31,7 +31,7 @@ public:
 	UInputAction* SprintAction; // Sprint
 
 
-	// UI 관련 변수, 함수
+	// about UI Function
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
 	TSubclassOf<UUserWidget> HUDWidgetClass; //HUD
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")
