@@ -7,7 +7,7 @@
 
 ATSCharacter::ATSCharacter() 
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComp->SetupAttachment(RootComponent);
@@ -104,16 +104,16 @@ void ATSCharacter::Move(const FInputActionValue& value)
 	}
 
 	FRotator ControlRotation = Controller->GetControlRotation();
-	FRotator YawRotation(0, ControlRotation.Yaw, 0); 
+	FRotator YawRotation(0, ControlRotation.Yaw, 0);
 
 	FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y); 
+	FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 	FVector MoveDirection = (Forward * MoveInput.X) + (Right * MoveInput.Y);
 	MoveDirection = MoveDirection.GetSafeNormal();
 
 	FRotator TargetRotation = MoveDirection.Rotation();
-	TargetRotation.Pitch = 0.0f; 
+	TargetRotation.Pitch = 0.0f;
 	TargetRotation.Roll = 0.0f;
 
 	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), 10.0f);
@@ -121,8 +121,6 @@ void ATSCharacter::Move(const FInputActionValue& value)
 
 	AddMovementInput(MoveDirection, 1.0f);
 }
-
-
 
 void ATSCharacter::StartJump(const FInputActionValue& value)
 {
