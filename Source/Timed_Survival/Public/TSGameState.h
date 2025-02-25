@@ -15,9 +15,12 @@ public:
 	virtual void BeginPlay() override;
 
 	//about Game flow
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HP")
+	float MaxHP;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Food")
 	int32 FoodCount;
 	int32 GetRandomValue;
+	FTimerHandle HPTimerHandle;
 
 	void StartLevel();
 	void OnGameOver();
