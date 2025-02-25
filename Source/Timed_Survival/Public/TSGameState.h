@@ -14,7 +14,7 @@ public:
 
 	virtual void BeginPlay() override;
 
-	//게임 흐름 관련 변수, 함수
+	//about Game flow
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Food")
 	int32 FoodCount;
 	int32 GetRandomValue;
@@ -27,7 +27,7 @@ public:
 	void BattleSystem();
 
 
-	// UI 관련 변수, 함수
+	// about UI Function 
 	FTimerHandle HUDUpdateTimerHandle;
 	void UpdateHUD();
 };

@@ -16,14 +16,14 @@ void ATSGameState::BeginPlay()
 	UpdateHUD();
 	StartLevel();
 
-	GetWorldTimerManager().SetTimer( //HUD 타이머
+	GetWorldTimerManager().SetTimer( //HUD Timer
 		HUDUpdateTimerHandle,
 		this,
 		&ATSGameState::UpdateHUD,
 		0.1f, true);
 }
 
-//게임 흐름 관련 함수
+//about Game flow
 void ATSGameState::StartLevel()
 {
 	UpdateHUD();
@@ -47,7 +47,7 @@ void ATSGameState:: BattleSystem()
 }
 
 
-// UI 관련 함수
+// about UI Function
 void ATSGameState::UpdateHUD()
 {
 
