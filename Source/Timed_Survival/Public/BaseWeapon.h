@@ -14,10 +14,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	int32 Damage;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	USkeletalMeshComponent* WeaponMesh;
+
 public:	
 	ABaseWeapon();
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual int32 GetDamage() const;
+
+	void SetOwner(AActor* NewOwner);
 
 };
