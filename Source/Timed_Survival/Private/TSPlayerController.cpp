@@ -1,12 +1,16 @@
 #include "TSPlayerController.h"
-#include "EnhancedInputSubsystems.h"	
+#include "TSGameState.h"
+#include "EnhancedInputSubsystems.h"
+#include "Blueprint/UserWidget.h"
 
 ATSPlayerController::ATSPlayerController()
 	: InputMappingContext(nullptr),
 	MoveAction(nullptr),
 	JumpAction(nullptr),
 	LookAction(nullptr),
-	SprintAction(nullptr)
+	SprintAction(nullptr),
+	HUDWidgetClass(nullptr),
+	HUDWidgetInstance(nullptr)
 {
 }
 
@@ -23,4 +27,25 @@ void ATSPlayerController::BeginPlay()
 			}
 		}
 	}
+
+	//UI
+	if (HUDWidgetClass)
+	{
+		UUserWidget* HUDWidget = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+		if (HUDWidget)
+		{
+			HUDWidget->AddToViewport();
+		}
+	}
+
+	ATSGameState* TSGameState = GetWorld() ? GetWorld()->GetGameState<ATSGameState>() : nullptr;
+	if (TSGameState)
+	{
+		TSGameState->UpdateHUD();
+	}
+}
+
+UUserWidget* ATSPlayerController::GetHUDWidget() const
+{
+	return HUDWidgetInstance;
 }
