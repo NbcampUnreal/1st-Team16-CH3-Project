@@ -10,7 +10,17 @@ ATSPlayerController::ATSPlayerController()
 	LookAction(nullptr),
 	SprintAction(nullptr),
 	HUDWidgetClass(nullptr),
-	HUDWidgetInstance(nullptr)
+	HUDWidgetInstance(nullptr),
+	MainMenuWidgetClass(nullptr),
+	MainMenuWidgetInstance(nullptr),
+	WeaponSelectWidgetClass(nullptr),
+	WeaponSelectWidgetInstance(nullptr),
+	GameOverWidgetClass(nullptr),
+	GameOverWidgetInstance(nullptr),
+	ClearScoreWidgetClass(nullptr),
+	ClearScoreWidgetInstance(nullptr),
+	OpeningWidgetClass(nullptr),
+	OpeningWidgetInstance(nullptr)
 {
 }
 
@@ -48,4 +58,30 @@ void ATSPlayerController::BeginPlay()
 UUserWidget* ATSPlayerController::GetHUDWidget() const
 {
 	return HUDWidgetInstance;
+}
+
+void ATSPlayerController::StartGame()
+{
+	
+}
+void ATSPlayerController::ShowHUD()
+{
+}
+void ATSPlayerController::ShowOpening()
+{
+}
+void ATSPlayerController::ShowMainMenu()
+{
+}
+void ATSPlayerController::ShowWeaponSelect()
+{
+}
+void ATSPlayerController::ShowGameOver()
+{
+}
+void ATSPlayerController::ShowClearScore()
+{
+}
+void ATSPlayerController::QuitGame()
+{
 }

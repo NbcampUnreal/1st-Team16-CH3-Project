@@ -66,13 +66,21 @@ public:
 	UFUNCTION(BlueprintPure, Category = "HUD")
 	UUserWidget* GetHUDWidget() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void StartGame();
+	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void ShowHUD();
+	UFUNCTION(BlueprintCallable, Category = "Opening")
 	void ShowOpening();
+	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void ShowMainMenu();
+	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void ShowWeaponSelect();
+	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void ShowGameOver();
+	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void ShowClearScore();
+	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void QuitGame();
 
 	virtual void BeginPlay() override;
