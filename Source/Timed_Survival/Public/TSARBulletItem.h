@@ -6,9 +6,8 @@
 #include "TSBaseBulletItem.h"
 #include "TSARBulletItem.generated.h"
 
-/**
- * 
- */
+class AAR;
+
 UCLASS()
 class TIMED_SURVIVAL_API ATSARBulletItem : public ATSBaseBulletItem
 {
