@@ -14,10 +14,7 @@ public:
 	UTSGameInstance();
 
 	
-
-
-	
-	
+			
 
 	// 회복 횟수
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Food")

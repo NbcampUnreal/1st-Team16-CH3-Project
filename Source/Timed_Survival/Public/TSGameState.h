@@ -39,7 +39,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Count")
 	int32 GetHealingCount() const;
 
-	// 음식 수집 횟수 증가 함수 - 아이템 연동
+	// 회복 수집 횟수 증가 함수 - 아이템 연동
 	UFUNCTION(BlueprintCallable, Category = "Count")
 	void IncreaseHealingCount(int32 Amount);
 };

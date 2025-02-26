@@ -58,8 +58,6 @@ void ATSGameState::UpdateHUD()
 
 
 
-
-
 // 시간(체력) 증가함수
 void ATSGameState::IncreaseTime(float Value)
 {
@@ -73,7 +71,7 @@ int32 ATSGameState::GetHealingCount() const
 	return HealingCount;
 }
 
-
+// 회복 수집 횟수 증가 함수
 void ATSGameState::IncreaseHealingCount(int32 Amount)
 {
 	
