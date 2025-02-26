@@ -27,6 +27,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	bool bIsReload;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	FName WeaponType;  
+
 	FTimerHandle ReloadTimerHandle;
 
 public:
@@ -42,6 +45,9 @@ public:
 	
 	UFUNCTION()
 	void FinishReload();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	FName GetWeaponType() const;
 
 	int32 GetBulletCount() const { return BulletCount; }
 	int32 GetMaxBulletCount() const { return MaxBulletCount; }

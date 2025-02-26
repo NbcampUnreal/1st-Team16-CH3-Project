@@ -1,9 +1,9 @@
+#include "Camera/CameraComponent.h"
+#include "EnhancedInputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "TSCharacter.h"
 #include "TSPlayerController.h"
-#include "EnhancedInputComponent.h"
-#include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 
 
 ATSCharacter::ATSCharacter() 
@@ -25,6 +25,18 @@ ATSCharacter::ATSCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bUseControllerRotationYaw = false;
+}
+
+AGunWeapon* ATSCharacter::FindWeaponByType(FName WeaponType)
+{
+	for (AGunWeapon* Weapon : Weapons)
+	{
+		if (Weapon && Weapon->GetWeaponType() == WeaponType)
+		{
+			return Weapon; 
+		}
+	}
+	return nullptr; 
 }
 
 

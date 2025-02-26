@@ -2,13 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GunWeapon.h"
 #include "TSCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
+class ABaseWeapon;
 struct FInputActionValue;
-
-
 
 UCLASS()
 class TIMED_SURVIVAL_API ATSCharacter : public ACharacter
@@ -23,6 +23,10 @@ protected:
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* CameraComp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	TArray<AGunWeapon*> Weapons;
+
+	AGunWeapon* FindWeaponByType(FName WeaponType);
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MovementSpeed")
