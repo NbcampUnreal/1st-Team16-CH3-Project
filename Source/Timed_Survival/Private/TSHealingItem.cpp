@@ -9,7 +9,9 @@
 
 ATSHealingItem::ATSHealingItem()
 {
-	HealingAmount = 10.0f; // 기본 회복량 (작은 회복 아이템 값)
+	count = 1; // 아이템 수집 횟수
+	HealingAmount = 10.0f; // 기본 회복량
+	ItemType = "DefaultHealing"; // 아이템 타입
 }
 
 void ATSHealingItem::ActivateItem(AActor* Activator)
@@ -23,7 +25,8 @@ void ATSHealingItem::ActivateItem(AActor* Activator)
 		ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
 		if (GameState)
 		{
-			GameState->IncreaseTime(HealingAmount);
+			GameState->IncreaseTime(HealingAmount); // 시간(체력) 증가
+			GameState->IncreaseHealingCount(count); // 음식 수집 횟수 증가
 		}
 
 		// 아이템 제거

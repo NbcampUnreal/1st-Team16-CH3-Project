@@ -15,8 +15,8 @@ public:
 	virtual void BeginPlay() override;
 
 	//about Game flow
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Food")
-	int32 FoodCount;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Healing")
+	int32 HealingCount;
 	int32 GetRandomValue;
 
 	void StartLevel();
@@ -31,5 +31,15 @@ public:
 	FTimerHandle HUDUpdateTimerHandle;
 	void UpdateHUD();
 
+
+	// 시간(체력) 증가함수 - 아이템 연동
 	void IncreaseTime(float Value);
+
+	
+	UFUNCTION(BlueprintPure, Category = "Count")
+	int32 GetHealingCount() const;
+
+	// 음식 수집 횟수 증가 함수 - 아이템 연동
+	UFUNCTION(BlueprintCallable, Category = "Count")
+	void IncreaseHealingCount(int32 Amount);
 };

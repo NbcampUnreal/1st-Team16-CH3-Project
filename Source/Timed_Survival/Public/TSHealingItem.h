@@ -19,8 +19,13 @@ public:
 
 
 protected:
+
+	// 아이템 수집 횟수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item")
+	int32 count;
+
 	// 회복량
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Healing")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	float HealingAmount;
 
 	// 아이템 활성화 시 (오버라이드)
