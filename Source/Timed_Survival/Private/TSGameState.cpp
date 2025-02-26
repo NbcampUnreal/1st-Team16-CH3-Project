@@ -1,4 +1,5 @@
 #include "TSGameState.h"
+#include "TSGameInstance.h"
 #include "TSPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h"
@@ -6,7 +7,7 @@
 
 ATSGameState::ATSGameState()
 {
-
+	HealingCount = 0;
 }
 
 void ATSGameState::BeginPlay()
@@ -51,4 +52,35 @@ void ATSGameState:: BattleSystem()
 void ATSGameState::UpdateHUD()
 {
 
+}
+
+
+
+
+
+// 시간(체력) 증가함수
+void ATSGameState::IncreaseTime(float Value)
+{
+	// 시간 증가
+}
+
+
+
+int32 ATSGameState::GetHealingCount() const
+{
+	return HealingCount;
+}
+
+// 회복 수집 횟수 증가 함수
+void ATSGameState::IncreaseHealingCount(int32 Amount)
+{
+	
+	UTSGameInstance* GameInstance = Cast<UTSGameInstance>(GetGameInstance());
+	if (GameInstance)
+	{
+		GameInstance->AddToHealingCount(Amount);
+	}
+	
+	// 디버깅 로그
+	UE_LOG(LogTemp, Warning, TEXT("HealingCount: %d"), HealingCount);
 }
