@@ -2,7 +2,7 @@
 
 
 #include "TSBaseBulletItem.h"
-#include "BaseWeapon.h"
+#include "../Weapon/GunWeapon.h"
 #include "GameFramework/Character.h"
 
 ATSBaseBulletItem::ATSBaseBulletItem()
@@ -32,17 +32,17 @@ void ATSBaseBulletItem::ActivateItem(AActor* Activator)
 
         //for (AActor* WeaponActor : OwnedWeapons)
         //{
-        //    ABaseWeapon* BaseWeapon = Cast<ABaseWeapon>(WeaponActor);
-        //    if (BaseWeapon)
+        //    AGunWeapon* GunWeapon = Cast<AGunWeapon>(WeaponActor);
+        //    if (GunWeapon)
         //    {
         //        // FName을 비교하여 해당 무기의 탄약을 추가
         //        if (ItemType == FName("PistolBullet"))
         //        {
-        //            BaseWeapon->PistolBulletAmount += BulletAmount;
+        //            GunWeapon->PistolBulletAmount += BulletAmount;
         //        }
         //        else if (ItemType == FName("ARBullet"))
         //        {
-        //            BaseWeapon->ARBulletAmount += BulletAmount;
+        //            GunWeapon->ARBulletAmount += BulletAmount;
         //        }
         //    }
         //}
