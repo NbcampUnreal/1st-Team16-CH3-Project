@@ -14,6 +14,20 @@ class TIMED_SURVIVAL_API AEnemyCharacter : public ACharacter
 public:
 	AEnemyCharacter();
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "AI")
-	TArray<AActor*> PatrolPoints;
+	void TakeDamage(int Damage);
+
+	void TakeHeadShot(int Damage);
+
+	void AIOnDeath();
+
+
+
+protected:
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Stats")
+	int CurrentHP;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Stats")
+	int MaxHP;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Stats")
+	float Damage;
+
 };

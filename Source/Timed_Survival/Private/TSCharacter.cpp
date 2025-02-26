@@ -164,3 +164,4 @@ void ATSCharacter::StopSprint(const FInputActionValue& value)
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
 }
+
