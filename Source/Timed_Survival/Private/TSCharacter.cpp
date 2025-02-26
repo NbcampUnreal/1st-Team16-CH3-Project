@@ -1,9 +1,10 @@
 #include "TSCharacter.h"
-#include "TSPlayerController.h"
-#include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
+#include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "TSPlayerController.h"
+
 
 ATSCharacter::ATSCharacter() 
 {
@@ -21,11 +22,25 @@ ATSCharacter::ATSCharacter()
 	NormalSpeed = 300.0f;
 	SprintSpeed = 1000.0f;
 
+	MaxTimeHealth = 100.0f;
+	CurrentTimeHealth = MaxTimeHealth;
+
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bUseControllerRotationYaw = false;
 }
 
+AGunWeapon* ATSCharacter::FindWeaponByType(FName WeaponType)
+{
+	for (AGunWeapon* Weapon : Weapons)
+	{
+		if (Weapon && Weapon->GetWeaponType() == WeaponType)
+		{
+			return Weapon; 
+		}
+	}
+	return nullptr; 
+}
 
 void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -92,6 +107,17 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		}
 	}
 }
+
+void ATSCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void ATSCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 
 void ATSCharacter::Move(const FInputActionValue& value)
 {
@@ -164,4 +190,22 @@ void ATSCharacter::StopSprint(const FInputActionValue& value)
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
 }
+
+void ATSCharacter::Death()
+{
+	if (DeathAnimation)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance)
+		{
+			FName SlotName = TEXT("DeathSlot");
+			AnimInstance->Montage_Play(DeathAnimation);
+			AnimInstance->Montage_JumpToSection(SlotName, DeathAnimation);
+		}
+	}
+
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+}
+
 
