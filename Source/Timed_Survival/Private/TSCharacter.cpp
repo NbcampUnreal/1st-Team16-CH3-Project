@@ -5,6 +5,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+
 ATSCharacter::ATSCharacter() 
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -93,6 +94,7 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	}
 }
 
+
 void ATSCharacter::Move(const FInputActionValue& value)
 {
 	if (!Controller) return;
@@ -164,4 +166,6 @@ void ATSCharacter::StopSprint(const FInputActionValue& value)
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
 }
+
+
 

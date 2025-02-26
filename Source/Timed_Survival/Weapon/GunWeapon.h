@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseWeapon.h"
+
 #include "GunWeapon.generated.h"
 
 UCLASS()
