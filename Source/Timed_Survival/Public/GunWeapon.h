@@ -41,4 +41,8 @@ public:
 	
 	UFUNCTION()
 	void FinishReload();
+
+	int32 GetBulletCount() const { return BulletCount; }
+	int32 GetMaxBulletCount() const { return MaxBulletCount; }
+	void SetBulletCount(int32 NewBulletCount) { BulletCount = NewBulletCount; }
 };
