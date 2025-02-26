@@ -11,6 +11,11 @@ AGunWeapon::AGunWeapon()
 	bIsReload = false;
 }
 
+void AGunWeapon::AddBullet(int32 Amount)
+{
+	BulletCount = FMath::Clamp(BulletCount + Amount, 0, MaxBulletCount);
+}
+
 float AGunWeapon::GetReloadDelay() const
 {
 	return ReloadDelay;
