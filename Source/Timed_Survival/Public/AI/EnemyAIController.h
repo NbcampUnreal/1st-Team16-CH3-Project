@@ -20,7 +20,7 @@ public:
 	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;	// MoveToActor 함수가 끝나면 불리는 함수
 
 protected:
-	int32 CurrentPatrolIndex = 0;
+	/*int32 CurrentPatrolIndex = 0;
 
-	void MoveToPatrolPoint();
+	void MoveToPatrolPoint();*/
 };
