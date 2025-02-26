@@ -8,6 +8,8 @@ class USpringArmComponent;
 class UCameraComponent;
 struct FInputActionValue;
 
+
+
 UCLASS()
 class TIMED_SURVIVAL_API ATSCharacter : public ACharacter
 {
@@ -43,4 +45,5 @@ protected:
 	void StartSprint(const FInputActionValue& value);
 	UFUNCTION()
 	void StopSprint(const FInputActionValue& value);
+
 };
