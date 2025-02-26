@@ -2,7 +2,7 @@
 
 
 #include "TSBaseBulletItem.h"
-#include "../Weapon/GunWeapon.h"
+#include "GunWeapon.h"
 #include "GameFramework/Character.h"
 
 ATSBaseBulletItem::ATSBaseBulletItem()

@@ -13,4 +13,6 @@ class TIMED_SURVIVAL_API APistol : public AGunWeapon
 	
 public:
 	APistol();
+
+	virtual void FireBullet() override;
 };
