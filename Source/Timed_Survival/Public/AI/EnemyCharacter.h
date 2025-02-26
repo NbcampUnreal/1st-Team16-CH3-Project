@@ -14,9 +14,9 @@ class TIMED_SURVIVAL_API AEnemyCharacter : public ACharacter
 public:
 	AEnemyCharacter();
 
-	void TakeDamage(int Damage);
+	//void TakeDamage(int Damage);
 
-	void TakeHeadShot(int Damage);
+	//void TakeHeadShot(int Damage);
 
 	void AIOnDeath();
 
