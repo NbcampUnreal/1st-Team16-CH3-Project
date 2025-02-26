@@ -14,11 +14,20 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	int32 Damage;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	TSubclassOf<UDamageType> DamageType;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
-	USkeletalMeshComponent* WeaponMesh;
+	UStaticMeshComponent* WeaponMesh;
 
 public:	
 	ABaseWeapon();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	virtual void Attack();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	virtual void FireBullet();
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual int32 GetDamage() const;

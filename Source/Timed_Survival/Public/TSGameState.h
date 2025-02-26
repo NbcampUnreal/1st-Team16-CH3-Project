@@ -19,6 +19,8 @@ public:
 	float MaxHP;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Food")
 	int32 FoodCount;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Healing")
+	int32 HealingCount;
 	int32 GetRandomValue;
 	FTimerHandle HPTimerHandle;
 
@@ -33,4 +35,16 @@ public:
 	// about UI Function 
 	FTimerHandle HUDUpdateTimerHandle;
 	void UpdateHUD();
+
+
+	// 시간(체력) 증가함수 - 아이템 연동
+	void IncreaseTime(float Value);
+
+	
+	UFUNCTION(BlueprintPure, Category = "Count")
+	int32 GetHealingCount() const;
+
+	// 회복 수집 횟수 증가 함수 - 아이템 연동
+	UFUNCTION(BlueprintCallable, Category = "Count")
+	void IncreaseHealingCount(int32 Amount);
 };
