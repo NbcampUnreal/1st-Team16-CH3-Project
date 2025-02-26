@@ -2,6 +2,8 @@
 
 
 #include "TSARBulletItem.h"
+#include "GameFramework/Actor.h"
+#include "AR.h"
 
 ATSARBulletItem::ATSARBulletItem()
 {
@@ -12,4 +14,18 @@ ATSARBulletItem::ATSARBulletItem()
 void ATSARBulletItem::ActivateItem(AActor* Activator)
 {
 	Super::ActivateItem(Activator);
+
+    if (!Activator)
+    {
+        return;
+    }
+
+    AAR* EquippedAR = Cast<AAR>(Activator);
+    if (EquippedAR)
+    {
+        int32 NewBulletCount = FMath::Clamp(EquippedAR->GetBulletCount() + BulletAmount, 0, EquippedAR->GetMaxBulletCount());
+        EquippedAR->SetBulletCount(NewBulletCount);
+
+        Destroy();
+    }
 }

@@ -12,4 +12,6 @@ class TIMED_SURVIVAL_API AAR : public AGunWeapon
 	
 public:
 	AAR();
+
+	virtual void FireBullet() override;
 };
