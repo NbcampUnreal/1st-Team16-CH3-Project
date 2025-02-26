@@ -2,12 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Animation/AnimMontage.h"
 #include "GunWeapon.h"
 #include "TSCharacter.generated.h"
+
 
 class USpringArmComponent;
 class UCameraComponent;
 class ABaseWeapon;
+class UAniMontage;
 struct FInputActionValue;
 
 UCLASS()
@@ -26,16 +29,33 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TArray<AGunWeapon*> Weapons;
 
-	AGunWeapon* FindWeaponByType(FName WeaponType);
+	// Death Aniamtion
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	UAnimMontage* DeathAnimation;
+public:
 
-
+	//Mvoe Speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MovementSpeed")
 	float NormalSpeed;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MovementSpeed")
 	float SprintSpeed;
 
+	// Time Health
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
+	float MaxTimeHealth;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentTimeHealth;
+
+protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void BeginPlay() override;
+
+public:
+	
+	virtual void Tick(float DeltaTime) override;
+
+protected:
 
 	UFUNCTION()
 	void Move(const FInputActionValue& value);
@@ -49,5 +69,10 @@ protected:
 	void StartSprint(const FInputActionValue& value);
 	UFUNCTION()
 	void StopSprint(const FInputActionValue& value);
+
+	AGunWeapon* FindWeaponByType(FName WeaponType);
+
+	UFUNCTION()
+	void Death();
 
 };
