@@ -1,8 +1,10 @@
 #include "TSCharacter.h"
+#include "TSGameState.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "TSPlayerController.h"
 
 
@@ -21,9 +23,6 @@ ATSCharacter::ATSCharacter()
 
 	NormalSpeed = 300.0f;
 	SprintSpeed = 1000.0f;
-
-	MaxTimeHealth = 100.0f;
-	CurrentTimeHealth = MaxTimeHealth;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -208,4 +207,9 @@ void ATSCharacter::Death()
 	GetCharacterMovement()->StopMovementImmediately();
 }
 
+// About Health
 
+void ATSCharacter::TakeDamage()
+{
+
+}

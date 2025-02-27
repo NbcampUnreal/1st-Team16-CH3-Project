@@ -34,17 +34,15 @@ protected:
 	UAnimMontage* DeathAnimation;
 public:
 
-	//Mvoe Speed
+	//Move Speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MovementSpeed")
 	float NormalSpeed;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MovementSpeed")
 	float SprintSpeed;
 
-	// Time Health
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
-	float MaxTimeHealth;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
-	float CurrentTimeHealth;
+	// about Health
+	void TakeDamage();
+
 
 protected:
 
