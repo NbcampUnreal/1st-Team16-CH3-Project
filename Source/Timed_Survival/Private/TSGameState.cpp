@@ -10,8 +10,10 @@
 ATSGameState::ATSGameState()
 {
 	HealingCount = 0;
-	BaseHealth = 3.0;
-	TotalHealth = BaseHealth * 60.0;
+	HealthBarMax = 30.0;
+	BaseHealth = 3.0f;
+	ItemHealth = 0.0f;
+	CurrentHealth = BaseHealth * 60.0f;
 }
 
 void ATSGameState::BeginPlay()
@@ -31,16 +33,16 @@ void ATSGameState::BeginPlay()
 //about Game flow
 void ATSGameState::StartLevel()
 {
-	UpdateHUD();
-
-	GetWorldTimerManager().SetTimer( //HP Timer
-		HealthTimerHandle,
+	GetWorldTimerManager().SetTimer( // Subtract Time
+		SubtractHealthTimerHandle,
 		this,
-		&ATSGameState::OnHPZero,
-		TotalHealth,
-		false
-	);
+		&ATSGameState::SubtractHealthOnSecond,
+		0.1f,
+		true);
+
+	UpdateHUD();
 }
+
 void ATSGameState::OnGameOver()
 {
 	UpdateHUD();
@@ -84,15 +86,13 @@ void ATSGameState::UpdateHUD()
 				//1)-1 HP Text
 				if (UTextBlock* HealthText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("HealthText"))))
 				{
-					float RemainingHealth = GetWorldTimerManager().GetTimerRemaining(HealthTimerHandle);
-					HealthText->SetText(FText::FromString(FString::Printf(TEXT("%1.f"), RemainingHealth)));
+					HealthText->SetText(FText::FromString(FString::Printf(TEXT("HealthTest : %.1f"),CurrentHealth)));
 				}
 
 				// 1)-2 HP Bar
-				if (UProgressBar* HealthBar = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("HealthBar"))))
+				if (UProgressBar* HealthBar = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("HealthBar1"))))
 				{
-					float RemainingHealth = GetWorldTimerManager().GetTimerRemaining(HealthTimerHandle);
-					float HealthPercent = RemainingHealth; //체력 증가, 디버프, 감소 수치 추가해야됨
+					float HealthPercent = CurrentHealth / HealthBarMax; //체력 증가, 디버프, 감소 수치 추가해야됨
 					HealthBar->SetPercent(HealthPercent);
 				}
 
@@ -115,30 +115,15 @@ void ATSGameState::UpdateHUD()
 // 시간(체력) 증가함수
 void ATSGameState::IncreaseTime(float Value)
 {
-	//// 임시 구현 코드 - 확인 필요
-	//float RemainingTime = GetWorldTimerManager().GetTimerRemaining(HealthTimerHandle);
-	//
-	//GetWorldTimerManager().SetTimer(
-	//	HealthTimerHandle,
-	//	this,
-	//	&ATSGameState::OnHPZero,
-	//	RemainingTime + Value, false
-	//);
+	ItemHealth += Value;
+	UpdateHealth();
 }
 
 // 시간(체력) 감소함수
 void ATSGameState::ReduceTime(float Value)
 {
-	//// 임시 구현 코드 - 확인 필요
-	//float RemainingTime = GetWorldTimerManager().GetTimerRemaining(HealthTimerHandle);
-	//
-	//GetWorldTimerManager().SetTimer(
-	//	HealthTimerHandle,
-	//	this,
-	//	&ATSGameState::OnHPZero,
-	//	FMath::Max(0.0f, RemainingTime - Value),
-	//	false
-	//);
+  ItemHealth -= Value;
+	UpdateHealth();
 }
 
 int32 ATSGameState::GetHealingCount() const
@@ -159,4 +144,14 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 	// 디버깅 로그
 	UE_LOG(LogTemp, Warning, TEXT("HealingCount: %d"), HealingCount);
 
+}
+
+void ATSGameState::SubtractHealthOnSecond()
+{
+	CurrentHealth -= 0.1f;
+}
+
+void ATSGameState::UpdateHealth()
+{
+	CurrentHealth = BaseHealth * 60.0f + ItemHealth;
 }
