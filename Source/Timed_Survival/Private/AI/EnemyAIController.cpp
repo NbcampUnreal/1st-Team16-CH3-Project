@@ -9,6 +9,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "AI/BTService_TSSightPlayer.h"
 
 const float AEnemyAIController::PatrolRadius(500.f);
 int32 AEnemyAIController::ShowAIDebug(0);
@@ -61,8 +62,6 @@ AEnemyAIController::AEnemyAIController()
 	SightConfig->SetStartsEnabled(true);
 
 	AIPerception->ConfigureSense(*SightConfig);
-
-	AIPerception->OnPerceptionUpdated.AddDynamic(this, &AEnemyAIController::PerceptionUpdated);
 }
 
 void AEnemyAIController::BeginPlay()
@@ -123,7 +122,7 @@ void AEnemyAIController::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 	for (AActor* UpdatedActor : UpdatedActors)
 	{
 		FAIStimulus AIStimulus;
-		AIStimulus = CanSenseActor(UpdatedActor, EAISense::ETS_Sight);
+		AIStimulus = CanSenseActor(UpdatedActor, ETS_AISense::E_Sight);
 		if (AIStimulus.WasSuccessfullySensed())
 		{
 			MoveToActor(
@@ -139,7 +138,7 @@ void AEnemyAIController::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 	}
 }
 
-FAIStimulus AEnemyAIController::CanSenseActor(AActor* Actor, EAISense Sense)
+FAIStimulus AEnemyAIController::CanSenseActor(AActor* Actor, ETS_AISense Sense)
 {
 	FActorPerceptionBlueprintInfo ActorPerceptionBlueprintInfo;
 	FAIStimulus ResultStimulus;
@@ -150,9 +149,9 @@ FAIStimulus AEnemyAIController::CanSenseActor(AActor* Actor, EAISense Sense)
 
 	switch (Sense)
 	{
-	case EAISense::ETS_None:
+	case ETS_AISense::E_None:
 		break;
-	case EAISense::ETS_Sight:
+	case ETS_AISense::E_Sight:
 		QuerySenseClass = UAISense_Sight::StaticClass();
 		break;
 	default:

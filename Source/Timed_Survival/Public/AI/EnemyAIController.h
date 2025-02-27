@@ -10,13 +10,10 @@ class UAIPerceptionComponent;
 class UAISenseConfig_Sight;
 
 UENUM(BlueprintType)
-enum class EAISense : uint8
+enum class ETS_AISense : uint8
 {
-	ETS_Sight UMETA(DisplayName = "Sight"),
-	ETS_Hearing UMETA(DisplayName = "Hearing"),
-	ETS_None UMETA(DisplayName = "None"),
-	ETS_Damage UMETA(DisplayName = "Damage"),
-	ETS_MAX UMETA(DisplayName = "MAX")
+	E_None UMETA(DisplayName = "None"),
+	E_Sight UMETA(DisplayName = "Sight")
 };
 /**
  * 
@@ -70,5 +67,5 @@ private:
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
 	UFUNCTION()
-	FAIStimulus CanSenseActor(AActor* Actor, EAISense Sense);
+	FAIStimulus CanSenseActor(AActor* Actor, ETS_AISense Sense);
 };
