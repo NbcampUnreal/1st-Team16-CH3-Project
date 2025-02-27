@@ -56,11 +56,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MovementSpeed")
 	float SprintSpeed;
 
-	// Helath
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
-	float MaxHealth;
 
-	float CurrentHealth;
+	// about Health
+	void TakeDamage();
 
 	// 무기 리스트 담을 배열
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
