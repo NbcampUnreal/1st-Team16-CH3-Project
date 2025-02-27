@@ -142,6 +142,22 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 					&ATSCharacter::Fire
 				);
 			}
+
+			if (PlayerController->AimingAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->AimingAction,
+					ETriggerEvent::Triggered,
+					this,
+					&ATSCharacter::StartAiming
+				);
+				EnhancedInput->BindAction(
+					PlayerController->AimingAction,
+					ETriggerEvent::Completed,
+					this,
+					&ATSCharacter::StopAiming
+				);
+			}
 		}
 	}
 }
@@ -149,6 +165,9 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void ATSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	DefaultFOV = CameraComp->FieldOfView;
+	DefaultCameraOffset = SpringArmComp->SocketOffset; // 카메라 컴포넌트 기본 위치를 저장한다.
 }
 
 void ATSCharacter::Tick(float DeltaTime)
@@ -308,6 +327,25 @@ void ATSCharacter::Fire(const FInputActionValue& value)
 	float FireTime = FireAnimation->GetPlayLength();
 	GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ATSCharacter::ResetMovementAfterFire, FireTime, false);
 }
+
+void ATSCharacter::StartAiming(const FInputActionValue& value)
+{
+	bIsAiming = true;
+	CameraComp->SetFieldOfView(AimFOV);
+	SpringArmComp->SocketOffset = FVector(272, -34, -43);
+	SpringArmComp->SetRelativeRotation(FRotator(1, -3.5, -0.8));
+}
+
+void ATSCharacter::StopAiming(const FInputActionValue& value)
+{
+	bIsAiming = false;
+	CameraComp->SetFieldOfView(DefaultFOV);
+	SpringArmComp->SocketOffset = DefaultCameraOffset;
+
+	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+}
+
+
 
 void ATSCharacter::Death()
 {
