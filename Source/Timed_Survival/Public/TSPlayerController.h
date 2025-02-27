@@ -31,10 +31,16 @@ public:
 	UInputAction* SprintAction; // Sprint
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* CrouchAction; // Crouch
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* ReloadAction; // Reload
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* FireAction; // Fire
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* AimingAction;
 
 	// about UI Function
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")

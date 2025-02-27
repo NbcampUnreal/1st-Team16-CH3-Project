@@ -105,6 +105,24 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 				);
 			}
 
+
+			if (PlayerController->CrouchAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->CrouchAction,
+					ETriggerEvent::Triggered,
+					this,
+					&ATSCharacter::StartCrouch
+				);
+
+				EnhancedInput->BindAction(
+					PlayerController->CrouchAction,
+					ETriggerEvent::Completed,
+					this,
+					&ATSCharacter::StopCrouch
+				);
+			}
+
 			if (PlayerController->ReloadAction)
 			{
 				EnhancedInput->BindAction(
@@ -124,6 +142,22 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 					&ATSCharacter::Fire
 				);
 			}
+
+			if (PlayerController->AimingAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->AimingAction,
+					ETriggerEvent::Triggered,
+					this,
+					&ATSCharacter::StartAiming
+				);
+				EnhancedInput->BindAction(
+					PlayerController->AimingAction,
+					ETriggerEvent::Completed,
+					this,
+					&ATSCharacter::StopAiming
+				);
+			}
 		}
 	}
 }
@@ -131,20 +165,29 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void ATSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	DefaultFOV = CameraComp->FieldOfView;
+	DefaultCameraOffset = SpringArmComp->SocketOffset; // 카메라 컴포넌트 기본 위치를 저장한다.
 }
 
 void ATSCharacter::Tick(float DeltaTime)
 {
-	FaceMouseDirection();
+	
 	Super::Tick(DeltaTime);
-	UpdateAimOffset();
+
+	FaceMouseDirection();
 
 	if (GetCharacterMovement()->MaxWalkSpeed == SprintSpeed)
 	{
-		if (LastMoveInput.X <= 0.0f || !FMath::IsNearlyZero(LastMoveInput.Y)) 
+		if (LastMoveInput.X <= 0.0f || !FMath::IsNearlyZero(LastMoveInput.Y))
 		{
 			StopSprint(FInputActionValue());
 		}
+	}
+
+	if (!IsFiring && LastMoveInput.IsNearlyZero() && !LastMoveDirection.IsNearlyZero())
+	{
+		AddMovementInput(LastMoveDirection, 1.0f);
 	}
 }
 
@@ -163,14 +206,17 @@ void ATSCharacter::Move(const FInputActionValue& value)
 	FRotator ControlRotation = Controller->GetControlRotation();
 	FRotator YawRotation(0, ControlRotation.Yaw, 0);
 
-	FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X); 
-	FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);   
+	FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 	FVector MoveDirection = (Forward * MoveInput.X) + (Right * MoveInput.Y);
 	MoveDirection = MoveDirection.GetSafeNormal();
 
-	SetActorRotation(YawRotation);
+	IsMovingForward = (MoveInput.X > 0.0f && FMath::IsNearlyZero(MoveInput.Y));
 
+	LastMoveDirection = MoveDirection; 
+
+	SetActorRotation(YawRotation);
 	AddMovementInput(MoveDirection, 1.0f);
 }
 
@@ -218,8 +264,28 @@ void ATSCharacter::StopSprint(const FInputActionValue& value)
 	}
 }
 
+void ATSCharacter::StartCrouch(const FInputActionValue& value)
+{
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+	
+	Crouch();
+}
+
+void ATSCharacter::StopCrouch(const FInputActionValue& value)
+{
+	UnCrouch();
+}
+
+
 void ATSCharacter::Reload(const FInputActionValue& value)
 {
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
 	UAnimInstance* AnimInstance = Cast<UAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(AnimInstance) == true && IsValid(ReloadAnimation) == true && AnimInstance->Montage_IsPlaying(ReloadAnimation) == false)
 	{
@@ -240,17 +306,46 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 
 void ATSCharacter::Fire(const FInputActionValue& value)
 {
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+
 	if (GetCharacterMovement())
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed * 0.0f;
 	}
+
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (IsValid(AnimInstance) && IsValid(FireAnimation) && !AnimInstance->Montage_IsPlaying(FireAnimation))
 	{
 		AnimInstance->Montage_Play(FireAnimation);
 	}
 
+	IsFiring = true;
+
+	float FireTime = FireAnimation->GetPlayLength();
+	GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ATSCharacter::ResetMovementAfterFire, FireTime, false);
 }
+
+void ATSCharacter::StartAiming(const FInputActionValue& value)
+{
+	bIsAiming = true;
+	CameraComp->SetFieldOfView(AimFOV);
+	SpringArmComp->SocketOffset = FVector(272, -34, -43);
+	SpringArmComp->SetRelativeRotation(FRotator(1, -3.5, -0.8));
+}
+
+void ATSCharacter::StopAiming(const FInputActionValue& value)
+{
+	bIsAiming = false;
+	CameraComp->SetFieldOfView(DefaultFOV);
+	SpringArmComp->SocketOffset = DefaultCameraOffset;
+
+	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+}
+
+
 
 void ATSCharacter::Death()
 {
@@ -276,17 +371,6 @@ void ATSCharacter::TakeDamage()
 
 }
 
-void ATSCharacter::UpdateAimOffset()
-{
-	if (!Controller) return;
-
-	FRotator ControlRotation = Controller->GetControlRotation();
-	FRotator ActorRotation = GetActorRotation();
-
-	AimRotation = UKismetMathLibrary::NormalizedDeltaRotator(ControlRotation, ActorRotation);
-
-}
-
 void ATSCharacter::EnableMovementAfterReload()
 {
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
@@ -302,3 +386,14 @@ void ATSCharacter::FaceMouseDirection()
 
 	SetActorRotation(NewRotation);
 }
+
+void ATSCharacter::ResetMovementAfterFire()
+{
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+	}
+
+	IsFiring = false;
+}
+

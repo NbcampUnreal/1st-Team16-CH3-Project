@@ -20,14 +20,36 @@ class TIMED_SURVIVAL_API ATSCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
+
 	ATSCharacter();
 
 private:
+	// 총을 쏘고있는지 판단
 	bool IsFiring = false;
-	bool IsReloading = false;
+
+	// 조준을 하고있는지 판단
+	bool bIsAiming = false;
+
+	// 이동키를 입력하고 있는지 확인
+	bool IsMovingForward = false;
 
 	// 마지막 입력된 이동 값 저장
 	FVector2D LastMoveInput; 
+
+	// 마지막 입력된 이동 방향 저정
+	FVector LastMoveDirection;
+
+	// 기본 FOV 저장
+	float DefaultFOV;   
+
+	// 조준 시 적용할 FOV
+	float AimFOV = 60.0f;   
+
+	// 기본 카메라 위치 저장
+	FVector DefaultCameraOffset;
+
+	// 조준 시 카메라 위치
+	FVector AimCameraOffset;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -79,10 +101,7 @@ public:
 protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void BeginPlay() override;
-
-public:
-	
+	virtual void BeginPlay() override;	
 	virtual void Tick(float DeltaTime) override;
 
 protected:
@@ -100,20 +119,31 @@ protected:
 	UFUNCTION()
 	void StopSprint(const FInputActionValue& value);
 	UFUNCTION()
+	void StartCrouch(const FInputActionValue& value);
+	UFUNCTION()
+	void StopCrouch(const FInputActionValue& value);
+	UFUNCTION()
 	void Reload(const FInputActionValue& value);
 	UFUNCTION()
 	void Fire(const FInputActionValue& value);
+	UFUNCTION()
+	void StartAiming(const FInputActionValue& value);
+	UFUNCTION()
+	void StopAiming(const FInputActionValue& value);
+
+
 
 	// Death
 	UFUNCTION()
 	void Death();
 
-	// Mouse Move Aim Function
-	void UpdateAimOffset();
-
 	// 다시 이동할 수 있는 함수(Reload시에 이동이 불가하여)
 	UFUNCTION()
 	void EnableMovementAfterReload(); 
 
+	// 캐릭터가 바라보는곳을 마우스로 설정하는 함수
 	void FaceMouseDirection();
+
+	// 총 쏜뒤에 캐릭터가 움직이게하는 함수
+	void ResetMovementAfterFire();
 };

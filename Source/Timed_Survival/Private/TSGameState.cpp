@@ -10,8 +10,10 @@
 ATSGameState::ATSGameState()
 {
 	HealingCount = 0;
-	BaseHealth = 3.0;
-	TotalHealth = BaseHealth * 60.0;
+	HealthBarMax = 180.0;
+	BaseHealth = 3.0f;
+	ItemHealth = 0.0f;
+	CurrentHealth = BaseHealth * 60.0f;
 }
 
 void ATSGameState::BeginPlay()
@@ -31,16 +33,16 @@ void ATSGameState::BeginPlay()
 //about Game flow
 void ATSGameState::StartLevel()
 {
-	UpdateHUD();
-
-	GetWorldTimerManager().SetTimer( //HP Timer
-		HealthTimerHandle,
+	GetWorldTimerManager().SetTimer( // Subtract Time
+		SubtractHealthTimerHandle,
 		this,
-		&ATSGameState::OnHPZero,
-		TotalHealth,
-		false
-	);
+		&ATSGameState::SubtractHealthOnSecond,
+		0.1f,
+		true);
+
+	//UpdateHUD();
 }
+
 void ATSGameState::OnGameOver()
 {
 	UpdateHUD();
@@ -81,21 +83,27 @@ void ATSGameState::UpdateHUD()
 		{
 			if (UUserWidget* HUDWidget = TSPlayerController->GetHUDWidget())
 			{
-				//1)-1 HP Text
+				float TotalHealthSet = CurrentHealth / HealthBarMax; // HealthBar 비율 세팅
+				int32 Bundle = (int32)TotalHealthSet; // HealthBar 몫
+				float HealthPercent = TotalHealthSet - Bundle; // HealthBar 반영 비율
+
+				//1)-1 Health Text
 				if (UTextBlock* HealthText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("HealthText"))))
 				{
-					float RemainingHealth = GetWorldTimerManager().GetTimerRemaining(HealthTimerHandle);
-					HealthText->SetText(FText::FromString(FString::Printf(TEXT("%1.f"), RemainingHealth)));
+					HealthText->SetText(FText::FromString(FString::Printf(TEXT("HealthTest : %.1f"),CurrentHealth)));
 				}
 
-				// 1)-2 HP Bar
+				// 1)-2 Health Bar percent
 				if (UProgressBar* HealthBar = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("HealthBar"))))
 				{
-					float RemainingHealth = GetWorldTimerManager().GetTimerRemaining(HealthTimerHandle);
-					float HealthPercent = RemainingHealth; //체력 증가, 디버프, 감소 수치 추가해야됨
 					HealthBar->SetPercent(HealthPercent);
 				}
 
+				// 1)-3 Health Bundle Text
+				if (UTextBlock* HealthBundle = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("HealthBundle"))))
+				{
+					HealthBundle->SetText(FText::FromString(FString::Printf(TEXT("X %d"), Bundle)));
+				}
 
 				// 2) Bullet Count
 				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("CountBullet"))))
@@ -115,13 +123,15 @@ void ATSGameState::UpdateHUD()
 // 시간(체력) 증가함수
 void ATSGameState::IncreaseTime(float Value)
 {
-	//TotalHealth += HealingAmount
+	ItemHealth += Value;
+	UpdateHealth();
 }
 
 // 시간(체력) 감소함수
 void ATSGameState::ReduceTime(float Value)
 {
-	//TotalHealth -= DamageAmount
+  ItemHealth -= Value;
+	UpdateHealth();
 }
 
 int32 ATSGameState::GetHealingCount() const
@@ -142,4 +152,14 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 	// 디버깅 로그
 	UE_LOG(LogTemp, Warning, TEXT("HealingCount: %d"), HealingCount);
 
+}
+
+void ATSGameState::SubtractHealthOnSecond()
+{
+	CurrentHealth -= 0.1f;
+}
+
+void ATSGameState::UpdateHealth()
+{
+	CurrentHealth = BaseHealth * 60.0f + ItemHealth;
 }

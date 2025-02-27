@@ -7,11 +7,11 @@
 
 ATSMineItem::ATSMineItem()
 {
-    ExplosionRadius = 300.0f;
-    ExplosionAIDamage = 30.0f;
-    ExplosionPlayerDamage = 10.0f;
+	ExplosionRadius = 300.0f; // 폭발 반경
+	ExplosionAIDamage = 30.0f; // AI에게 줄 피해량 (HP)
+	ExplosionPlayerDamage = 10.0f; // 플레이어에게 줄 피해량 (시간)
     ItemType = "Mine";
-    bHasExploded = false;
+	bHasExploded = false; // 폭발 여부
 
     // 폭발 감지용 Sphere 콜리전 설정
     ExplosionCollision = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionCollision"));
@@ -24,8 +24,11 @@ ATSMineItem::ATSMineItem()
 }
 
 // 지뢰에서 벗어났을 때 실행
-void ATSMineItem::HandleOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void ATSMineItem::HandleOverlapEnd(
+    UPrimitiveComponent* OverlappedComponent,
+    AActor* OtherActor,
+    UPrimitiveComponent* OtherComp,
+    int32 OtherBodyIndex)
 {
     if (!OtherActor || bHasExploded) return;
 
