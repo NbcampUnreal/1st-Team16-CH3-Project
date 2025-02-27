@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseWeapon.h"
+
 #include "GunWeapon.generated.h"
 
 UCLASS()
@@ -29,6 +30,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	bool bIsReload;
 
+	FName WeaponType;  
+
 	FTimerHandle ReloadTimerHandle;
 
 public:
@@ -44,6 +47,8 @@ public:
 	
 	UFUNCTION()
 	void FinishReload();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 
 	int32 GetBulletCount() const { return BulletCount; }
 	int32 GetMaxBulletCount() const { return MaxBulletCount; }
