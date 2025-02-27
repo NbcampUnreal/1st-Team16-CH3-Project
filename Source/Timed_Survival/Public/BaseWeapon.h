@@ -24,9 +24,6 @@ public:
 	ABaseWeapon();
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	virtual void Attack();
-
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void FireBullet();
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")

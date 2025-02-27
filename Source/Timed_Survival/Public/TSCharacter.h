@@ -27,12 +27,11 @@ protected:
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* CameraComp;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	TArray<AGunWeapon*> Weapons;
-
+	
 	// Death Aniamtion
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* DeathAnimation;
+
 	// Reload Animation
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* ReloadAnimation;
@@ -50,7 +49,7 @@ protected:
 	FTimerHandle ReloadTimerHandle;
 
 public:
-
+	
 	//Mvoe Speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MovementSpeed")
 	float NormalSpeed;
@@ -62,6 +61,13 @@ public:
 	float MaxHealth;
 
 	float CurrentHealth;
+
+	// 무기 리스트 담을 배열
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	TArray<AGunWeapon*> Weapons;
+	
+	// 무기 타입으로 무기 찾는 함수(총알 추가용)
+	AGunWeapon* FindWeaponByType(FName WeaponType);
 
 protected:
 
@@ -91,7 +97,7 @@ protected:
 	UFUNCTION()
 	void Fire(const FInputActionValue& value);
 
-	AGunWeapon* FindWeaponByType(FName WeaponType);
+	
 
 	// Death 
 	UFUNCTION()
