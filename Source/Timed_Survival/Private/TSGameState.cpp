@@ -1,5 +1,6 @@
 #include "TSGameState.h"
 #include "TSGameInstance.h"
+#include "TSCharacter.h"
 #include "TSPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h"
@@ -9,6 +10,8 @@
 ATSGameState::ATSGameState()
 {
 	HealingCount = 0;
+	BaseHealth = 3.0;
+	TotalHealth = BaseHealth * 60.0;
 }
 
 void ATSGameState::BeginPlay()
@@ -29,6 +32,14 @@ void ATSGameState::BeginPlay()
 void ATSGameState::StartLevel()
 {
 	UpdateHUD();
+
+	GetWorldTimerManager().SetTimer( //HP Timer
+		HealthTimerHandle,
+		this,
+		&ATSGameState::OnHPZero,
+		TotalHealth,
+		false
+	);
 }
 void ATSGameState::OnGameOver()
 {
@@ -70,32 +81,30 @@ void ATSGameState::UpdateHUD()
 		{
 			if (UUserWidget* HUDWidget = TSPlayerController->GetHUDWidget())
 			{
-				//HP바 수치 적용 체크용 if문입니다. 나중에 주석처리 or 삭제
-				if (UTextBlock* HPTextCheck = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("HPCheck"))))
+				//1)-1 HP Text
+				if (UTextBlock* HealthText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("HealthText"))))
 				{
-					float RemainingHP = GetWorldTimerManager().GetTimerRemaining(HPTimerHandle);
-					HPTextCheck->SetText(FText::FromString(FString::Printf(TEXT("HP %1.f"), RemainingHP)));
+					float RemainingHealth = GetWorldTimerManager().GetTimerRemaining(HealthTimerHandle);
+					HealthText->SetText(FText::FromString(FString::Printf(TEXT("%1.f"), RemainingHealth)));
 				}
-				//HP바 수치 적용 체크용 if문입니다. 나중에 주석처리 or 삭제
 
-
-				// 1) HP Bar
-				if (UProgressBar* HPBar = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("HPBar"))))
+				// 1)-2 HP Bar
+				if (UProgressBar* HealthBar = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("HealthBar"))))
 				{
-					float RemainingHP = GetWorldTimerManager().GetTimerRemaining(HPTimerHandle);
-					float HpPercent = RemainingHP / MaxHP; //체력 증가, 디버프, 감소 수치 추가해야됨
-					HPBar->SetPercent(HpPercent);
+					float RemainingHealth = GetWorldTimerManager().GetTimerRemaining(HealthTimerHandle);
+					float HealthPercent = RemainingHealth; //체력 증가, 디버프, 감소 수치 추가해야됨
+					HealthBar->SetPercent(HealthPercent);
 				}
 
 
-				// 2) 총알 수
+				// 2) Bullet Count
 				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("CountBullet"))))
 				{
 					
 				}
 				
-				// 3) 회복 시 UI효과
-				// 4) 디버프 시 UI효과(지속)
+				// 3) Healing Effect
+				// 4) Debuff
 				// 5) 피격 시 UI효과(지뢰, AI)(일시적)
 				// 6) 헤드샷 UI효과
 			}
@@ -106,7 +115,7 @@ void ATSGameState::UpdateHUD()
 // 시간(체력) 증가함수
 void ATSGameState::IncreaseTime(float Value)
 {
-	// 시간 증가
+	//TotalHealth += HealingAmount
 }
 
 int32 ATSGameState::GetHealingCount() const
