@@ -135,36 +135,41 @@ void ATSCharacter::BeginPlay()
 
 void ATSCharacter::Tick(float DeltaTime)
 {
+	FaceMouseDirection();
 	Super::Tick(DeltaTime);
 	UpdateAimOffset();
-}
 
+	if (GetCharacterMovement()->MaxWalkSpeed == SprintSpeed)
+	{
+		if (LastMoveInput.X <= 0.0f || !FMath::IsNearlyZero(LastMoveInput.Y)) 
+		{
+			StopSprint(FInputActionValue());
+		}
+	}
+}
 
 void ATSCharacter::Move(const FInputActionValue& value)
 {
 	if (!Controller) return;
-	const FVector2D MoveInput = value.Get<FVector2D>();
+	FVector2D MoveInput = value.Get<FVector2D>();
 
 	if (FMath::IsNearlyZero(MoveInput.X) && FMath::IsNearlyZero(MoveInput.Y))
 	{
 		return;
 	}
 
+	LastMoveInput = MoveInput;
+
 	FRotator ControlRotation = Controller->GetControlRotation();
 	FRotator YawRotation(0, ControlRotation.Yaw, 0);
 
-	FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X); 
+	FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);   
 
 	FVector MoveDirection = (Forward * MoveInput.X) + (Right * MoveInput.Y);
 	MoveDirection = MoveDirection.GetSafeNormal();
 
-	FRotator TargetRotation = MoveDirection.Rotation();
-	TargetRotation.Pitch = 0.0f;
-	TargetRotation.Roll = 0.0f;
-
-	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), 10.0f);
-	SetActorRotation(NewRotation);
+	SetActorRotation(YawRotation);
 
 	AddMovementInput(MoveDirection, 1.0f);
 }
@@ -196,13 +201,14 @@ void ATSCharacter::Look(const FInputActionValue& value)
 
 void ATSCharacter::StartSprint(const FInputActionValue& value)
 {
+	if (!GetCharacterMovement()) return;
 
-
-	if (GetCharacterMovement())
+	if (LastMoveInput.X > 0.0f && FMath::IsNearlyZero(LastMoveInput.Y))
 	{
 		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 	}
 }
+
 
 void ATSCharacter::StopSprint(const FInputActionValue& value)
 {
@@ -236,7 +242,7 @@ void ATSCharacter::Fire(const FInputActionValue& value)
 {
 	if (GetCharacterMovement())
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 50.0f;
+		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
 	}
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (IsValid(AnimInstance) && IsValid(FireAnimation) && !AnimInstance->Montage_IsPlaying(FireAnimation))
@@ -284,4 +290,15 @@ void ATSCharacter::UpdateAimOffset()
 void ATSCharacter::EnableMovementAfterReload()
 {
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+}
+
+void ATSCharacter::FaceMouseDirection()
+{
+	if (!Controller) return;
+
+	FRotator NewRotation = Controller->GetControlRotation();
+	NewRotation.Pitch = 0.0f; 
+	NewRotation.Roll = 0.0f;
+
+	SetActorRotation(NewRotation);
 }
