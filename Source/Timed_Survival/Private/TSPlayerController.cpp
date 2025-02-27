@@ -9,6 +9,7 @@ ATSPlayerController::ATSPlayerController()
 	JumpAction(nullptr),
 	LookAction(nullptr),
 	SprintAction(nullptr),
+	CrouchAction(nullptr),
 	ReloadAction(nullptr),
 	FireAction(nullptr),
 	HUDWidgetClass(nullptr),
