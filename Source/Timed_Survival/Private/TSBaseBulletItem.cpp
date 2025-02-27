@@ -8,7 +8,7 @@
 ATSBaseBulletItem::ATSBaseBulletItem()
 {
 	BulletAmount = 10; // 총알 수량
-    WeaponType = "DefaultBullet";
+    WeaponType = FName("DefaultBullet");
 }
 
 

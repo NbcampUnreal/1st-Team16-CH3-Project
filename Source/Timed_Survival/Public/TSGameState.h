@@ -19,13 +19,17 @@ public:
 	float HealthBarMax;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float BaseHealth;
-	float TotalHealth;
+	float ItemHealth;
+	float CurrentHealth;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Food")
 	int32 FoodCount;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Healing")
 	int32 HealingCount;
 	int32 GetRandomValue;
-	FTimerHandle HealthTimerHandle;
+
+	FTimerHandle SubtractHealthTimerHandle;
+	void SubtractHealthOnSecond();
 
 	void StartLevel();
 	void OnGameOver();
@@ -43,6 +47,9 @@ public:
 	// 시간(체력) 증가함수 - 아이템 연동
 	void IncreaseTime(float Value);
 
+	// 시간(체력) 감소함수 - 아이템 연동
+	void ReduceTime(float Value);
+
 	
 	UFUNCTION(BlueprintPure, Category = "Count")
 	int32 GetHealingCount() const;
@@ -50,4 +57,6 @@ public:
 	// 회복 수집 횟수 증가 함수 - 아이템 연동
 	UFUNCTION(BlueprintCallable, Category = "Count")
 	void IncreaseHealingCount(int32 Amount);
+
+	void UpdateHealth();
 };
