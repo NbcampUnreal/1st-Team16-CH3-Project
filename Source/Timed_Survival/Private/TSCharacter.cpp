@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "TSPlayerController.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 ATSCharacter::ATSCharacter() 
@@ -22,8 +23,8 @@ ATSCharacter::ATSCharacter()
 	NormalSpeed = 300.0f;
 	SprintSpeed = 1000.0f;
 
-	MaxTimeHealth = 100.0f;
-	CurrentTimeHealth = MaxTimeHealth;
+	MaxHP = 100.0f;
+	CurrentHP = MaxHP;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -116,6 +117,7 @@ void ATSCharacter::BeginPlay()
 void ATSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	UpdateAimOffset();
 }
 
 
@@ -206,6 +208,17 @@ void ATSCharacter::Death()
 
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
+}
+
+void ATSCharacter::UpdateAimOffset()
+{
+	if (!Controller) return;
+
+	FRotator ControlRotation = Controller->GetControlRotation();
+	FRotator ActorRotation = GetActorRotation();
+
+	AimRotation = UKismetMathLibrary::NormalizedDeltaRotator(ControlRotation, ActorRotation);
+
 }
 
 

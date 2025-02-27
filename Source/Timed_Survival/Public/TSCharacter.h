@@ -32,6 +32,11 @@ protected:
 	// Death Aniamtion
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* DeathAnimation;
+
+	// Aim Rotation
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aiming")
+	FRotator AimRotation;
+
 public:
 
 	//Mvoe Speed
@@ -42,9 +47,9 @@ public:
 
 	// Time Health
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
-	float MaxTimeHealth;
+	float MaxHP;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
-	float CurrentTimeHealth;
+	float CurrentHP;
 
 protected:
 
@@ -72,7 +77,11 @@ protected:
 
 	AGunWeapon* FindWeaponByType(FName WeaponType);
 
+	// Death 
 	UFUNCTION()
 	void Death();
+
+	// Mouse Move Aim Function
+	void UpdateAimOffset();
 
 };
