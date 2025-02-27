@@ -268,6 +268,8 @@ void ATSCharacter::Death()
 void ATSCharacter::TakeDamage()
 {
 
+}
+
 void ATSCharacter::UpdateAimOffset()
 {
 	if (!Controller) return;
@@ -282,6 +284,4 @@ void ATSCharacter::UpdateAimOffset()
 void ATSCharacter::EnableMovementAfterReload()
 {
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-}
-
 }
