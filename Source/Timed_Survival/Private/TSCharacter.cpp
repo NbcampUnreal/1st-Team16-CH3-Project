@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TSPlayerController.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 ATSCharacter::ATSCharacter() 
@@ -29,6 +30,7 @@ ATSCharacter::ATSCharacter()
 	bUseControllerRotationYaw = false;
 }
 
+// 무기 타입으로 무기 찾는 함수(총알 추가용)
 AGunWeapon* ATSCharacter::FindWeaponByType(FName WeaponType)
 {
 	for (AGunWeapon* Weapon : Weapons)
@@ -78,7 +80,6 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 			if (PlayerController->LookAction)
 			{
-
 				EnhancedInput->BindAction(
 					PlayerController->LookAction, 
 					ETriggerEvent::Triggered,    
@@ -103,6 +104,26 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 					&ATSCharacter::StopSprint      
 				);
 			}
+
+			if (PlayerController->ReloadAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->ReloadAction,
+					ETriggerEvent::Triggered,
+					this,
+					&ATSCharacter::Reload
+				);
+			}
+
+			if (PlayerController->FireAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->FireAction,
+					ETriggerEvent::Triggered,
+					this,
+					&ATSCharacter::Fire
+				);
+			}
 		}
 	}
 }
@@ -115,6 +136,7 @@ void ATSCharacter::BeginPlay()
 void ATSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	UpdateAimOffset();
 }
 
 
@@ -190,6 +212,40 @@ void ATSCharacter::StopSprint(const FInputActionValue& value)
 	}
 }
 
+void ATSCharacter::Reload(const FInputActionValue& value)
+{
+	UAnimInstance* AnimInstance = Cast<UAnimInstance>(GetMesh()->GetAnimInstance());
+	if (IsValid(AnimInstance) == true && IsValid(ReloadAnimation) == true && AnimInstance->Montage_IsPlaying(ReloadAnimation) == false)
+	{
+		GetCharacterMovement()->DisableMovement();
+
+		AnimInstance->Montage_Play(ReloadAnimation);
+
+		float ReloadTime = ReloadAnimation->GetPlayLength();
+		GetWorld()->GetTimerManager().SetTimer(
+			ReloadTimerHandle,
+			this,
+			&ATSCharacter::EnableMovementAfterReload,
+			ReloadTime,
+			false
+		);
+	}
+}
+
+void ATSCharacter::Fire(const FInputActionValue& value)
+{
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 50.0f;
+	}
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (IsValid(AnimInstance) && IsValid(FireAnimation) && !AnimInstance->Montage_IsPlaying(FireAnimation))
+	{
+		AnimInstance->Montage_Play(FireAnimation);
+	}
+
+}
+
 void ATSCharacter::Death()
 {
 	if (DeathAnimation)
@@ -207,9 +263,25 @@ void ATSCharacter::Death()
 	GetCharacterMovement()->StopMovementImmediately();
 }
 
-// About Health
 
+// About Health
 void ATSCharacter::TakeDamage()
 {
+
+void ATSCharacter::UpdateAimOffset()
+{
+	if (!Controller) return;
+
+	FRotator ControlRotation = Controller->GetControlRotation();
+	FRotator ActorRotation = GetActorRotation();
+
+	AimRotation = UKismetMathLibrary::NormalizedDeltaRotator(ControlRotation, ActorRotation);
+
+}
+
+void ATSCharacter::EnableMovementAfterReload()
+{
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+}
 
 }
