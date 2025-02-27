@@ -22,6 +22,10 @@ class TIMED_SURVIVAL_API ATSCharacter : public ACharacter
 public:
 	ATSCharacter();
 
+private:
+	bool IsFiring = false;
+	bool IsReloading = false;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArmComp;
@@ -45,8 +49,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aiming")
 	FRotator AimRotation;
 
-	// Reload Charcter Move Stop
+	// Reload Charcter Move Stop and resetreload
 	FTimerHandle ReloadTimerHandle;
+	// Reset Fire
+	FTimerHandle FireTimerHandle;
 
 public:
 	
@@ -97,16 +103,21 @@ protected:
 	UFUNCTION()
 	void Fire(const FInputActionValue& value);
 
-	
-
-	// Death 
+	// Death
 	UFUNCTION()
 	void Death();
 
 	// Mouse Move Aim Function
 	void UpdateAimOffset();
 
+	// ResetFire
+	void ResetFireState();
+
 	// 다시 이동할 수 있는 함수(Reload시에 이동이 불가하여)
 	UFUNCTION()
 	void EnableMovementAfterReload(); 
+
+	void FaceMouseDirection();
+
+
 };

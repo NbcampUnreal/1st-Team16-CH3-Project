@@ -138,6 +138,7 @@ void ATSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateAimOffset();
+	FaceMouseDirection();
 }
 
 
@@ -172,6 +173,12 @@ void ATSCharacter::Move(const FInputActionValue& value)
 
 void ATSCharacter::StartJump(const FInputActionValue& value)
 {
+	// firing and reloading prevent jump
+	if (IsFiring || IsReloading)
+	{
+		return;
+	}
+
 	if (value.Get<bool>()) 
 	{
 		Jump();
@@ -215,11 +222,21 @@ void ATSCharacter::StopSprint(const FInputActionValue& value)
 
 void ATSCharacter::Reload(const FInputActionValue& value)
 {
-	UAnimInstance* AnimInstance = Cast<UAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(AnimInstance) == true && IsValid(ReloadAnimation) == true && AnimInstance->Montage_IsPlaying(ReloadAnimation) == false)
+	if (GetCharacterMovement()->IsFalling())
 	{
-		GetCharacterMovement()->DisableMovement();
+		return;
+	}
 
+	if (IsFiring)
+	{
+		return;
+	}
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (IsValid(AnimInstance) && IsValid(ReloadAnimation) && !AnimInstance->Montage_IsPlaying(ReloadAnimation))
+	{
+		IsReloading = true;
+		GetCharacterMovement()->DisableMovement();
 		AnimInstance->Montage_Play(ReloadAnimation);
 
 		float ReloadTime = ReloadAnimation->GetPlayLength();
@@ -235,16 +252,36 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 
 void ATSCharacter::Fire(const FInputActionValue& value)
 {
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+
+	if (IsReloading)
+	{
+		return;
+	}
+
 	if (GetCharacterMovement())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 50.0f;
 	}
+
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (IsValid(AnimInstance) && IsValid(FireAnimation) && !AnimInstance->Montage_IsPlaying(FireAnimation))
 	{
+		IsFiring = true;
 		AnimInstance->Montage_Play(FireAnimation);
-	}
 
+		float FireTime = FireAnimation->GetPlayLength();
+		GetWorld()->GetTimerManager().SetTimer(
+			FireTimerHandle,
+			this,
+			&ATSCharacter::ResetFireState,
+			FireTime,
+			false
+		);
+	}
 }
 
 void ATSCharacter::Death()
@@ -275,11 +312,26 @@ void ATSCharacter::UpdateAimOffset()
 
 }
 
-
+void ATSCharacter::ResetFireState()
+{
+	IsFiring = false;
+}
 
 void ATSCharacter::EnableMovementAfterReload()
 {
+	IsReloading = false;
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+}
+
+void ATSCharacter::FaceMouseDirection()
+{
+	if (!Controller) return;
+
+	FRotator NewRotation = Controller->GetControlRotation();
+	NewRotation.Pitch = 0.0f;
+	NewRotation.Roll = 0.0f;
+
+	SetActorRotation(NewRotation);
 }
 
 
