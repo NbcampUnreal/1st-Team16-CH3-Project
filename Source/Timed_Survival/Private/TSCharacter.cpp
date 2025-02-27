@@ -330,6 +330,16 @@ void ATSCharacter::Fire(const FInputActionValue& value)
 
 void ATSCharacter::StartAiming(const FInputActionValue& value)
 {
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+
+	if (GetCharacterMovement()->MaxWalkSpeed == 1000)
+	{
+		return;
+	}
+
 	bIsAiming = true;
 	CameraComp->SetFieldOfView(AimFOV);
 	SpringArmComp->SocketOffset = FVector(272, -34, -43);
