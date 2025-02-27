@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseWeapon.h"
+
 #include "GunWeapon.generated.h"
 
 UCLASS()
@@ -12,7 +13,14 @@ class TIMED_SURVIVAL_API AGunWeapon : public ABaseWeapon
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	FName WeaponType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float ReloadDelay;
+
+	// 예비 탄약
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	int32 ReserveBullet;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	int32 BulletCount;
@@ -25,7 +33,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	bool bIsReload;
-
+	
 	FTimerHandle ReloadTimerHandle;
 
 public:
@@ -37,8 +45,17 @@ public:
 	virtual void FireBullet() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void Reload();
+	virtual void Reload();
 	
 	UFUNCTION()
-	void FinishReload();
+	virtual void FinishReload();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+
+	int32 GetBulletCount() const { return BulletCount; }
+	int32 GetMaxBulletCount() const { return MaxBulletCount; }
+	void SetBulletCount(int32 NewBulletCount) { BulletCount = NewBulletCount; }
+
+	FName GetWeaponType() const { return WeaponType; }
+	void AddBullet(int32 Amount);
 };

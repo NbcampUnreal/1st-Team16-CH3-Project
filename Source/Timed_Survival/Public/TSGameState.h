@@ -15,9 +15,17 @@ public:
 	virtual void BeginPlay() override;
 
 	//about Game flow
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float HealthBarMax;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float BaseHealth;
+	float TotalHealth;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Food")
+	int32 FoodCount;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Healing")
 	int32 HealingCount;
 	int32 GetRandomValue;
+	FTimerHandle HealthTimerHandle;
 
 	void StartLevel();
 	void OnGameOver();

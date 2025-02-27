@@ -4,11 +4,19 @@
 
 AGunWeapon::AGunWeapon()
 {
+	ReserveBullet = 10; // 예비 탄약
 	BulletCount = 10;
 	MaxBulletCount = 10;
 	Damage = 10;
 	ReloadDelay = 2.0f;
 	bIsReload = false;
+}
+
+void AGunWeapon::AddBullet(int32 Amount)
+{
+	ReserveBullet += Amount; // 예비 탄약에 추가
+	//디버그용
+	UE_LOG(LogTemp, Warning, TEXT("%s 탄약 추가됨! 현재 탄약: %d"), *WeaponType.ToString(), ReserveBullet);
 }
 
 float AGunWeapon::GetReloadDelay() const

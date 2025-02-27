@@ -9,6 +9,8 @@ ATSPlayerController::ATSPlayerController()
 	JumpAction(nullptr),
 	LookAction(nullptr),
 	SprintAction(nullptr),
+	ReloadAction(nullptr),
+	FireAction(nullptr),
 	HUDWidgetClass(nullptr),
 	HUDWidgetInstance(nullptr),
 	MainMenuWidgetClass(nullptr),
