@@ -9,7 +9,7 @@
 
 ATSHealingItem::ATSHealingItem()
 {
-	count = 1; // 아이템 수집 횟수
+	count =0; // 아이템 수집 횟수
 	HealingAmount = 10.0f; // 기본 회복량
 	ItemType = "DefaultHealing"; // 아이템 타입
 }
