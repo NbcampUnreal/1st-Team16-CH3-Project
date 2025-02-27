@@ -27,6 +27,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Healing")
 	int32 HealingCount;
 	int32 GetRandomValue;
+
 	FTimerHandle SubtractHealthTimerHandle;
 	void SubtractHealthOnSecond();
 
@@ -45,6 +46,9 @@ public:
 
 	// 시간(체력) 증가함수 - 아이템 연동
 	void IncreaseTime(float Value);
+
+	// 시간(체력) 감소함수 - 아이템 연동
+	void ReduceTime(float Value);
 
 	
 	UFUNCTION(BlueprintPure, Category = "Count")
