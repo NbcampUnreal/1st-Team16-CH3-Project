@@ -43,6 +43,9 @@ public:
 	// 시간(체력) 증가함수 - 아이템 연동
 	void IncreaseTime(float Value);
 
+	// 시간(체력) 감소함수 - 아이템 연동
+	void ReduceTime(float Value);
+
 	
 	UFUNCTION(BlueprintPure, Category = "Count")
 	int32 GetHealingCount() const;
