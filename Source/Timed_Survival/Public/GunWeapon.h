@@ -13,7 +13,7 @@ class TIMED_SURVIVAL_API AGunWeapon : public ABaseWeapon
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FName weaponType;
+	FName WeaponType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float ReloadDelay;
@@ -29,9 +29,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	bool bIsReload;
-
-	FName WeaponType;  
-
+	
 	FTimerHandle ReloadTimerHandle;
 
 public:
@@ -54,6 +52,6 @@ public:
 	int32 GetMaxBulletCount() const { return MaxBulletCount; }
 	void SetBulletCount(int32 NewBulletCount) { BulletCount = NewBulletCount; }
 
-	FName GetWeaponType() const { return weaponType; }
+	FName GetWeaponType() const { return WeaponType; }
 	void AddBullet(int32 Amount);
 };

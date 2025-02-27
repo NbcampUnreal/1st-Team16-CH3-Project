@@ -30,6 +30,7 @@ ATSCharacter::ATSCharacter()
 	bUseControllerRotationYaw = false;
 }
 
+// 무기 타입으로 무기 찾는 함수(총알 추가용)
 AGunWeapon* ATSCharacter::FindWeaponByType(FName WeaponType)
 {
 	for (AGunWeapon* Weapon : Weapons)

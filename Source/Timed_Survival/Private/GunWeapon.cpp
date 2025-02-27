@@ -14,6 +14,8 @@ AGunWeapon::AGunWeapon()
 void AGunWeapon::AddBullet(int32 Amount)
 {
 	BulletCount = FMath::Clamp(BulletCount + Amount, 0, MaxBulletCount);
+	//디버그용
+	UE_LOG(LogTemp, Warning, TEXT("%s 탄약 추가됨! 현재 탄약: %d"), *WeaponType.ToString(), BulletCount);
 }
 
 float AGunWeapon::GetReloadDelay() const

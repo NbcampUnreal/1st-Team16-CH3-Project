@@ -6,7 +6,7 @@
 #include "TSBaseBulletItem.h"
 #include "TSARBulletItem.generated.h"
 
-class AAR;
+
 
 UCLASS()
 class TIMED_SURVIVAL_API ATSARBulletItem : public ATSBaseBulletItem
@@ -16,5 +16,4 @@ class TIMED_SURVIVAL_API ATSARBulletItem : public ATSBaseBulletItem
 public:
 	ATSARBulletItem();
 
-	virtual void ActivateItem(AActor* Activator) override;
 };
