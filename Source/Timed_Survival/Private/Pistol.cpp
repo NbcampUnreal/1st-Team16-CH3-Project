@@ -3,7 +3,7 @@
 
 APistol::APistol()
 {
-    Damage = 20;
+    Damage = 10;
     ReloadDelay = 1.5f;
 }
 
@@ -32,4 +32,22 @@ void APistol::FireBullet()
     {
         UE_LOG(LogTemp, Warning, TEXT("Failed spawn bullet!"));
     }
+}
+
+void APistol::Reload()
+{
+    if (bIsReload || BulletCount == MaxBulletCount)
+    {
+        return;
+    }
+
+    bIsReload = true;
+
+    GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &APistol::FinishReload, ReloadDelay, false);
+}
+
+void APistol::FinishReload()
+{
+    BulletCount = MaxBulletCount;
+    bIsReload = false;
 }
