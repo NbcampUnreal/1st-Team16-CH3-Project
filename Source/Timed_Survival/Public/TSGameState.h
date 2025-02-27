@@ -19,13 +19,16 @@ public:
 	float HealthBarMax;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float BaseHealth;
-	float TotalHealth;
+	float PlusHealth;
+	float CurrentHealth;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Food")
 	int32 FoodCount;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Healing")
 	int32 HealingCount;
 	int32 GetRandomValue;
-	FTimerHandle HealthTimerHandle;
+	FTimerHandle SubtractHealthTimerHandle;
+	void SubtractHealthOnSecond();
 
 	void StartLevel();
 	void OnGameOver();

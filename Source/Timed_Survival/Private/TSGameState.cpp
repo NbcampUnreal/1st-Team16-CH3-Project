@@ -10,8 +10,10 @@
 ATSGameState::ATSGameState()
 {
 	HealingCount = 0;
-	BaseHealth = 3.0;
-	TotalHealth = BaseHealth * 60.0;
+	HealthBarMax = 30.0;
+	BaseHealth = 3.0f;
+	PlusHealth = 0.0f;
+	CurrentHealth = BaseHealth * 60.0f + PlusHealth;
 }
 
 void ATSGameState::BeginPlay()
@@ -26,20 +28,23 @@ void ATSGameState::BeginPlay()
 		this,
 		&ATSGameState::UpdateHUD,
 		0.1f, true);
+
+
 }
 
 //about Game flow
 void ATSGameState::StartLevel()
 {
-	UpdateHUD();
-
-	GetWorldTimerManager().SetTimer( //HP Timer
-		HealthTimerHandle,
+	
+	GetWorldTimerManager().SetTimer( // Subtract Timer
+		SubtractHealthTimerHandle,
 		this,
-		&ATSGameState::OnHPZero,
-		TotalHealth,
-		false
-	);
+		&ATSGameState::SubtractHealthOnSecond,
+		1.0f,
+		true);
+
+
+	UpdateHUD();
 }
 void ATSGameState::OnGameOver()
 {
@@ -84,15 +89,13 @@ void ATSGameState::UpdateHUD()
 				//1)-1 HP Text
 				if (UTextBlock* HealthText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("HealthText"))))
 				{
-					float RemainingHealth = GetWorldTimerManager().GetTimerRemaining(HealthTimerHandle);
-					HealthText->SetText(FText::FromString(FString::Printf(TEXT("%1.f"), RemainingHealth)));
+					HealthText->SetText(FText::FromString(FString::Printf(TEXT("HealthTest : %.1f"),CurrentHealth)));
 				}
 
 				// 1)-2 HP Bar
-				if (UProgressBar* HealthBar = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("HealthBar"))))
+				if (UProgressBar* HealthBar = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("HealthBar1"))))
 				{
-					float RemainingHealth = GetWorldTimerManager().GetTimerRemaining(HealthTimerHandle);
-					float HealthPercent = RemainingHealth; //체력 증가, 디버프, 감소 수치 추가해야됨
+					float HealthPercent = CurrentHealth / HealthBarMax; //체력 증가, 디버프, 감소 수치 추가해야됨
 					HealthBar->SetPercent(HealthPercent);
 				}
 
@@ -115,7 +118,7 @@ void ATSGameState::UpdateHUD()
 // 시간(체력) 증가함수
 void ATSGameState::IncreaseTime(float Value)
 {
-	//TotalHealth += HealingAmount
+	PlusHealth += Value;
 }
 
 int32 ATSGameState::GetHealingCount() const
@@ -136,4 +139,9 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 	// 디버깅 로그
 	UE_LOG(LogTemp, Warning, TEXT("HealingCount: %d"), HealingCount);
 
+}
+
+void ATSGameState::SubtractHealthOnSecond()
+{
+	CurrentHealth -= 1.0f;
 }
