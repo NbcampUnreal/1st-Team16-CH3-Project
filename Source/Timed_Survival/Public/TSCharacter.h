@@ -20,14 +20,21 @@ class TIMED_SURVIVAL_API ATSCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
+
 	ATSCharacter();
 
 private:
+
 	bool IsFiring = false;
-	bool IsReloading = false;
+
+	// 키를 입력하고 있는지 확인
+	bool IsMovingForward = false;
 
 	// 마지막 입력된 이동 값 저장
 	FVector2D LastMoveInput; 
+
+	// 마지막 입력된 이동 방향 저정
+	FVector LastMoveDirection;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -79,10 +86,7 @@ public:
 protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void BeginPlay() override;
-
-public:
-	
+	virtual void BeginPlay() override;	
 	virtual void Tick(float DeltaTime) override;
 
 protected:
@@ -108,12 +112,13 @@ protected:
 	UFUNCTION()
 	void Death();
 
-	// Mouse Move Aim Function
-	void UpdateAimOffset();
-
 	// 다시 이동할 수 있는 함수(Reload시에 이동이 불가하여)
 	UFUNCTION()
 	void EnableMovementAfterReload(); 
 
+	// 캐릭터가 바라보는곳을 마우스로 설정하는 함수
 	void FaceMouseDirection();
+
+	// 총 쏜뒤에 캐릭터가 움직이게하는 함수
+	void ResetMovementAfterFire();
 };
