@@ -4,6 +4,7 @@
 
 AGunWeapon::AGunWeapon()
 {
+	ReserveBullet = 10; // 예비 탄약
 	BulletCount = 10;
 	MaxBulletCount = 10;
 	Damage = 10;
@@ -13,9 +14,9 @@ AGunWeapon::AGunWeapon()
 
 void AGunWeapon::AddBullet(int32 Amount)
 {
-	BulletCount = FMath::Clamp(BulletCount + Amount, 0, MaxBulletCount);
+	ReserveBullet += Amount; // 예비 탄약에 추가
 	//디버그용
-	UE_LOG(LogTemp, Warning, TEXT("%s 탄약 추가됨! 현재 탄약: %d"), *WeaponType.ToString(), BulletCount);
+	UE_LOG(LogTemp, Warning, TEXT("%s 탄약 추가됨! 현재 탄약: %d"), *WeaponType.ToString(), ReserveBullet);
 }
 
 float AGunWeapon::GetReloadDelay() const

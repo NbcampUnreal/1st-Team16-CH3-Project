@@ -7,5 +7,5 @@
 ATSARBulletItem::ATSARBulletItem()
 {
 	BulletAmount = 10;
-	WeaponType = "AR";
+	WeaponType = FName("AR");
 }

@@ -6,5 +6,5 @@
 ATSPistolBulletItem::ATSPistolBulletItem()
 {
 	BulletAmount = 5;
-    WeaponType = "Pistol";
+	WeaponType = FName("Pistol");
 }

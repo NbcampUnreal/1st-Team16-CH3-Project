@@ -8,7 +8,7 @@
 ATSBaseBulletItem::ATSBaseBulletItem()
 {
 	BulletAmount = 10; // 총알 수량
-	
+    WeaponType = "DefaultBullet";
 }
 
 
@@ -30,7 +30,7 @@ void ATSBaseBulletItem::ActivateItem(AActor* Activator)
         if (Weapon)
         {
             Weapon->AddBullet(BulletAmount);
-            Destroy();  // 아이템 사용 후 제거
+            
         }
     }
 
