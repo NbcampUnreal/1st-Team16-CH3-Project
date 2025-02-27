@@ -11,6 +11,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class ABaseWeapon;
 class UAniMontage;
+class FTimerhandle;
 struct FInputActionValue;
 
 UCLASS()
@@ -31,7 +32,22 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* DeathAnimation;
 
-	
+	// Reload Animation
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	UAnimMontage* ReloadAnimation;
+	// Fire Animation
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	UAnimMontage* FireAnimation;
+
+
+
+	// Aim Rotation
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aiming")
+	FRotator AimRotation;
+
+	// Reload Charcter Move Stop
+	FTimerHandle ReloadTimerHandle;
+
 public:
 	
 	//Mvoe Speed
@@ -40,11 +56,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MovementSpeed")
 	float SprintSpeed;
 
-	// Time Health
+	// Helath
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
-	float MaxTimeHealth;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
-	float CurrentTimeHealth;
+	float MaxHealth;
+
+	float CurrentHealth;
 
 	// 무기 리스트 담을 배열
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
@@ -76,10 +92,21 @@ protected:
 	void StartSprint(const FInputActionValue& value);
 	UFUNCTION()
 	void StopSprint(const FInputActionValue& value);
+	UFUNCTION()
+	void Reload(const FInputActionValue& value);
+	UFUNCTION()
+	void Fire(const FInputActionValue& value);
 
 	
 
+	// Death 
 	UFUNCTION()
 	void Death();
 
+	// Mouse Move Aim Function
+	void UpdateAimOffset();
+
+	// 다시 이동할 수 있는 함수(Reload시에 이동이 불가하여)
+	UFUNCTION()
+	void EnableMovementAfterReload(); 
 };
