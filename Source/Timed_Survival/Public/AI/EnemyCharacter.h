@@ -3,18 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "AI/TS_EnemyCharacterBase.h"
 #include "EnemyCharacter.generated.h"
 
 UCLASS()
-class TIMED_SURVIVAL_API AEnemyCharacter : public ACharacter
+class TIMED_SURVIVAL_API AEnemyCharacter : public ATS_EnemyCharacterBase
 {
 	GENERATED_BODY()
 
 public:
 	AEnemyCharacter();
+	
+	virtual void BeginPlay() override;
 
-	//void TakeDamage(int Damage);
+	//virtual void TakeDamage(float DamageAmount) override;
 
 	//void TakeHeadShot(int Damage);
 
@@ -24,9 +26,9 @@ public:
 
 protected:
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Stats")
-	int CurrentHP;
+	int32 CurrentHP;
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Stats")
-	int MaxHP;
+	int32 MaxHP;
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Stats")
 	float Damage;
 
