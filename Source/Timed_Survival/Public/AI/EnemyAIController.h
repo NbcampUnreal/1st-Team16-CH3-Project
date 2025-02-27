@@ -8,21 +8,25 @@
 
 class UAIPerceptionComponent;
 class UAISenseConfig_Sight;
+struct FAIStimulus;
 
 UENUM(BlueprintType)
 enum class ETS_AISense : uint8
 {
-	E_None UMETA(DisplayName = "None"),
-	E_Sight UMETA(DisplayName = "Sight")
+	ETS_Sight UMETA(DisplayName = "Sight"),
+	ETS_Hearing UMETA(DisplayName = "Hearing"),
+	ETS_None UMETA(DisplayName = "None"),
+	ETS_Damage UMETA(DisplayName = "Damage"),
+	ETS_MAX UMETA(DisplayName = "MAX")
 };
 /**
- * 
+ *
  */
 UCLASS()
 class TIMED_SURVIVAL_API AEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
-	
+
 public:
 	AEnemyAIController();
 	// virtual void OnPossess(APawn* InPawn) override;
@@ -52,6 +56,8 @@ public:
 
 	static const FName TargetActorKey;
 
+	static const FName PlayerDetectedKey;
+
 	/*int32 CurrentPatrolIndex = 0;
 
 	void MoveToPatrolPoint();*/
@@ -62,7 +68,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess))
 	TObjectPtr<UBlackboardData> BlackboardDataAsset;
-	
+
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 

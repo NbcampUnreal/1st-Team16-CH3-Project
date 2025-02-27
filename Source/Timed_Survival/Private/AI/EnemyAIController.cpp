@@ -9,13 +9,13 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionComponent.h"
-#include "AI/BTService_TSSightPlayer.h"
 
 const float AEnemyAIController::PatrolRadius(500.f);
 int32 AEnemyAIController::ShowAIDebug(0);
 const FName AEnemyAIController::StartPatrolPositionKey(TEXT("StartPatrolPosition"));
 const FName AEnemyAIController::EndPatrolPositionKey(TEXT("EndPatrolPosition"));
 const FName AEnemyAIController::TargetActorKey(TEXT("TargetActor"));
+const FName AEnemyAIController::PlayerDetectedKey(TEXT("PlayerDetected"));
 
 
 FAutoConsoleVariableRef CVarShowAIDebug(
@@ -56,12 +56,14 @@ AEnemyAIController::AEnemyAIController()
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
-	
+
 	SightConfig->AutoSuccessRangeFromLastSeenLocation = -1.f;
 	SightConfig->SetMaxAge(3.f);
 	SightConfig->SetStartsEnabled(true);
 
 	AIPerception->ConfigureSense(*SightConfig);
+
+	AIPerception->OnPerceptionUpdated.AddDynamic(this, &AEnemyAIController::PerceptionUpdated);
 }
 
 void AEnemyAIController::BeginPlay()
@@ -91,7 +93,7 @@ void AEnemyAIController::BeginAI(APawn* InPawn)
 		{
 			bool bRundSucceeded = RunBehaviorTree(BehaviorTree);
 			checkf(bRundSucceeded == true, TEXT("Invalid BehaviorTree"));
-			
+
 			BlackboardComponent->SetValueAsVector(StartPatrolPositionKey, InPawn->GetActorLocation());
 
 			if (ShowAIDebug == 1)
@@ -122,9 +124,10 @@ void AEnemyAIController::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 	for (AActor* UpdatedActor : UpdatedActors)
 	{
 		FAIStimulus AIStimulus;
-		AIStimulus = CanSenseActor(UpdatedActor, ETS_AISense::E_Sight);
+		AIStimulus = CanSenseActor(UpdatedActor, ETS_AISense::ETS_Sight);
 		if (AIStimulus.WasSuccessfullySensed())
 		{
+			Blackboard->SetValueAsBool(PlayerDetectedKey, true);
 			MoveToActor(
 				UpdatedActor,
 				1.0f,
@@ -134,6 +137,10 @@ void AEnemyAIController::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 				nullptr,
 				true
 			);
+		}
+		else
+		{
+			Blackboard->SetValueAsBool(PlayerDetectedKey, false);
 		}
 	}
 }
@@ -149,9 +156,9 @@ FAIStimulus AEnemyAIController::CanSenseActor(AActor* Actor, ETS_AISense Sense)
 
 	switch (Sense)
 	{
-	case ETS_AISense::E_None:
+	case ETS_AISense::ETS_None:
 		break;
-	case ETS_AISense::E_Sight:
+	case ETS_AISense::ETS_Sight:
 		QuerySenseClass = UAISense_Sight::StaticClass();
 		break;
 	default:
