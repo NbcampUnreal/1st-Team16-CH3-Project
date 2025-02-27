@@ -6,7 +6,7 @@
 #include "TSBaseBulletItem.h"
 #include "TSPistolBulletItem.generated.h"
 
-class APistol;
+
 
 UCLASS()
 class TIMED_SURVIVAL_API ATSPistolBulletItem : public ATSBaseBulletItem
@@ -16,5 +16,4 @@ class TIMED_SURVIVAL_API ATSPistolBulletItem : public ATSBaseBulletItem
 public:
 	ATSPistolBulletItem();
 
-	virtual void ActivateItem(AActor* Activator) override;
 };
