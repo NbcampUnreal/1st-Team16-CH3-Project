@@ -27,7 +27,7 @@ private:
 
 	bool IsFiring = false;
 
-	// 키를 입력하고 있는지 확인
+	// 이동키를 입력하고 있는지 확인
 	bool IsMovingForward = false;
 
 	// 마지막 입력된 이동 값 저장
@@ -104,8 +104,12 @@ protected:
 	UFUNCTION()
 	void StopSprint(const FInputActionValue& value);
 	UFUNCTION()
-	void Reload(const FInputActionValue& value);
+	void StartCrouch(const FInputActionValue& value);
 	UFUNCTION()
+	void StopCrouch(const FInputActionValue& value);
+	UFUNCTION()
+	void Reload(const FInputActionValue& value);
+	UFUNCTION(BlueprintCallable)
 	void Fire(const FInputActionValue& value);
 
 	// Death

@@ -31,6 +31,9 @@ public:
 	UInputAction* SprintAction; // Sprint
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* CrouchAction; // Crouch
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* ReloadAction; // Reload
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")

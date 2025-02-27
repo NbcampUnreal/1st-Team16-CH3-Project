@@ -105,6 +105,24 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 				);
 			}
 
+
+			if (PlayerController->CrouchAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->CrouchAction,
+					ETriggerEvent::Triggered,
+					this,
+					&ATSCharacter::StartCrouch
+				);
+
+				EnhancedInput->BindAction(
+					PlayerController->CrouchAction,
+					ETriggerEvent::Completed,
+					this,
+					&ATSCharacter::StopCrouch
+				);
+			}
+
 			if (PlayerController->ReloadAction)
 			{
 				EnhancedInput->BindAction(
@@ -227,6 +245,22 @@ void ATSCharacter::StopSprint(const FInputActionValue& value)
 	}
 }
 
+void ATSCharacter::StartCrouch(const FInputActionValue& value)
+{
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+	
+	Crouch();
+}
+
+void ATSCharacter::StopCrouch(const FInputActionValue& value)
+{
+	UnCrouch();
+}
+
+
 void ATSCharacter::Reload(const FInputActionValue& value)
 {
 	if (GetCharacterMovement()->IsFalling())
@@ -253,6 +287,11 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 
 void ATSCharacter::Fire(const FInputActionValue& value)
 {
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+
 	if (GetCharacterMovement())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed * 0.0f;
