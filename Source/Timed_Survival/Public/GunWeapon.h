@@ -43,10 +43,10 @@ public:
 	virtual void FireBullet() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void Reload();
+	virtual void Reload();
 	
 	UFUNCTION()
-	void FinishReload();
+	virtual void FinishReload();
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 

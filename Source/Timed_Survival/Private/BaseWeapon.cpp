@@ -12,10 +12,6 @@ ABaseWeapon::ABaseWeapon()
 	Damage = 10;
 }
 
-void ABaseWeapon::Attack()
-{
-}
-
 void ABaseWeapon::FireBullet()
 {
 }
