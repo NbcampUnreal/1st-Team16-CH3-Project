@@ -118,6 +118,12 @@ void ATSGameState::IncreaseTime(float Value)
 	//TotalHealth += HealingAmount
 }
 
+// 시간(체력) 감소함수
+void ATSGameState::ReduceTime(float Value)
+{
+	//TotalHealth -= DamageAmount
+}
+
 int32 ATSGameState::GetHealingCount() const
 {
 	return HealingCount;
