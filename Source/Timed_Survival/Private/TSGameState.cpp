@@ -115,13 +115,30 @@ void ATSGameState::UpdateHUD()
 // 시간(체력) 증가함수
 void ATSGameState::IncreaseTime(float Value)
 {
-	//TotalHealth += HealingAmount
+	//// 임시 구현 코드 - 확인 필요
+	//float RemainingTime = GetWorldTimerManager().GetTimerRemaining(HealthTimerHandle);
+	//
+	//GetWorldTimerManager().SetTimer(
+	//	HealthTimerHandle,
+	//	this,
+	//	&ATSGameState::OnHPZero,
+	//	RemainingTime + Value, false
+	//);
 }
 
 // 시간(체력) 감소함수
 void ATSGameState::ReduceTime(float Value)
 {
-	//TotalHealth -= DamageAmount
+	//// 임시 구현 코드 - 확인 필요
+	//float RemainingTime = GetWorldTimerManager().GetTimerRemaining(HealthTimerHandle);
+	//
+	//GetWorldTimerManager().SetTimer(
+	//	HealthTimerHandle,
+	//	this,
+	//	&ATSGameState::OnHPZero,
+	//	FMath::Max(0.0f, RemainingTime - Value),
+	//	false
+	//);
 }
 
 int32 ATSGameState::GetHealingCount() const
