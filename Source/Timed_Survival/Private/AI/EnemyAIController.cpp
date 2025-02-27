@@ -15,6 +15,7 @@ int32 AEnemyAIController::ShowAIDebug(0);
 const FName AEnemyAIController::StartPatrolPositionKey(TEXT("StartPatrolPosition"));
 const FName AEnemyAIController::EndPatrolPositionKey(TEXT("EndPatrolPosition"));
 const FName AEnemyAIController::TargetActorKey(TEXT("TargetActor"));
+const FName AEnemyAIController::PlayerDetectedKey(TEXT("PlayerDetected"));
 
 
 FAutoConsoleVariableRef CVarShowAIDebug(
@@ -55,7 +56,7 @@ AEnemyAIController::AEnemyAIController()
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
-	
+
 	SightConfig->AutoSuccessRangeFromLastSeenLocation = -1.f;
 	SightConfig->SetMaxAge(3.f);
 	SightConfig->SetStartsEnabled(true);
@@ -92,7 +93,7 @@ void AEnemyAIController::BeginAI(APawn* InPawn)
 		{
 			bool bRundSucceeded = RunBehaviorTree(BehaviorTree);
 			checkf(bRundSucceeded == true, TEXT("Invalid BehaviorTree"));
-			
+
 			BlackboardComponent->SetValueAsVector(StartPatrolPositionKey, InPawn->GetActorLocation());
 
 			if (ShowAIDebug == 1)
@@ -123,9 +124,10 @@ void AEnemyAIController::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 	for (AActor* UpdatedActor : UpdatedActors)
 	{
 		FAIStimulus AIStimulus;
-		AIStimulus = CanSenseActor(UpdatedActor, EAISense::ETS_Sight);
+		AIStimulus = CanSenseActor(UpdatedActor, ETS_AISense::ETS_Sight);
 		if (AIStimulus.WasSuccessfullySensed())
 		{
+			Blackboard->SetValueAsBool(PlayerDetectedKey, true);
 			MoveToActor(
 				UpdatedActor,
 				1.0f,
@@ -136,10 +138,14 @@ void AEnemyAIController::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 				true
 			);
 		}
+		else
+		{
+			Blackboard->SetValueAsBool(PlayerDetectedKey, false);
+		}
 	}
 }
 
-FAIStimulus AEnemyAIController::CanSenseActor(AActor* Actor, EAISense Sense)
+FAIStimulus AEnemyAIController::CanSenseActor(AActor* Actor, ETS_AISense Sense)
 {
 	FActorPerceptionBlueprintInfo ActorPerceptionBlueprintInfo;
 	FAIStimulus ResultStimulus;
@@ -150,9 +156,9 @@ FAIStimulus AEnemyAIController::CanSenseActor(AActor* Actor, EAISense Sense)
 
 	switch (Sense)
 	{
-	case EAISense::ETS_None:
+	case ETS_AISense::ETS_None:
 		break;
-	case EAISense::ETS_Sight:
+	case ETS_AISense::ETS_Sight:
 		QuerySenseClass = UAISense_Sight::StaticClass();
 		break;
 	default:
