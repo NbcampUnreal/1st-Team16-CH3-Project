@@ -12,8 +12,8 @@ ATSGameState::ATSGameState()
 	HealingCount = 0;
 	HealthBarMax = 30.0;
 	BaseHealth = 3.0f;
-	PlusHealth = 0.0f;
-	CurrentHealth = BaseHealth * 60.0f + PlusHealth;
+	ItemHealth = 0.0f;
+	CurrentHealth = BaseHealth * 60.0f;
 }
 
 void ATSGameState::BeginPlay()
@@ -28,24 +28,21 @@ void ATSGameState::BeginPlay()
 		this,
 		&ATSGameState::UpdateHUD,
 		0.1f, true);
-
-
 }
 
 //about Game flow
 void ATSGameState::StartLevel()
 {
-	
-	GetWorldTimerManager().SetTimer( // Subtract Timer
+	GetWorldTimerManager().SetTimer( // Subtract Time
 		SubtractHealthTimerHandle,
 		this,
 		&ATSGameState::SubtractHealthOnSecond,
-		1.0f,
+		0.1f,
 		true);
-
 
 	UpdateHUD();
 }
+
 void ATSGameState::OnGameOver()
 {
 	UpdateHUD();
@@ -118,7 +115,8 @@ void ATSGameState::UpdateHUD()
 // 시간(체력) 증가함수
 void ATSGameState::IncreaseTime(float Value)
 {
-	PlusHealth += Value;
+	ItemHealth += Value;
+	UpdateHealth();
 }
 
 int32 ATSGameState::GetHealingCount() const
@@ -143,5 +141,10 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 
 void ATSGameState::SubtractHealthOnSecond()
 {
-	CurrentHealth -= 1.0f;
+	CurrentHealth -= 0.1f;
+}
+
+void ATSGameState::UpdateHealth()
+{
+	CurrentHealth = BaseHealth * 60.0f + ItemHealth;
 }

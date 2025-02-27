@@ -19,7 +19,7 @@ public:
 	float HealthBarMax;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float BaseHealth;
-	float PlusHealth;
+	float ItemHealth;
 	float CurrentHealth;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Food")
@@ -53,4 +53,6 @@ public:
 	// 회복 수집 횟수 증가 함수 - 아이템 연동
 	UFUNCTION(BlueprintCallable, Category = "Count")
 	void IncreaseHealingCount(int32 Amount);
+
+	void UpdateHealth();
 };
