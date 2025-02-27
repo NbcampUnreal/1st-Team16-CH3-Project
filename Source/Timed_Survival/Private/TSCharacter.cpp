@@ -23,8 +23,8 @@ ATSCharacter::ATSCharacter()
 	NormalSpeed = 300.0f;
 	SprintSpeed = 1000.0f;
 
-	MaxHP = 100.0f;
-	CurrentHP = MaxHP;
+	MaxHealth = 100.0f;
+	CurrentHealth = MaxHealth;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -80,7 +80,6 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 			if (PlayerController->LookAction)
 			{
-
 				EnhancedInput->BindAction(
 					PlayerController->LookAction, 
 					ETriggerEvent::Triggered,    
@@ -103,6 +102,26 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 					ETriggerEvent::Completed,       
 					this,                           
 					&ATSCharacter::StopSprint      
+				);
+			}
+
+			if (PlayerController->ReloadAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->ReloadAction,
+					ETriggerEvent::Triggered,
+					this,
+					&ATSCharacter::Reload
+				);
+			}
+
+			if (PlayerController->FireAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->FireAction,
+					ETriggerEvent::Triggered,
+					this,
+					&ATSCharacter::Fire
 				);
 			}
 		}
@@ -193,6 +212,40 @@ void ATSCharacter::StopSprint(const FInputActionValue& value)
 	}
 }
 
+void ATSCharacter::Reload(const FInputActionValue& value)
+{
+	UAnimInstance* AnimInstance = Cast<UAnimInstance>(GetMesh()->GetAnimInstance());
+	if (IsValid(AnimInstance) == true && IsValid(ReloadAnimation) == true && AnimInstance->Montage_IsPlaying(ReloadAnimation) == false)
+	{
+		GetCharacterMovement()->DisableMovement();
+
+		AnimInstance->Montage_Play(ReloadAnimation);
+
+		float ReloadTime = ReloadAnimation->GetPlayLength();
+		GetWorld()->GetTimerManager().SetTimer(
+			ReloadTimerHandle,
+			this,
+			&ATSCharacter::EnableMovementAfterReload,
+			ReloadTime,
+			false
+		);
+	}
+}
+
+void ATSCharacter::Fire(const FInputActionValue& value)
+{
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 50.0f;
+	}
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (IsValid(AnimInstance) && IsValid(FireAnimation) && !AnimInstance->Montage_IsPlaying(FireAnimation))
+	{
+		AnimInstance->Montage_Play(FireAnimation);
+	}
+
+}
+
 void ATSCharacter::Death()
 {
 	if (DeathAnimation)
@@ -219,6 +272,13 @@ void ATSCharacter::UpdateAimOffset()
 
 	AimRotation = UKismetMathLibrary::NormalizedDeltaRotator(ControlRotation, ActorRotation);
 
+}
+
+
+
+void ATSCharacter::EnableMovementAfterReload()
+{
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 }
 
 
