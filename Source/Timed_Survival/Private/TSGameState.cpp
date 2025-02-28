@@ -212,6 +212,7 @@ void ATSGameState::SetStopTimeReductionEnabled(bool bEnable)
 void ATSGameState::SubtractHealthOnSecond()
 {
 	if (bIsStopTimeReductionEnabled && CurrentHealth > 0.0f)
+	if (CurrentHealth > 0.0f)
 	{
 		CurrentHealth -= 0.1f;
 	}
@@ -225,6 +226,20 @@ void ATSGameState::SubtractHealthOnSecond()
   }
 }
 
+// GunWeapon Bullet Data Function
+
+void ATSGameState::GetBulletData()
+{
+	AGunWeapon* BulletData;
+	BulletData->GetBulletCount();
+	BulletData->GetMaxBulletCount();
+	BulletData->GetWeaponType();
+}
+
+void ATSGameState::UpdateBulletData()
+{
+	GetBulletData();
+}
 
 // void ATSGameState::FindARBullet()
 // {
