@@ -90,7 +90,7 @@ void ATSMineItem::Explode()
             // 플레이어의 경우, GameState에서 남은 시간을 감소
             if (ATSGameState* GameState = GetWorld()->GetGameState<ATSGameState>())
             {
-                GameState->ReduceTime(ExplosionPlayerDamage);
+                GameState->ReduceTime(ExplosionPlayerDamage, true);
             }
         }
         else if (Actor->ActorHasTag("MoveCharacter"))

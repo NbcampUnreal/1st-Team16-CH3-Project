@@ -21,6 +21,7 @@ protected:
 
 	virtual void ActivateItem(AActor* Activator) override;
 
-	// HP 정지 시간
+	// HP 방어 시간
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mask")
 	float StopTimeDuration;
 };
