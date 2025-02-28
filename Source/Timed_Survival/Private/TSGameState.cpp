@@ -2,6 +2,9 @@
 #include "TSGameInstance.h"
 #include "TSCharacter.h"
 #include "TSPlayerController.h"
+#include "TSBaseBulletItem.h"
+#include "TSARBulletItem.h"
+#include "TSPistolBulletItem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
@@ -40,7 +43,6 @@ void ATSGameState::StartLevel()
 		0.1f,
 		true);
 
-	//UpdateHUD();
 }
 
 void ATSGameState::OnGameOver()
@@ -124,10 +126,33 @@ void ATSGameState::UpdateHUD()
 					HealthBundle->SetText(FText::FromString(FString::Printf(TEXT("X %d"), Bundle)));
 				}
 
-				// 2) Bullet Count
-				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("CountBullet"))))
+				// 2)-1 AR Bullet Count
+				if (UTextBlock* CountARBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBullet"))))
 				{
+					ATSARBulletItem* TSARBulletItem = GetWorld()->SpawnActor<ATSARBulletItem>(ATSARBulletItem::StaticClass());
+					//int32 ARBulletCount = TSARBulletItem->
 					
+				/*	ATSBaseBulletItem* TSBaseBulletItem;
+					ATSARBulletItem* TSARBulletItem = Cast<ATSARBulletItem>(TSBaseBulletItem);
+									
+					int32 ARBulletInInven =*/
+					
+					//CountARBullet->SetText(FText::FromString(FString::Printf(TEXT("AR: %d"))));
+				}
+				// 2)-2 AR Bullet Reload
+				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBulletReload"))))
+				{
+
+				}
+				// 2)-3 Pistol Bullet Count
+				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("PistolBullet"))))
+				{
+
+				}
+				// 2)-4 Pistol Bullet Reload
+				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("PistolBulletReload"))))
+				{
+
 				}
 				
 				// 3) Healing Effect
@@ -191,5 +216,15 @@ void ATSGameState::SubtractHealthOnSecond()
 		GetWorldTimerManager().ClearTimer(SubtractHealthTimerHandle); 
 
 		OnHPZero();
-	}
+  }
 }
+
+
+// void ATSGameState::FindARBullet()
+// {
+// 	TArray<AActor*> FoundBullets;
+// 	//UGameplayStatics::GetAllActorsOfClass(GetWorld(),TSubclassOf<AActor>ATSBaseBulletItem,)
+// }
+// void ATSGameState::FindPistolBullet()
+// {
+// }
