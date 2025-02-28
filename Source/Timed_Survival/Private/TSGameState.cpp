@@ -203,9 +203,15 @@ void ATSGameState::UpdateHealth()
 	CurrentHealth = BaseHealth * 60.0f + ItemHealth;
 }
 
+// 시간 감소 활성화 함수
+void ATSGameState::SetStopTimeReductionEnabled(bool bEnable)
+{
+	bIsStopTimeReductionEnabled = bEnable;
+}
+
 void ATSGameState::SubtractHealthOnSecond()
 {
-	if (CurrentHealth > 0.0f)
+	if (bIsStopTimeReductionEnabled && CurrentHealth > 0.0f)
 	{
 		CurrentHealth -= 0.1f;
 	}

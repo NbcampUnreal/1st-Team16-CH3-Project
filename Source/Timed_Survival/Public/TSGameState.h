@@ -57,6 +57,10 @@ public:
 	// 시간(체력) 감소함수 - 아이템 연동
 	void ReduceTime(float Value);
 
+	bool bIsStopTimeReductionEnabled = true; // 시간 감소 활성화 여부
+	// 시간 감소 활성화 함수
+	void SetStopTimeReductionEnabled(bool bEnable);
+
 
 	UFUNCTION(BlueprintPure, Category = "Count")
 	int32 GetHealingCount() const;
