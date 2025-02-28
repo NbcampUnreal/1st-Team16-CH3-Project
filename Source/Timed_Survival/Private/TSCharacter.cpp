@@ -12,6 +12,7 @@
 ATSCharacter::ATSCharacter() 
 {
 	PrimaryActorTick.bCanEverTick = true;
+	CurrentWeapon = nullptr;
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComp->SetupAttachment(RootComponent);
@@ -406,19 +407,4 @@ void ATSCharacter::ResetMovementAfterFire()
 	}
 
 	IsFiring = false;
-}
-
-//테스트
-void ATSCharacter::EquipWeapon(ABaseWeapon* NewWeapon)
-{
-	if (!NewWeapon) return;
-
-	// 무기를 캐릭터의 손에 장착
-	NewWeapon->AttachWeaponToCharacter(this, "WeaponSocket");
-
-	// 현재 장착된 무기 변경
-	CurrentWeapon = NewWeapon;
-
-	// 디버깅 로그 출력
-	UE_LOG(LogTemp, Warning, TEXT("Weapon Equipped: %s"), *NewWeapon->GetName());
 }

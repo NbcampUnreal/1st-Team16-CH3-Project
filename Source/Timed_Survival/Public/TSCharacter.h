@@ -103,6 +103,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void EquipWeapon(ABaseWeapon* NewWeapon);
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<ABaseWeapon> PistolBlueprint;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	ABaseWeapon* CurrentWeapon;
 
