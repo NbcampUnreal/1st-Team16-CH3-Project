@@ -8,7 +8,6 @@
 #include "TSPlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
 
-
 ATSCharacter::ATSCharacter() 
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -306,6 +305,7 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 
 void ATSCharacter::Fire(const FInputActionValue& value)
 {
+	
 	if (GetCharacterMovement()->IsFalling())
 	{
 		return;
