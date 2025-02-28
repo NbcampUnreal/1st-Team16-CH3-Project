@@ -138,8 +138,7 @@ void ATSGameState::UpdateHUD()
 				}
 
 				// 2) About Bullet HUD========================================================================================
-				GetBulletData();
-
+				
 				// 2)-1 AR Bullet Count
 				if (UTextBlock* CountARBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBullet"))))
 				{

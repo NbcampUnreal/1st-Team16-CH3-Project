@@ -39,7 +39,7 @@ void ATSBaseBulletItem::ActivateItem(AActor* Activator)
     ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
     if (GameState)
     {
-        GameState->GetBulletData();
+        GameState->UpdateBulletData();
     }
 
 
