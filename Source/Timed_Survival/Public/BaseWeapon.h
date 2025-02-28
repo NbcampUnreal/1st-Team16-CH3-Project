@@ -18,7 +18,7 @@ protected:
 	TSubclassOf<UDamageType> DamageType;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
-	UStaticMeshComponent* WeaponMesh;
+	USkeletalMeshComponent* WeaponMesh;
 
 public:	
 	ABaseWeapon();
