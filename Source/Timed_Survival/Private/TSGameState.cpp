@@ -104,6 +104,7 @@ void ATSGameState::UpdateHUD()
 		{
 			if (UUserWidget* HUDWidget = TSPlayerController->GetHUDWidget())
 			{
+				// 1) About Health HUD========================================================================================
 				float TotalHealthSet = CurrentHealth / HealthBarMax; // HealthBar 비율 세팅
 				int32 Bundle = (int32)TotalHealthSet; // HealthBar 몫
 				float HealthPercent = TotalHealthSet - Bundle; // HealthBar 반영 비율
@@ -126,18 +127,13 @@ void ATSGameState::UpdateHUD()
 					HealthBundle->SetText(FText::FromString(FString::Printf(TEXT("X %d"), Bundle)));
 				}
 
+				// 2) About Bullet HUD========================================================================================
+				GetBulletData();
+
 				// 2)-1 AR Bullet Count
 				if (UTextBlock* CountARBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBullet"))))
 				{
-					ATSARBulletItem* TSARBulletItem = GetWorld()->SpawnActor<ATSARBulletItem>(ATSARBulletItem::StaticClass());
-					//int32 ARBulletCount = TSARBulletItem->
-					
-				/*	ATSBaseBulletItem* TSBaseBulletItem;
-					ATSARBulletItem* TSARBulletItem = Cast<ATSARBulletItem>(TSBaseBulletItem);
-									
-					int32 ARBulletInInven =*/
-					
-					//CountARBullet->SetText(FText::FromString(FString::Printf(TEXT("AR: %d"))));
+					//CountARBullet->SetText(FText::FromString(FString::Printf(TEXT("X %d"), Bundle)));
 				}
 				// 2)-2 AR Bullet Reload
 				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBulletReload"))))
@@ -223,14 +219,15 @@ void ATSGameState::SubtractHealthOnSecond()
 		GetWorldTimerManager().ClearTimer(SubtractHealthTimerHandle); 
 
 		OnHPZero();
-  }
+	}
 }
 
 // GunWeapon Bullet Data Function
 
 void ATSGameState::GetBulletData()
 {
-	AGunWeapon* BulletData;
+	AGunWeapon* BulletData = GetWorld()->SpawnActor<AGunWeapon>(AGunWeapon::StaticClass());
+	BulletData->GetBulletInPlayer();
 	BulletData->GetBulletCount();
 	BulletData->GetMaxBulletCount();
 	BulletData->GetWeaponType();
