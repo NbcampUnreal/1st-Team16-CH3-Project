@@ -170,6 +170,62 @@ void ATSGameState::UpdateHUD()
 	}
 
 }
+
+//----------------------- 방독면 ------------------------
+
+// 방독면 활성화 함수
+void ATSGameState::SetStopTimeReductionEnabled(bool bEnable)
+{
+	bIsStopTimeReductionEnabled = bEnable;
+}
+
+// 방독면 효과 함수
+void ATSGameState::SetMaskEffect(bool bEnable, float Duration)
+{
+	bIsMaskActive = bEnable;
+	MaskTimeRemaining = Duration;
+
+	if (bEnable)
+	{
+		GetWorld()->GetTimerManager().SetTimer(
+			MaskEffectTimerHandle,
+			this,
+			&ATSGameState::UpdateMaskTimer,
+			1.0f,
+			true
+		);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().ClearTimer(MaskEffectTimerHandle);
+		MaskTimeRemaining = 0.0f;
+	}
+
+	UpdateHUD();
+}
+
+// 방독면 남은 시간 반환 함수
+void ATSGameState::UpdateMaskTimer()
+{
+	if (MaskTimeRemaining > 0)
+	{
+		MaskTimeRemaining -= 1.0f;
+		UpdateHUD();
+	}
+	else
+	{
+		SetMaskEffect(false, 0.0f);
+		SetStopTimeReductionEnabled(true);
+	}
+}
+
+// 방독면 활성화 여부 반환 함수
+bool ATSGameState::IsMaskActive() const
+{
+	return bIsMaskActive;
+}
+// -----------------------------------------------------
+
 // 시간(체력) 증가함수
 void ATSGameState::IncreaseTime(float Value)
 {
@@ -178,10 +234,14 @@ void ATSGameState::IncreaseTime(float Value)
 }
 
 // 시간(체력) 감소함수
-void ATSGameState::ReduceTime(float Value)
+void ATSGameState::ReduceTime(float Value, bool bIgnoreMask)
 {
-  ItemHealth -= Value;
-	UpdateHealth();
+	// bIgnoreMask가 true일 떄 지뢰 같은 강제 피해는 적용되도록 예외 처리
+	if (bIsStopTimeReductionEnabled || bIgnoreMask)
+	{
+		ItemHealth -= Value;
+		UpdateHealth();
+	}
 }
 
 int32 ATSGameState::GetHealingCount() const
@@ -209,16 +269,9 @@ void ATSGameState::UpdateHealth()
 	CurrentHealth = BaseHealth * 60.0f + ItemHealth;
 }
 
-// 시간 감소 활성화 함수
-void ATSGameState::SetStopTimeReductionEnabled(bool bEnable)
-{
-	bIsStopTimeReductionEnabled = bEnable;
-}
-
 void ATSGameState::SubtractHealthOnSecond()
 {
 	if (bIsStopTimeReductionEnabled && CurrentHealth > 0.0f)
-	if (CurrentHealth > 0.0f)
 	{
 		CurrentHealth -= 0.1f;
 	}

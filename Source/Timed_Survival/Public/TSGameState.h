@@ -44,20 +44,15 @@ public:
 	// SubtractHealthOnSecont함수에서 CurrentHealth가 0으로 떨어지면 Character.cpp에 Death()함수 호출
 	void OnHPZero();
 	void BattleSystem();
-
-
+	
 	// about UI Function 
 	FTimerHandle HUDUpdateTimerHandle;
 	void UpdateHUD();
 
 	// about Health(Timer) Function - with Item Class
 	void IncreaseTime(float Value);
-	void ReduceTime(float Value);
-	bool bIsStopTimeReductionEnabled = true; // 시간 감소 활성화 여부
-	// 시간 감소 활성화 함수
-	void SetStopTimeReductionEnabled(bool bEnable);
-
-
+	void ReduceTime(float Value, bool bIgnoreMask = false); // 방독면 무시 여부
+		
 	// about Health Item - with Item Class
 	UFUNCTION(BlueprintPure, Category = "Count")
 	int32 GetHealingCount() const;
@@ -75,5 +70,17 @@ public:
 	/*void FindARBullet();
 	void FindPistolBullet();*/
 
+	// 방독면 관련 변수
+	bool bIsStopTimeReductionEnabled = true; // 시간 감소 활성화 여부
+	bool bIsMaskActive = false; // 마스크 활성화 여부
+	float MaskTimeRemaining = 0.0f; // 마스크 남은 시간
+	FTimerHandle MaskEffectTimerHandle; // 마스크 효과 타이머 핸들
 	
+	// 방독면 관련 함수
+	void SetStopTimeReductionEnabled(bool bEnable); // 시간 감소 활성화 함수
+	void SetMaskEffect(bool bEnable, float Duration); // 마스크 효과 함수
+	bool IsMaskActive() const; // 마스크 활성화 여부
+	float GetMaskTimeRemaining() const; // 마스크 남은 시간
+	void UpdateMaskTimer(); // 마스크 타이머 업데이트 함수
+		
 };
