@@ -17,9 +17,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	TSubclassOf<UDamageType> DamageType;
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void AttachWeaponToCharacter(ACharacter* Character, FName SocketName);
-
 public:	
 	ABaseWeapon();
 
