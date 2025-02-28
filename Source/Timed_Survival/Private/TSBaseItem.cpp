@@ -3,6 +3,8 @@
 
 #include "TSBaseItem.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Kismet/GameplayStatics.h" 
 #include "Particles/ParticleSystemComponent.h"
 
@@ -16,10 +18,16 @@ ATSBaseItem::ATSBaseItem()
 	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	SetRootComponent(Scene);
 
-	// 콜리전 컴포넌트
+	// 충돌 감지 스피어 컴포넌트 (아이템 획득 범위)
 	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
 	Collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	Collision->SetupAttachment(Scene);
+
+	// 감지 범위 (아웃라인 표시용)
+	DetectionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectionSphere"));
+	DetectionSphere->SetSphereRadius(200.0f); // 감지 범위 설정
+	DetectionSphere->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	DetectionSphere->SetupAttachment(Scene);
 
 	// 스태틱 메쉬 컴포넌트
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
@@ -29,12 +37,72 @@ ATSBaseItem::ATSBaseItem()
 	StaticMesh->SetGenerateOverlapEvents(false);
 
 	//이벤트 바인딩
+	DetectionSphere->OnComponentBeginOverlap.AddDynamic(this, &ATSBaseItem::OnDetectionOverlap);
+	DetectionSphere->OnComponentEndOverlap.AddDynamic(this, &ATSBaseItem::OnDetectionEndOverlap);
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATSBaseItem::OnItemOverlap);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ATSBaseItem::OnItemEndOverlap);
+
+	OutlineMaterial = nullptr;
+	OriginalMaterial = nullptr;
+	bShowOutline = true;
 }
 
+//--------------------------- 아웃라인 온오프 -------------------------------
 
-// 아이템이 겹쳐질 때 호출되는 함수
+// 감지 범위에 들어오면 테두리 활성화
+void ATSBaseItem::OnDetectionOverlap(
+	UPrimitiveComponent* OverlappedComp,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor->ActorHasTag("Player") && bShowOutline)
+	{
+		if (StaticMesh)
+		{
+			// 기존 머티리얼을 저장 (MID가 아닌 원래 머티리얼을 가져와야 함)
+			if (!OriginalMaterial)
+			{
+				OriginalMaterial = StaticMesh->GetMaterial(0);
+			}
+
+			if (OriginalMaterial)
+			{
+				// 새로운 MaterialInstanceDynamic 생성
+				OutlineMaterial = UMaterialInstanceDynamic::Create(OriginalMaterial, this);
+				if (OutlineMaterial)
+				{
+					OutlineMaterial->SetScalarParameterValue(TEXT("OutlineWidth"), 15.0f);
+					OutlineMaterial->SetVectorParameterValue(TEXT("OutlineColor"), FLinearColor::Yellow);
+					StaticMesh->SetMaterial(0, OutlineMaterial);
+				}
+			}
+		}
+	}
+}
+
+// 감지 범위를 벗어나면 테두리 제거
+void ATSBaseItem::OnDetectionEndOverlap(
+	UPrimitiveComponent* OverlappedComp,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
+{
+	if (OtherActor && OtherActor->ActorHasTag("Player") && StaticMesh && OutlineMaterial)
+	{
+		// 기존 머티리얼로 복구 (MID가 아닌 원래 머티리얼을 사용해야 함)
+		if (OriginalMaterial)
+		{
+			StaticMesh->SetMaterial(0, OriginalMaterial);
+		}
+	}
+}
+
+//--------------------------------------------------------------------
+
+// 아이템과 겹쳐질 때 호출되는 함수 (ex.획득)
 void ATSBaseItem::OnItemOverlap(
 	UPrimitiveComponent* OverlappedComp,
 	AActor* OtherActor,
@@ -60,6 +128,8 @@ void ATSBaseItem::OnItemEndOverlap(
 {
 		
 }
+
+// --------------------------------------------------------------------
 
 // 아이템 활성화 시 발동 함수
 void ATSBaseItem::ActivateItem(AActor* Activator)
