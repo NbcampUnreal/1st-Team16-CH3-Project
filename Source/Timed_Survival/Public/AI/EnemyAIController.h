@@ -10,15 +10,6 @@ class UAIPerceptionComponent;
 class UAISenseConfig_Sight;
 struct FAIStimulus;
 
-UENUM(BlueprintType)
-enum class ETS_AISense : uint8
-{
-	ETS_Sight UMETA(DisplayName = "Sight"),
-	ETS_Hearing UMETA(DisplayName = "Hearing"),
-	ETS_None UMETA(DisplayName = "None"),
-	ETS_Damage UMETA(DisplayName = "Damage"),
-	ETS_MAX UMETA(DisplayName = "MAX")
-};
 /**
  *
  */
@@ -29,8 +20,7 @@ class TIMED_SURVIVAL_API AEnemyAIController : public AAIController
 
 public:
 	AEnemyAIController();
-	// virtual void OnPossess(APawn* InPawn) override;
-	// virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;	// MoveToActor 함수가 끝나면 불리는 함수
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -58,9 +48,6 @@ public:
 
 	static const FName PlayerDetectedKey;
 
-	/*int32 CurrentPatrolIndex = 0;
-
-	void MoveToPatrolPoint();*/
 
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess))
@@ -68,10 +55,4 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess))
 	TObjectPtr<UBlackboardData> BlackboardDataAsset;
-
-	UFUNCTION()
-	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
-
-	UFUNCTION()
-	FAIStimulus CanSenseActor(AActor* Actor, ETS_AISense Sense);
 };
