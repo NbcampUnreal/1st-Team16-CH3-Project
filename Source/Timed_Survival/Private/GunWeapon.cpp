@@ -27,7 +27,7 @@ float AGunWeapon::GetReloadDelay() const
 void AGunWeapon::FireBullet()
 {
 	//reload
-	if (bIsReload)
+	if (bIsReload || BulletCount <= 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Cannot fire reload"));
 		return;
