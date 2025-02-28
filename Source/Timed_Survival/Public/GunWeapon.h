@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseWeapon.h"
-
+#include "TSAmmo.h"
 #include "GunWeapon.generated.h"
 
 UCLASS()
@@ -28,11 +28,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	int32 MaxBulletCount;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	TSubclassOf<AActor> BulletClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	TSubclassOf<class ATSAmmo> BulletClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	bool bIsReload;
+
 	
 	FTimerHandle ReloadTimerHandle;
 

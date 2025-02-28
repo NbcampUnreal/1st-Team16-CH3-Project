@@ -1,6 +1,9 @@
 
 #include "GunWeapon.h"
+#include "TSAmmo.h"
 #include "TimerManager.h"
+#include "Engine/World.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 AGunWeapon::AGunWeapon()
 {
@@ -33,9 +36,23 @@ void AGunWeapon::FireBullet()
 		return;
 	}
 
-	if (BulletCount <= 0)
+	BulletCount--;
+
+	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
+	FRotator SpawnRotation = GetActorRotation();
+
+	if (BulletClass)
 	{
-		return;
+		ATSAmmo* Bullet = GetWorld()->SpawnActor<ATSAmmo>(BulletClass, SpawnLocation, SpawnRotation);
+		if (Bullet)
+		{
+			UProjectileMovementComponent* BulletMovement = Bullet->GetProjectileMovementComponent();
+			if (BulletMovement)
+			{
+				BulletMovement->InitialSpeed = 5000.f;
+				BulletMovement->MaxSpeed = 5000.f;
+			}
+		}
 	}
 
 	Super::FireBullet();
