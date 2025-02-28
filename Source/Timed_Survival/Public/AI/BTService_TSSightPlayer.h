@@ -6,7 +6,6 @@
 #include "BehaviorTree/BTService.h"
 #include "BTService_TSSightPlayer.generated.h"
 
-
 UENUM(BlueprintType)
 enum class ETS_AISenseT : uint8
 {
@@ -22,7 +21,7 @@ UCLASS()
 class TIMED_SURVIVAL_API UBTService_TSSightPlayer : public UBTService
 {
 	GENERATED_BODY()
-
+	
 public:
 	UBTService_TSSightPlayer(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
