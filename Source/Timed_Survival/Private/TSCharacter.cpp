@@ -12,7 +12,6 @@
 ATSCharacter::ATSCharacter() 
 {
 	PrimaryActorTick.bCanEverTick = true;
-	CurrentWeapon = nullptr;
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComp->SetupAttachment(RootComponent);

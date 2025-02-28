@@ -99,16 +99,6 @@ public:
 	AGunWeapon* FindWeaponByType(FName WeaponType);
 
 
-	// 테스트
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void EquipWeapon(ABaseWeapon* NewWeapon);
-
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	TSubclassOf<ABaseWeapon> PistolBlueprint;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
-	ABaseWeapon* CurrentWeapon;
-
 protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
