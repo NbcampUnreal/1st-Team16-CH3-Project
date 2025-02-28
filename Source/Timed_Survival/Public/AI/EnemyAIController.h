@@ -69,9 +69,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess))
 	TObjectPtr<UBlackboardData> BlackboardDataAsset;
 
-	UFUNCTION()
-	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+	//UFUNCTION()
+	//void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
-	UFUNCTION()
-	FAIStimulus CanSenseActor(AActor* Actor, ETS_AISense Sense);
+	//UFUNCTION()
+	//FAIStimulus CanSenseActor(AActor* Actor, ETS_AISense Sense);
 };

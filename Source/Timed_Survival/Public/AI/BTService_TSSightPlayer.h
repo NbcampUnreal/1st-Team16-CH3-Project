@@ -6,6 +6,7 @@
 #include "BehaviorTree/BTService.h"
 #include "BTService_TSSightPlayer.generated.h"
 
+
 UENUM(BlueprintType)
 enum class ETS_AISenseT : uint8
 {
@@ -21,6 +22,8 @@ UCLASS()
 class TIMED_SURVIVAL_API UBTService_TSSightPlayer : public UBTService
 {
 	GENERATED_BODY()
+
+public:
 	
 public:
 	UBTService_TSSightPlayer(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -28,5 +31,5 @@ public:
 protected:
     virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	//UFUNCTION()
-	//FAIStimulus CanSenseActor(AActor* Actor, ETS_AISenseT Sense);
+	FAIStimulus CanSenseActor(AActor* Actor, ETS_AISenseT Sense, UBehaviorTreeComponent& OwnerComp);
 };
