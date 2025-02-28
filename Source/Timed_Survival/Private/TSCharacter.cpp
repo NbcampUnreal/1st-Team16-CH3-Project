@@ -8,7 +8,6 @@
 #include "TSPlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
 
-
 ATSCharacter::ATSCharacter() 
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -306,6 +305,7 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 
 void ATSCharacter::Fire(const FInputActionValue& value)
 {
+	
 	if (GetCharacterMovement()->IsFalling())
 	{
 		return;
@@ -330,10 +330,20 @@ void ATSCharacter::Fire(const FInputActionValue& value)
 
 void ATSCharacter::StartAiming(const FInputActionValue& value)
 {
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+
+	if (GetCharacterMovement()->MaxWalkSpeed == 1000)
+	{
+		return;
+	}
+
 	bIsAiming = true;
 	CameraComp->SetFieldOfView(AimFOV);
-	SpringArmComp->SocketOffset = FVector(272, -34, -43);
-	SpringArmComp->SetRelativeRotation(FRotator(1, -3.5, -0.8));
+	SpringArmComp->SocketOffset = FVector(260, -35, -41);
+	SpringArmComp->SetRelativeRotation(FRotator(0, -9, 5));
 }
 
 void ATSCharacter::StopAiming(const FInputActionValue& value)
