@@ -66,7 +66,10 @@ public:
 	void UpdateHealth();
 
 	// about Bullet Items
-	void GetBulletData();
+	int32 CurrentBulletCount;
+	int32 BulletCountInWeapon;
+	int32 MaxBulletCount;
+	FTimerHandle BulletDataUpdateTimerHandel;
 	void UpdateBulletData();
 
 	/*void FindARBullet();

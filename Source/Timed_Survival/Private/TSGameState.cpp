@@ -17,6 +17,10 @@ ATSGameState::ATSGameState()
 	BaseHealth = 3.0f;
 	ItemHealth = 0.0f;
 	CurrentHealth = BaseHealth * 60.0f;
+
+	CurrentBulletCount = 0;
+	BulletCountInWeapon = 0;
+	MaxBulletCount = 0;
 }
 
 void ATSGameState::BeginPlay()
@@ -31,6 +35,12 @@ void ATSGameState::BeginPlay()
 		this,
 		&ATSGameState::UpdateHUD,
 		0.1f, true);
+
+	GetWorldTimerManager().SetTimer(
+		BulletDataUpdateTimerHandel,
+		this,
+		&ATSGameState::UpdateBulletData,
+		0.1f, true);	
 }
 
 //about Game flow
@@ -133,7 +143,8 @@ void ATSGameState::UpdateHUD()
 				// 2)-1 AR Bullet Count
 				if (UTextBlock* CountARBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBullet"))))
 				{
-					//CountARBullet->SetText(FText::FromString(FString::Printf(TEXT("X %d"), Bundle)));
+					
+					CountARBullet->SetText(FText::FromString(FString::Printf(TEXT("AR : %d"),CurrentBulletCount)));
 				}
 				// 2)-2 AR Bullet Reload
 				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBulletReload"))))
@@ -224,19 +235,26 @@ void ATSGameState::SubtractHealthOnSecond()
 
 // GunWeapon Bullet Data Function
 
-void ATSGameState::GetBulletData()
-{
-	AGunWeapon* BulletData = GetWorld()->SpawnActor<AGunWeapon>(AGunWeapon::StaticClass());
-	BulletData->GetBulletInPlayer();
-	BulletData->GetBulletCount();
-	BulletData->GetMaxBulletCount();
-	BulletData->GetWeaponType();
-}
-
 void ATSGameState::UpdateBulletData()
 {
-	GetBulletData();
+	if (!GetWorld()) return;
+
+	AGunWeapon* BulletData = GetWorld()->SpawnActor<AGunWeapon>(AGunWeapon::StaticClass());
+	
+	if (!BulletData)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No BulletData!"));
+		return;
+	}
+
+	CurrentBulletCount = BulletData->GetBulletInPlayer();	
+	BulletCountInWeapon = BulletData->GetBulletCount();
+	MaxBulletCount = BulletData->GetMaxBulletCount();
+	FName WeaponType = BulletData->GetWeaponType();
+
+	BulletData->Destroy();
 }
+
 
 // void ATSGameState::FindARBullet()
 // {
