@@ -53,6 +53,9 @@ public:
 	// about Health(Timer) Function - with Item Class
 	void IncreaseTime(float Value);
 	void ReduceTime(float Value);
+	bool bIsStopTimeReductionEnabled = true; // 시간 감소 활성화 여부
+	// 시간 감소 활성화 함수
+	void SetStopTimeReductionEnabled(bool bEnable);
 
 
 	// about Health Item - with Item Class
