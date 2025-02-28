@@ -68,24 +68,38 @@ void ATSPlayerController::StartGame()
 {
 	
 }
+
 void ATSPlayerController::ShowHUD()
 {
+
 }
+
 void ATSPlayerController::ShowOpening()
 {
+
 }
+
 void ATSPlayerController::ShowMainMenu()
 {
+
 }
+
 void ATSPlayerController::ShowWeaponSelect()
 {
+
 }
+
 void ATSPlayerController::ShowGameOver()
 {
+
 }
+
 void ATSPlayerController::ShowClearScore()
 {
+
 }
+
 void ATSPlayerController::QuitGame()
 {
+
 }

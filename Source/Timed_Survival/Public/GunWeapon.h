@@ -51,8 +51,9 @@ public:
 	UFUNCTION()
 	virtual void FinishReload();
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	//UFUNCTION(BlueprintCallable, Category = "Weapon") //<-얘 원래 함수 주인 누구에요?
 
+	int32 GetBulletInPlayer() const { return ReserveBullet; }
 	int32 GetBulletCount() const { return BulletCount; }
 	int32 GetMaxBulletCount() const { return MaxBulletCount; }
 	void SetBulletCount(int32 NewBulletCount) { BulletCount = NewBulletCount; }
