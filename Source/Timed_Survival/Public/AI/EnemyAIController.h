@@ -9,6 +9,7 @@
 class UAIPerceptionComponent;
 class UAISenseConfig_Sight;
 struct FAIStimulus;
+
 /**
  *
  */

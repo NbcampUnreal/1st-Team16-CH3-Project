@@ -1,14 +1,12 @@
 
 #include "BaseWeapon.h"
+#include "GameFramework/Character.h"
 #include "Components/SkeletalMeshComponent.h"
 
 ABaseWeapon::ABaseWeapon()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	
-	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
-	RootComponent = WeaponMesh;
-
 	Damage = 10;
 }
 
@@ -24,5 +22,15 @@ int32 ABaseWeapon::GetDamage() const
 void ABaseWeapon::SetOwner(AActor* NewOwner)
 {
 	Super::SetOwner(NewOwner);
+}
+
+void ABaseWeapon::AttachWeaponToCharacter(ACharacter* Character, FName SocketName)
+{
+	if (!Character) return;
+
+	USkeletalMeshComponent* CharacterMesh = Character->GetMesh();
+	if (!CharacterMesh) return;
+
+	AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
 }
 

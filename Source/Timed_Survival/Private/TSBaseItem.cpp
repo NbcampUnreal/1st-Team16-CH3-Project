@@ -24,6 +24,9 @@ ATSBaseItem::ATSBaseItem()
 	// 스태틱 메쉬 컴포넌트
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(Collision);
+	// 스태틱 메시의 충돌 감지 완전 비활성화
+	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StaticMesh->SetGenerateOverlapEvents(false);
 
 	//이벤트 바인딩
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATSBaseItem::OnItemOverlap);
@@ -55,8 +58,7 @@ void ATSBaseItem::OnItemEndOverlap(
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("EndOverlap!")));
-	ActivateItem(OtherActor);
+		
 }
 
 // 아이템 활성화 시 발동 함수
