@@ -26,8 +26,7 @@ public:
 	UBTService_TSSightPlayer(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
-  virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-    
-	UFUNCTION()
+    virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
 	FAIStimulus CanSenseActor(AActor* Actor, ETS_AISenseT Sense, UBehaviorTreeComponent& OwnerComp);
 };
