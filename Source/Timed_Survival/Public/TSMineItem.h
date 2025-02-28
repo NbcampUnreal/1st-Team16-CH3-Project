@@ -22,42 +22,54 @@ public:
     ATSMineItem();
 
 protected:
-    // 폭발 감지용 콜리전
-    UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Mine", meta = (AllowPrivateAccess = "true"))
-    USphereComponent* ExplosionCollision;
+    // 폭발 데미지 범위로 사용할 콜리전 (예: 폭발 시 피해 적용)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mine")
+    class USphereComponent* ExplosionCollision;
 
-    // 폭발 반경
-    UPROPERTY(EditDefaultsOnly, BlueprintReadwrite, Category = "Mine")
+    // 트리거용 콜리전 컴포넌트 (지뢰 근접 영역)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mine")
+    class USphereComponent* TriggerCollision;
+
+    // 트리거 영역의 메시 컴포넌트
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mine")
+    class UStaticMeshComponent* TriggerMesh;
+
+    // 폭발 범위 (ExplosionCollision의 반경)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mine")
     float ExplosionRadius;
 
-    // 폭발 이펙트
-    UPROPERTY(EditDefaultsOnly, BlueprintReadwrite, Category = "Effects")
-    UParticleSystem* ExplosionParticle;
+	// 트리거 영역 반지름
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mine")
+	float TriggerRadius;
 
-    // 폭발 사운드
-    UPROPERTY(EditDefaultsOnly, BlueprintReadwrite, Category = "Effects")
-    USoundBase* ExplosionSound;;
-
-    // AI에게 줄 피해량
-    UPROPERTY(EditDefaultsOnly, BlueprintReadwrite, Category = "Mine")
+    // AI에게 줄 폭발 피해량 (HP)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mine")
     float ExplosionAIDamage;
 
-    // 플레이어 남은 시간 감소량
-    UPROPERTY(EditDefaultsOnly, BlueprintReadwrite, Category = "Mine")
+    // 플레이어에게 줄 폭발 피해량 (남은 시간 감소량)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mine")
     float ExplosionPlayerDamage;
 
+    // 폭발 파티클 효과
+    UPROPERTY(EditDefaultsOnly, Category = "Mine")
+    class UParticleSystem* ExplosionParticle;
 
-    // 액터가 지뢰에서 벗어났을 때 실행될 함수
+    // 폭발 사운드 효과
+    UPROPERTY(EditDefaultsOnly, Category = "Mine")
+    class USoundBase* ExplosionSound;
+
+    // 이미 폭발했는지 확인하는 변수
+    bool bHasExploded;
+
+    // 트리거 콜리전 영역에서 액터가 벗어났을 때 호출되는 함수
     UFUNCTION()
-    void HandleOverlapEnd(
+    void HandleTriggerEndOverlap(
         UPrimitiveComponent* OverlappedComponent,
         AActor* OtherActor,
         UPrimitiveComponent* OtherComp,
-        int32 OtherBodyIndex);
+        int32 OtherBodyIndex
+    );
 
-    // 폭발 실행 함수
+    // 폭발 처리 함수
     void Explode();
-
-    // 폭발 여부
-    bool bHasExploded;
 };

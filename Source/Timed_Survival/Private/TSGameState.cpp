@@ -2,6 +2,9 @@
 #include "TSGameInstance.h"
 #include "TSCharacter.h"
 #include "TSPlayerController.h"
+#include "TSBaseBulletItem.h"
+#include "TSARBulletItem.h"
+#include "TSPistolBulletItem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
@@ -40,7 +43,6 @@ void ATSGameState::StartLevel()
 		0.1f,
 		true);
 
-	//UpdateHUD();
 }
 
 void ATSGameState::OnGameOver()
@@ -51,11 +53,19 @@ void ATSGameState::OnGameOver()
 	{
 		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
 		{
-			TSPlayerController->SetPause(true);
 			TSPlayerController->ShowMainMenu();
+
+			// 죽는 애니메이션이 끝나는 3초 뒤에 SetPause(true)가 실행하도록함.
+			GetWorld()->GetTimerManager().SetTimer(
+				TimerHandle,
+				FTimerDelegate::CreateWeakLambda(TSPlayerController,[TSPlayerController](){TSPlayerController->SetPause(true);}),
+				1.7f,
+				false
+			);
 		}
 	}
 }
+
 void ATSGameState::NextLevel()
 {
 
@@ -67,6 +77,17 @@ void ATSGameState::EndLevel()
 void ATSGameState::OnHPZero()
 {
 	OnGameOver();
+
+	// 캐릭터의 Deaht()함수 호출로 죽는 애니메이션 재생용
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController)
+	{
+		ATSCharacter* PlayerCharacter = Cast<ATSCharacter>(PlayerController->GetPawn());
+		if (PlayerCharacter)
+		{
+			PlayerCharacter->Death();
+		}
+	}
 }
 void ATSGameState:: BattleSystem()
 {
@@ -83,6 +104,7 @@ void ATSGameState::UpdateHUD()
 		{
 			if (UUserWidget* HUDWidget = TSPlayerController->GetHUDWidget())
 			{
+				// 1) About Health HUD========================================================================================
 				float TotalHealthSet = CurrentHealth / HealthBarMax; // HealthBar 비율 세팅
 				int32 Bundle = (int32)TotalHealthSet; // HealthBar 몫
 				float HealthPercent = TotalHealthSet - Bundle; // HealthBar 반영 비율
@@ -105,10 +127,28 @@ void ATSGameState::UpdateHUD()
 					HealthBundle->SetText(FText::FromString(FString::Printf(TEXT("X %d"), Bundle)));
 				}
 
-				// 2) Bullet Count
-				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("CountBullet"))))
+				// 2) About Bullet HUD========================================================================================
+				GetBulletData();
+
+				// 2)-1 AR Bullet Count
+				if (UTextBlock* CountARBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBullet"))))
 				{
-					
+					//CountARBullet->SetText(FText::FromString(FString::Printf(TEXT("X %d"), Bundle)));
+				}
+				// 2)-2 AR Bullet Reload
+				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBulletReload"))))
+				{
+
+				}
+				// 2)-3 Pistol Bullet Count
+				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("PistolBullet"))))
+				{
+
+				}
+				// 2)-4 Pistol Bullet Reload
+				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("PistolBulletReload"))))
+				{
+
 				}
 				
 				// 3) Healing Effect
@@ -120,6 +160,62 @@ void ATSGameState::UpdateHUD()
 	}
 
 }
+
+//----------------------- 방독면 ------------------------
+
+// 방독면 활성화 함수
+void ATSGameState::SetStopTimeReductionEnabled(bool bEnable)
+{
+	bIsStopTimeReductionEnabled = bEnable;
+}
+
+// 방독면 효과 함수
+void ATSGameState::SetMaskEffect(bool bEnable, float Duration)
+{
+	bIsMaskActive = bEnable;
+	MaskTimeRemaining = Duration;
+
+	if (bEnable)
+	{
+		GetWorld()->GetTimerManager().SetTimer(
+			MaskEffectTimerHandle,
+			this,
+			&ATSGameState::UpdateMaskTimer,
+			1.0f,
+			true
+		);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().ClearTimer(MaskEffectTimerHandle);
+		MaskTimeRemaining = 0.0f;
+	}
+
+	UpdateHUD();
+}
+
+// 방독면 남은 시간 반환 함수
+void ATSGameState::UpdateMaskTimer()
+{
+	if (MaskTimeRemaining > 0)
+	{
+		MaskTimeRemaining -= 1.0f;
+		UpdateHUD();
+	}
+	else
+	{
+		SetMaskEffect(false, 0.0f);
+		SetStopTimeReductionEnabled(true);
+	}
+}
+
+// 방독면 활성화 여부 반환 함수
+bool ATSGameState::IsMaskActive() const
+{
+	return bIsMaskActive;
+}
+// -----------------------------------------------------
+
 // 시간(체력) 증가함수
 void ATSGameState::IncreaseTime(float Value)
 {
@@ -128,10 +224,14 @@ void ATSGameState::IncreaseTime(float Value)
 }
 
 // 시간(체력) 감소함수
-void ATSGameState::ReduceTime(float Value)
+void ATSGameState::ReduceTime(float Value, bool bIgnoreMask)
 {
-  ItemHealth -= Value;
-	UpdateHealth();
+	// bIgnoreMask가 true일 떄 지뢰 같은 강제 피해는 적용되도록 예외 처리
+	if (bIsStopTimeReductionEnabled || bIgnoreMask)
+	{
+		ItemHealth -= Value;
+		UpdateHealth();
+	}
 }
 
 int32 ATSGameState::GetHealingCount() const
@@ -154,12 +254,48 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 
 }
 
-void ATSGameState::SubtractHealthOnSecond()
-{
-	CurrentHealth -= 0.1f;
-}
-
 void ATSGameState::UpdateHealth()
 {
 	CurrentHealth = BaseHealth * 60.0f + ItemHealth;
 }
+
+void ATSGameState::SubtractHealthOnSecond()
+{
+	if (bIsStopTimeReductionEnabled && CurrentHealth > 0.0f)
+	{
+		CurrentHealth -= 0.1f;
+	}
+
+	if (CurrentHealth <= 0.0f)
+	{
+		// 0초 밑으로 안내려가게 Clear
+		GetWorldTimerManager().ClearTimer(SubtractHealthTimerHandle); 
+
+		OnHPZero();
+	}
+}
+
+// GunWeapon Bullet Data Function
+
+void ATSGameState::GetBulletData()
+{
+	AGunWeapon* BulletData = GetWorld()->SpawnActor<AGunWeapon>(AGunWeapon::StaticClass());
+	BulletData->GetBulletInPlayer();
+	BulletData->GetBulletCount();
+	BulletData->GetMaxBulletCount();
+	BulletData->GetWeaponType();
+}
+
+void ATSGameState::UpdateBulletData()
+{
+	GetBulletData();
+}
+
+// void ATSGameState::FindARBullet()
+// {
+// 	TArray<AActor*> FoundBullets;
+// 	//UGameplayStatics::GetAllActorsOfClass(GetWorld(),TSubclassOf<AActor>ATSBaseBulletItem,)
+// }
+// void ATSGameState::FindPistolBullet()
+// {
+// }

@@ -21,15 +21,15 @@ public:
 protected:
 	
 	// 씬 컴포넌트
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Itme|Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
 	USceneComponent* Scene;
 
 	// 충돌 컴포넌트
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Itme|Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
 	USphereComponent* Collision;
 
 	// 스태틱 메쉬 컴포넌트
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Itme|Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
 	UStaticMeshComponent* StaticMesh;
 
 	// 파티클

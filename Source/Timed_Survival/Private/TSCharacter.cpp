@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "TSPlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
-
+#include "Components/SkeletalMeshComponent.h"
 
 ATSCharacter::ATSCharacter() 
 {
@@ -306,6 +306,7 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 
 void ATSCharacter::Fire(const FInputActionValue& value)
 {
+	
 	if (GetCharacterMovement()->IsFalling())
 	{
 		return;
@@ -330,10 +331,20 @@ void ATSCharacter::Fire(const FInputActionValue& value)
 
 void ATSCharacter::StartAiming(const FInputActionValue& value)
 {
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+
+	if (GetCharacterMovement()->MaxWalkSpeed == 1000)
+	{
+		return;
+	}
+
 	bIsAiming = true;
 	CameraComp->SetFieldOfView(AimFOV);
-	SpringArmComp->SocketOffset = FVector(272, -34, -43);
-	SpringArmComp->SetRelativeRotation(FRotator(1, -3.5, -0.8));
+	SpringArmComp->SocketOffset = FVector(260, -35, -41);
+	SpringArmComp->SetRelativeRotation(FRotator(0, -9, 5));
 }
 
 void ATSCharacter::StopAiming(const FInputActionValue& value)
@@ -397,3 +408,17 @@ void ATSCharacter::ResetMovementAfterFire()
 	IsFiring = false;
 }
 
+//테스트
+void ATSCharacter::EquipWeapon(ABaseWeapon* NewWeapon)
+{
+	if (!NewWeapon) return;
+
+	// 무기를 캐릭터의 손에 장착
+	NewWeapon->AttachWeaponToCharacter(this, "WeaponSocket");
+
+	// 현재 장착된 무기 변경
+	CurrentWeapon = NewWeapon;
+
+	// 디버깅 로그 출력
+	UE_LOG(LogTemp, Warning, TEXT("Weapon Equipped: %s"), *NewWeapon->GetName());
+}

@@ -17,9 +17,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	TSubclassOf<UDamageType> DamageType;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
-	UStaticMeshComponent* WeaponMesh;
-
 public:	
 	ABaseWeapon();
 
@@ -30,5 +27,8 @@ public:
 	virtual int32 GetDamage() const;
 
 	void SetOwner(AActor* NewOwner);
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void AttachWeaponToCharacter(ACharacter* Character, FName SocketName);
 
 };
