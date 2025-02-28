@@ -132,6 +132,7 @@ protected:
 	void StopAiming(const FInputActionValue& value);
 
 
+public:
 
 	// Death
 	UFUNCTION()

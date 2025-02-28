@@ -51,11 +51,19 @@ void ATSGameState::OnGameOver()
 	{
 		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
 		{
-			TSPlayerController->SetPause(true);
 			TSPlayerController->ShowMainMenu();
+
+			// 죽는 애니메이션이 끝나는 3초 뒤에 SetPause(true)가 실행하도록함.
+			GetWorld()->GetTimerManager().SetTimer(
+				TimerHandle,
+				FTimerDelegate::CreateWeakLambda(TSPlayerController,[TSPlayerController](){TSPlayerController->SetPause(true);}),
+				1.7f,
+				false
+			);
 		}
 	}
 }
+
 void ATSGameState::NextLevel()
 {
 
@@ -67,6 +75,17 @@ void ATSGameState::EndLevel()
 void ATSGameState::OnHPZero()
 {
 	OnGameOver();
+
+	// 캐릭터의 Deaht()함수 호출로 죽는 애니메이션 재생용
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController)
+	{
+		ATSCharacter* PlayerCharacter = Cast<ATSCharacter>(PlayerController->GetPawn());
+		if (PlayerCharacter)
+		{
+			PlayerCharacter->Death();
+		}
+	}
 }
 void ATSGameState:: BattleSystem()
 {
@@ -154,12 +173,23 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 
 }
 
-void ATSGameState::SubtractHealthOnSecond()
-{
-	CurrentHealth -= 0.1f;
-}
-
 void ATSGameState::UpdateHealth()
 {
 	CurrentHealth = BaseHealth * 60.0f + ItemHealth;
+}
+
+void ATSGameState::SubtractHealthOnSecond()
+{
+	if (CurrentHealth > 0.0f)
+	{
+		CurrentHealth -= 0.1f;
+	}
+
+	if (CurrentHealth <= 0.0f)
+	{
+		// 0초 밑으로 안내려가게 Clear
+		GetWorldTimerManager().ClearTimer(SubtractHealthTimerHandle); 
+
+		OnHPZero();
+	}
 }
