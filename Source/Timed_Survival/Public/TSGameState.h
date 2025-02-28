@@ -58,5 +58,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Count")
 	void IncreaseHealingCount(int32 Amount);
 
+	// Count Bullet Items
+	void FindARBullet();
+	void FindPistolBullet();
+
 	void UpdateHealth();
 };
