@@ -26,18 +26,6 @@ FAutoConsoleVariableRef CVarShowAIDebug(
 	ECVF_Cheat
 );
 
-//void AEnemyAIController::OnPossess(APawn* InPawn)
-//{
-//	Super::OnPossess(InPawn);
-//}
-//
-//
-//
-//void AEnemyAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
-//{
-//	Super::OnMoveCompleted(RequestID, Result);
-//}
-
 AEnemyAIController::AEnemyAIController()
 {
 	BrainComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BrainComponent"));
@@ -118,65 +106,3 @@ void AEnemyAIController::EndAI()
 		}
 	}
 }
-
-//void AEnemyAIController::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
-//{
-//	for (AActor* UpdatedActor : UpdatedActors)
-//	{
-//		FAIStimulus AIStimulus;
-//		AIStimulus = CanSenseActor(UpdatedActor, ETS_AISense::ETS_Sight);
-//		if (AIStimulus.WasSuccessfullySensed())
-//		{
-//		/*	Blackboard->SetValueAsBool(PlayerDetectedKey, true);
-//			MoveToActor(
-//				UpdatedActor,
-//				1.0f,
-//				true,
-//				true,
-//				false,
-//				nullptr,
-//				true
-//			);*/
-//		}
-//		else
-//		{
-//			Blackboard->SetValueAsBool(PlayerDetectedKey, false);
-//		}
-//	}
-//}
-
-//FAIStimulus AEnemyAIController::CanSenseActor(AActor* Actor, ETS_AISense Sense)
-//{
-//	FActorPerceptionBlueprintInfo ActorPerceptionBlueprintInfo;
-//	FAIStimulus ResultStimulus;
-//
-//	AIPerception->GetActorsPerception(Actor, ActorPerceptionBlueprintInfo);
-//
-//	TSubclassOf<UAISense> QuerySenseClass;
-//
-//	switch (Sense)
-//	{
-//	case ETS_AISense::ETS_None:
-//		break;
-//	case ETS_AISense::ETS_Sight:
-//		QuerySenseClass = UAISense_Sight::StaticClass();
-//		break;
-//	default:
-//		break;
-//	}
-//
-//	TSubclassOf<UAISense> LastSensedStimulusClass;
-//
-//	for (const FAIStimulus& AIStimulus : ActorPerceptionBlueprintInfo.LastSensedStimuli)
-//	{
-//		LastSensedStimulusClass = UAIPerceptionSystem::GetSenseClassForStimulus(this, AIStimulus);
-//
-//		if (QuerySenseClass == LastSensedStimulusClass)
-//		{
-//			ResultStimulus = AIStimulus;
-//			return ResultStimulus;
-//		}
-//	}
-//
-//	return ResultStimulus;
-//}

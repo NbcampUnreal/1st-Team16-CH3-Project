@@ -30,6 +30,6 @@ public:
 
 protected:
     virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-	//UFUNCTION()
+	UFUNCTION()
 	FAIStimulus CanSenseActor(AActor* Actor, ETS_AISenseT Sense, UBehaviorTreeComponent& OwnerComp);
 };
