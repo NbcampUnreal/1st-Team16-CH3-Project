@@ -2,6 +2,9 @@
 #include "TSGameInstance.h"
 #include "TSCharacter.h"
 #include "TSPlayerController.h"
+#include "TSBaseBulletItem.h"
+#include "TSARBulletItem.h"
+#include "TSPistolBulletItem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
@@ -40,7 +43,6 @@ void ATSGameState::StartLevel()
 		0.1f,
 		true);
 
-	//UpdateHUD();
 }
 
 void ATSGameState::OnGameOver()
@@ -51,11 +53,19 @@ void ATSGameState::OnGameOver()
 	{
 		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
 		{
-			TSPlayerController->SetPause(true);
 			TSPlayerController->ShowMainMenu();
+
+			// 죽는 애니메이션이 끝나는 3초 뒤에 SetPause(true)가 실행하도록함.
+			GetWorld()->GetTimerManager().SetTimer(
+				TimerHandle,
+				FTimerDelegate::CreateWeakLambda(TSPlayerController,[TSPlayerController](){TSPlayerController->SetPause(true);}),
+				1.7f,
+				false
+			);
 		}
 	}
 }
+
 void ATSGameState::NextLevel()
 {
 
@@ -67,6 +77,17 @@ void ATSGameState::EndLevel()
 void ATSGameState::OnHPZero()
 {
 	OnGameOver();
+
+	// 캐릭터의 Deaht()함수 호출로 죽는 애니메이션 재생용
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController)
+	{
+		ATSCharacter* PlayerCharacter = Cast<ATSCharacter>(PlayerController->GetPawn());
+		if (PlayerCharacter)
+		{
+			PlayerCharacter->Death();
+		}
+	}
 }
 void ATSGameState:: BattleSystem()
 {
@@ -105,10 +126,33 @@ void ATSGameState::UpdateHUD()
 					HealthBundle->SetText(FText::FromString(FString::Printf(TEXT("X %d"), Bundle)));
 				}
 
-				// 2) Bullet Count
-				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("CountBullet"))))
+				// 2)-1 AR Bullet Count
+				if (UTextBlock* CountARBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBullet"))))
 				{
+					ATSARBulletItem* TSARBulletItem = GetWorld()->SpawnActor<ATSARBulletItem>(ATSARBulletItem::StaticClass());
+					//int32 ARBulletCount = TSARBulletItem->
 					
+				/*	ATSBaseBulletItem* TSBaseBulletItem;
+					ATSARBulletItem* TSARBulletItem = Cast<ATSARBulletItem>(TSBaseBulletItem);
+									
+					int32 ARBulletInInven =*/
+					
+					//CountARBullet->SetText(FText::FromString(FString::Printf(TEXT("AR: %d"))));
+				}
+				// 2)-2 AR Bullet Reload
+				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBulletReload"))))
+				{
+
+				}
+				// 2)-3 Pistol Bullet Count
+				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("PistolBullet"))))
+				{
+
+				}
+				// 2)-4 Pistol Bullet Reload
+				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("PistolBulletReload"))))
+				{
+
 				}
 				
 				// 3) Healing Effect
@@ -154,12 +198,33 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 
 }
 
-void ATSGameState::SubtractHealthOnSecond()
-{
-	CurrentHealth -= 0.1f;
-}
-
 void ATSGameState::UpdateHealth()
 {
 	CurrentHealth = BaseHealth * 60.0f + ItemHealth;
 }
+
+void ATSGameState::SubtractHealthOnSecond()
+{
+	if (CurrentHealth > 0.0f)
+	{
+		CurrentHealth -= 0.1f;
+	}
+
+	if (CurrentHealth <= 0.0f)
+	{
+		// 0초 밑으로 안내려가게 Clear
+		GetWorldTimerManager().ClearTimer(SubtractHealthTimerHandle); 
+
+		OnHPZero();
+  }
+}
+
+
+// void ATSGameState::FindARBullet()
+// {
+// 	TArray<AActor*> FoundBullets;
+// 	//UGameplayStatics::GetAllActorsOfClass(GetWorld(),TSubclassOf<AActor>ATSBaseBulletItem,)
+// }
+// void ATSGameState::FindPistolBullet()
+// {
+// }
