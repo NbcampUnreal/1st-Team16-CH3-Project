@@ -42,9 +42,6 @@ private:
 	// 기본 FOV 저장
 	float DefaultFOV;   
 
-	// 조준 시 적용할 FOV
-	float AimFOV = 60.0f;   
-
 	// 기본 카메라 위치 저장
 	FVector DefaultCameraOffset;
 
@@ -64,10 +61,6 @@ protected:
 	// Reload Animation
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* ReloadAnimation;
-	// Fire Animation
-	UPROPERTY(EditAnywhere, Category = "Animation")
-	UAnimMontage* FireAnimation;
-
 
 
 	// Aim Rotation
@@ -80,7 +73,14 @@ protected:
 	FTimerHandle FireTimerHandle;
 
 public:
+
+	// 발사하는지 애니메이션 확인용 -- 변경 불가
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
+	bool bFire = false;
 	
+	// 조준 시 적용할 FOV
+	float AimFOV = 60.0f;
+
 	//Mvoe Speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MovementSpeed")
 	float NormalSpeed;
@@ -126,7 +126,9 @@ protected:
 	UFUNCTION()
 	void Reload(const FInputActionValue& value);
 	UFUNCTION()
-	void Fire(const FInputActionValue& value);
+	void StartFire(const FInputActionValue& value);
+	UFUNCTION()
+	void StopFire(const FInputActionValue& value);
 	UFUNCTION()
 	void StartAiming(const FInputActionValue& value);
 	UFUNCTION()
@@ -148,4 +150,12 @@ public:
 
 	// 총 쏜뒤에 캐릭터가 움직이게하는 함수
 	void ResetMovementAfterFire();
+
+	//테스트
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	UChildActorComponent* WeaponChildActor;
+
+
+	void ResetFireState();
+
 };
