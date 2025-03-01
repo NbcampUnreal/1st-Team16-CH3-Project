@@ -11,16 +11,20 @@
 #include "Blueprint/UserWidget.h"
 
 ATSGameState::ATSGameState()
-{
-	HealingCount = 0;
+{	
 	HealthBarMax = 180.0;
-	BaseHealth = 3.0f;
+	BaseHealth = 3.0f; // unit of time : min
 	ItemHealth = 0.0f;
-	CurrentHealth = BaseHealth * 60.0f;
+	CurrentHealth = BaseHealth * 60.0f; // change unit of time : sec
+		
+	HealingCount = 0;
 
 	CurrentBulletCount = 0;
 	BulletCountInWeapon = 0;
 	MaxBulletCount = 0;
+
+	SetMaskEffectTime = 0.0f;
+	MaskTimeRemaining = 0.0f;
 }
 
 void ATSGameState::BeginPlay()
@@ -67,7 +71,7 @@ void ATSGameState::OnGameOver()
 
 			// 죽는 애니메이션이 끝나는 3초 뒤에 SetPause(true)가 실행하도록함.
 			GetWorld()->GetTimerManager().SetTimer(
-				TimerHandle,
+				PauseForDeadAnimTimerHandle,
 				FTimerDelegate::CreateWeakLambda(TSPlayerController,[TSPlayerController](){TSPlayerController->SetPause(true);}),
 				1.7f,
 				false
@@ -161,10 +165,22 @@ void ATSGameState::UpdateHUD()
 
 				}
 				
-				// 3) Healing Effect
-				// 4) Debuff
-				// 5) 피격 시 UI효과(지뢰, AI)(일시적)
-				// 6) 헤드샷 UI효과
+				// 3) About Gas Mask HUD========================================================================================
+				if (UProgressBar* GasMask = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("GasMask"))))
+				{
+					float GasMaskTimePercent = MaskTimeRemaining / SetMaskEffectTime;
+					GasMask->SetPercent(GasMaskTimePercent);
+				}
+				//testmessage
+				if (UTextBlock* GasMask = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("GasMasktest1"))))
+				{
+					float GasMaskTimePercent = MaskTimeRemaining / SetMaskEffectTime;
+					GasMask->SetText(FText::FromString(FString::Printf(TEXT("left time %f MakeTime %f"), SetMaskEffectTime, MaskTimeRemaining)));
+				}
+				// 4) Healing Effect
+				// 5) Debuff
+				// 6) 피격 시 UI효과(지뢰, AI)(일시적)
+				// 7) 헤드샷 UI효과
 			}
 		}
 	}
@@ -183,6 +199,7 @@ void ATSGameState::SetStopTimeReductionEnabled(bool bEnable)
 void ATSGameState::SetMaskEffect(bool bEnable, float Duration)
 {
 	bIsMaskActive = bEnable;
+	SetMaskEffectTime = Duration;
 	MaskTimeRemaining = Duration;
 
 	if (bEnable)
@@ -204,7 +221,7 @@ void ATSGameState::SetMaskEffect(bool bEnable, float Duration)
 	UpdateHUD();
 }
 
-// 방독면 남은 시간 반환 함수
+// 방독면 타이머 업데이트 함수 (남은 시간 반환이 아니고 업데이트 인것 같아 주석 수정했습니다. 혹시나 의도가 다르다면 연락주세요 -전보경)
 void ATSGameState::UpdateMaskTimer()
 {
 	if (MaskTimeRemaining > 0)
