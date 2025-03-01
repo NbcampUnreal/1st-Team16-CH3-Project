@@ -2,6 +2,7 @@
 #include "TSGameState.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -139,7 +140,13 @@ void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 					PlayerController->FireAction,
 					ETriggerEvent::Triggered,
 					this,
-					&ATSCharacter::Fire
+					&ATSCharacter::StartFire
+				);
+				EnhancedInput->BindAction(
+					PlayerController->FireAction,
+					ETriggerEvent::Completed,
+					this,
+					&ATSCharacter::StopFire
 				);
 			}
 
@@ -304,30 +311,34 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 	}
 }
 
-void ATSCharacter::Fire(const FInputActionValue& value)
+void ATSCharacter::StartFire(const FInputActionValue& value)
 {
-	
-	if (GetCharacterMovement()->IsFalling())
+	if (GetCharacterMovement()->IsFalling()) // 점프 중에는 발사 금지
 	{
 		return;
 	}
 
 	if (GetCharacterMovement())
 	{
-		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed * 0.0f;
+		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
 	}
 
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (IsValid(AnimInstance) && IsValid(FireAnimation) && !AnimInstance->Montage_IsPlaying(FireAnimation))
-	{
-		AnimInstance->Montage_Play(FireAnimation);
-	}
-
-	IsFiring = true;
-
-	float FireTime = FireAnimation->GetPlayLength();
-	GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ATSCharacter::ResetMovementAfterFire, FireTime, false);
+	// Fire 변수를 true로 설정하여 애니메이션 블루프린트에서 감지 가능하게 함
+	bFire = true;
 }
+
+void ATSCharacter::StopFire(const FInputActionValue& value)
+{
+	// 캐릭터 이동속도 원상 복귀
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+	}
+
+	// Fire 변수를 false로 설정하여 애니메이션 블루프린트에서 감지 가능하게 함
+	bFire = false;
+}
+
 
 void ATSCharacter::StartAiming(const FInputActionValue& value)
 {
@@ -406,4 +417,9 @@ void ATSCharacter::ResetMovementAfterFire()
 	}
 
 	IsFiring = false;
+}
+
+void ATSCharacter::ResetFireState()
+{
+	bFire = false; // Fire 상태 해제
 }

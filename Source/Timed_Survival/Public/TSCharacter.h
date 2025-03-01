@@ -25,7 +25,7 @@ public:
 
 private:
 	// 총을 쏘고있는지 판단
-	bool IsFiring = false;
+	bool IsFiring;
 
 	// 조준을 하고있는지 판단
 	bool bIsAiming = false;
@@ -64,10 +64,6 @@ protected:
 	// Reload Animation
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* ReloadAnimation;
-	// Fire Animation
-	UPROPERTY(EditAnywhere, Category = "Animation")
-	UAnimMontage* FireAnimation;
-
 
 
 	// Aim Rotation
@@ -80,6 +76,10 @@ protected:
 	FTimerHandle FireTimerHandle;
 
 public:
+
+	// 발사하는지 애니메이션 확인용 -- 변경 불가
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
+	bool bFire = false;
 	
 	//Mvoe Speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MovementSpeed")
@@ -126,7 +126,9 @@ protected:
 	UFUNCTION()
 	void Reload(const FInputActionValue& value);
 	UFUNCTION()
-	void Fire(const FInputActionValue& value);
+	void StartFire(const FInputActionValue& value);
+	UFUNCTION()
+	void StopFire(const FInputActionValue& value);
 	UFUNCTION()
 	void StartAiming(const FInputActionValue& value);
 	UFUNCTION()
@@ -148,4 +150,7 @@ public:
 
 	// 총 쏜뒤에 캐릭터가 움직이게하는 함수
 	void ResetMovementAfterFire();
+
+	void ResetFireState();
+
 };
