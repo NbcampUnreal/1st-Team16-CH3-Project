@@ -25,7 +25,7 @@ public:
 
 private:
 	// 총을 쏘고있는지 판단
-	bool IsFiring;
+	bool IsFiring = false;
 
 	// 조준을 하고있는지 판단
 	bool bIsAiming = false;
@@ -41,9 +41,6 @@ private:
 
 	// 기본 FOV 저장
 	float DefaultFOV;   
-
-	// 조준 시 적용할 FOV
-	float AimFOV = 60.0f;   
 
 	// 기본 카메라 위치 저장
 	FVector DefaultCameraOffset;
@@ -81,6 +78,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
 	bool bFire = false;
 	
+	// 조준 시 적용할 FOV
+	float AimFOV = 60.0f;
+
 	//Mvoe Speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MovementSpeed")
 	float NormalSpeed;

@@ -173,6 +173,9 @@ void ATSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// 기본적으로 총을 안쏘는 상태로 시작하게 false로 설정
+	bFire = false;
+
 	DefaultFOV = CameraComp->FieldOfView;
 	DefaultCameraOffset = SpringArmComp->SocketOffset; // 카메라 컴포넌트 기본 위치를 저장한다.
 }
@@ -354,8 +357,8 @@ void ATSCharacter::StartAiming(const FInputActionValue& value)
 
 	bIsAiming = true;
 	CameraComp->SetFieldOfView(AimFOV);
-	SpringArmComp->SocketOffset = FVector(260, -35, -41);
-	SpringArmComp->SetRelativeRotation(FRotator(0, -9, 5));
+	SpringArmComp->SocketOffset = FVector(260, -40, -54);
+	SpringArmComp->SetRelativeRotation(FRotator(0, -4, 0));
 }
 
 void ATSCharacter::StopAiming(const FInputActionValue& value)
