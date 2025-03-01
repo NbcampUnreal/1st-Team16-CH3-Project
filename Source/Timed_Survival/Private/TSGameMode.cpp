@@ -5,6 +5,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "TSPlayerController.h"
 
+// ============================================================================================================
+// 내 콘텐트 폴더에 WBP_WeaponSelect가있으면 WBP_SelectWidget에 블루프린트를 실행한다.
+// 기본 PawnClass는 nullptr로 비워둔다.
+// 기본 PlayerControllerClass는 ATSPlayerController::StaticClass()로 설정
 ATSGameMode::ATSGameMode()
 {
 	static ConstructorHelpers::FClassFinder<UUserWidget> WeaponSelectWidgetBP(TEXT("/Game/UI/Widget/WBP_WeaponSelect.WBP_WeaponSelect"));
@@ -17,6 +21,10 @@ ATSGameMode::ATSGameMode()
 	PlayerControllerClass = ATSPlayerController::StaticClass();
 }
 
+
+
+// ============================================================================================================
+// WBP_WeaponSelectWidget을 게임시작과 동시에 바로 표시한다.
 void ATSGameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -52,6 +60,10 @@ void ATSGameMode::BeginPlay()
 	}
 }
 
+
+
+// ============================================================================================================
+// 캐릭터랑 컨트롤러가 있다면 (0, 0, 0)위치로 캐릭터를 스폰하고 조정할 수있게 함.
 void ATSGameMode::SpawnSelectedCharacter()
 {
 	UTSGameInstance* GameInstance = Cast<UTSGameInstance>(GetGameInstance());
@@ -60,8 +72,8 @@ void ATSGameMode::SpawnSelectedCharacter()
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (!PlayerController) return;
 
-	// 캐릭터 스폰 위치 지정 (임시로 (0,0,300)에서 스폰)
-	FVector SpawnLocation = FVector(0.0f, 0.0f, 300.0f);
+	// 캐릭터 스폰 위치 지정 (임시로 (0,0,0)에서 스폰)
+	FVector SpawnLocation = FVector(0.0f, 0.0f, 0.0f);
 	FRotator SpawnRotation = FRotator::ZeroRotator;
 
 	// 캐릭터 스폰
