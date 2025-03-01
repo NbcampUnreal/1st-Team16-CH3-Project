@@ -3,8 +3,10 @@
 
 #include "TSBaseItem.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h" 
 #include "Particles/ParticleSystemComponent.h"
+#include "Sound/SoundBase.h"
 
 // Sets default values
 ATSBaseItem::ATSBaseItem()
@@ -12,29 +14,70 @@ ATSBaseItem::ATSBaseItem()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	// 씬 컴포넌트
+	// Scene 컴포넌트
 	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	SetRootComponent(Scene);
 
-	// 콜리전 컴포넌트
+	// 충돌 감지 스피어 컴포넌트 (아이템 획득 범위)
 	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
 	Collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
-	Collision->SetupAttachment(Scene);
+	Collision->SetupAttachment(StaticMesh);
 
 	// 스태틱 메쉬 컴포넌트
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	StaticMesh->SetupAttachment(Collision);
+	StaticMesh->SetupAttachment(Scene);
+	// 기본적으로 테두리 비활성화
+	StaticMesh->SetRenderCustomDepth(false);
+	StaticMesh->SetCustomDepthStencilValue(CustomDepthValue);
 	// 스태틱 메시의 충돌 감지 완전 비활성화
 	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	StaticMesh->SetGenerateOverlapEvents(false);
 
-	//이벤트 바인딩
+	// 테두리 활성화를 위한 감지용 SphereComponent
+	OutlineTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("OutlineTrigger"));
+	OutlineTrigger->InitSphereRadius(OutlineRadius);
+	OutlineTrigger->SetCollisionProfileName(TEXT("Trigger"));
+	OutlineTrigger->SetupAttachment(StaticMesh);
+
+	// 이벤트 바인딩
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATSBaseItem::OnItemOverlap);
-	Collision->OnComponentEndOverlap.AddDynamic(this, &ATSBaseItem::OnItemEndOverlap);
+	OutlineTrigger->OnComponentBeginOverlap.AddDynamic(this, &ATSBaseItem::OnOutlineTriggerOverlap);
+	OutlineTrigger->OnComponentEndOverlap.AddDynamic(this, &ATSBaseItem::OnOutlineTriggerEndOverlap);
 }
 
+//--------------------------- 아웃라인 온오프 -------------------------------
 
-// 아이템이 겹쳐질 때 호출되는 함수
+// 플레이어가 감지 범위에 들어오면 테두리 활성화
+void ATSBaseItem::OnOutlineTriggerOverlap(
+	UPrimitiveComponent* OverlappedComp,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor->ActorHasTag("Player"))
+	{
+		StaticMesh->SetRenderCustomDepth(true);
+	}
+}
+
+// 플레이어가 감지 범위를 벗어나면 테두리 비활성화
+void ATSBaseItem::OnOutlineTriggerEndOverlap(
+	UPrimitiveComponent* OverlappedComp,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
+{
+	if (OtherActor && OtherActor->ActorHasTag("Player"))
+	{
+		StaticMesh->SetRenderCustomDepth(false);
+	}
+}
+
+//--------------------------------------------------------------------
+
+// 아이템과 겹쳐질 때 호출되는 함수 (ex.획득)
 void ATSBaseItem::OnItemOverlap(
 	UPrimitiveComponent* OverlappedComp,
 	AActor* OtherActor,
@@ -60,6 +103,8 @@ void ATSBaseItem::OnItemEndOverlap(
 {
 		
 }
+
+// --------------------------------------------------------------------
 
 // 아이템 활성화 시 발동 함수
 void ATSBaseItem::ActivateItem(AActor* Activator)

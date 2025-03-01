@@ -58,17 +58,15 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Mine")
     class USoundBase* ExplosionSound;
 
-    // 이미 폭발했는지 확인하는 변수
+    // 지뢰 폭발 여부
     bool bHasExploded;
 
-    // 트리거 콜리전 영역에서 액터가 벗어났을 때 호출되는 함수
-    UFUNCTION()
-    void HandleTriggerEndOverlap(
-        UPrimitiveComponent* OverlappedComponent,
+    // 플레이어 또는 AI가 트리거에서 벗어나면 폭발
+    virtual void OnItemEndOverlap(
+        UPrimitiveComponent* OverlappedComp,
         AActor* OtherActor,
         UPrimitiveComponent* OtherComp,
-        int32 OtherBodyIndex
-    );
+        int32 OtherBodyIndex) override;
 
     // 폭발 처리 함수
     void Explode();
