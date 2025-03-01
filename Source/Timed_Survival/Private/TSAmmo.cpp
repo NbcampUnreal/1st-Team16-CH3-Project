@@ -8,12 +8,12 @@
 
 ATSAmmo::ATSAmmo()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
     CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
     CollisionComponent->InitSphereRadius(5.0f);
     CollisionComponent->SetCollisionProfileName(TEXT("BlockAll"));
-    CollisionComponent->OnComponentHit.AddDynamic(this, &ATSAmmo::OnHit);
+    CollisionComponent->OnComponentHit.AddDynamic(this, &ATSAmmo::HandleHit);
     RootComponent = CollisionComponent;
 
     
@@ -33,7 +33,6 @@ ATSAmmo::ATSAmmo()
 void ATSAmmo::BeginPlay()
 {
 	Super::BeginPlay();
-
     SetLifeSpan(10.0f);
 	
 }
@@ -44,15 +43,32 @@ void ATSAmmo::Tick(float DeltaTime)
 
 }
 
-void ATSAmmo::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ATSAmmo::HandleHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
+    UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-    if (OtherActor && OtherActor != this)
+    if (!OtherActor || OtherActor == this)
     {
-        UE_LOG(LogTemp, Warning, TEXT("The bullet hit %s!"), *OtherActor->GetName());
-
-        UGameplayStatics::ApplyDamage(OtherActor, 10.0f, GetInstigatorController(), this, UDamageType::StaticClass());
-        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.Location, FRotator::ZeroRotator);
-
-        Destroy();
+        UE_LOG(LogTemp, Warning, TEXT(" HandleHit()가 올바르게 실행되지 않음!"));
+        return;
     }
+
+    UE_LOG(LogTemp, Warning, TEXT(" 총알이 %s 에 충돌!"), *OtherActor->GetName());
+
+    if (ImpactEffect)
+    {
+        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.Location, FRotator::ZeroRotator);
+    }
+
+    //  데미지 적용
+    float AppliedDamage = Damage;
+    UE_LOG(LogTemp, Warning, TEXT(" 적용된 데미지: %f"), AppliedDamage);
+
+    UGameplayStatics::ApplyDamage(OtherActor, AppliedDamage, GetInstigatorController(), this, UDamageType::StaticClass());
+
+    Destroy();
 }
+
+void ATSAmmo::SetDamage(float NewDamage)
+    {
+        Damage = NewDamage;
+    }
