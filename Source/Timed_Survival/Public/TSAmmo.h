@@ -20,7 +20,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComp,
+	void HandleHit(UPrimitiveComponent* HitComp,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		FVector NormalImpulse,
@@ -28,6 +28,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	class UParticleSystem* ImpactEffect;
+
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+	void SetDamage(float NewDamage);
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+	float GetDamage() const { return Damage; }
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -38,6 +43,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	class UProjectileMovementComponent* ProjectileMovement;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess = "true"))
+	float Damage;
 
 public:
 	UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovement; }

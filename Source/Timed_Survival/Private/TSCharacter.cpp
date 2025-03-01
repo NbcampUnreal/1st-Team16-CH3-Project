@@ -29,6 +29,7 @@ ATSCharacter::ATSCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bUseControllerRotationYaw = false;
+
 }
 
 // 무기 타입으로 무기 찾는 함수(총알 추가용)
@@ -178,6 +179,38 @@ void ATSCharacter::BeginPlay()
 
 	DefaultFOV = CameraComp->FieldOfView;
 	DefaultCameraOffset = SpringArmComp->SocketOffset; // 카메라 컴포넌트 기본 위치를 저장한다.
+
+	//테스트
+	
+	if (!WeaponChildActor)
+	{
+		WeaponChildActor = FindComponentByClass<UChildActorComponent>();
+	}
+
+	if (!WeaponChildActor)
+	{
+		UE_LOG(LogTemp, Error, TEXT("WeaponChildActor가 nullptr입니다! 블루프린트에서 설정되었는지 확인하세요."));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("WeaponChildActor가 정상적으로 설정되었습니다."));
+
+	AActor* ChildActor = WeaponChildActor->GetChildActor();
+	if (!ChildActor)
+	{
+		UE_LOG(LogTemp, Error, TEXT(" WeaponChildActor->GetChildActor()가 nullptr입니다! BP_M16이 제대로 설정되었는지 확인하세요."));
+		return;
+	}
+
+	AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
+	if (EquippedWeapon)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ChildActor에서 무기 장착 성공: %s"), *EquippedWeapon->GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ChildActor를 AGunWeapon으로 캐스팅 실패! BP_M16이 AGunWeapon을 상속받았는지 확인하세요."));
+	}
 }
 
 void ATSCharacter::Tick(float DeltaTime)
@@ -325,6 +358,49 @@ void ATSCharacter::StartFire(const FInputActionValue& value)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
 	}
+  
+  IsFiring = true;
+
+	float FireTime = FireAnimation->GetPlayLength();
+	GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ATSCharacter::ResetMovementAfterFire, FireTime, false);
+
+	//테스트
+	if (!WeaponChildActor)
+	{
+		UE_LOG(LogTemp, Error, TEXT(" Fire(): WeaponChildActor가 nullptr입니다! 블루프린트에서 설정되었는지 확인하세요."));
+		return;
+	}
+
+	AActor* ChildActor = WeaponChildActor->GetChildActor();
+	if (!ChildActor)
+	{
+		UE_LOG(LogTemp, Error, TEXT(" Fire(): WeaponChildActor->GetChildActor()가 nullptr입니다! BP_M16이 올바르게 설정되었는지 확인하세요."));
+		return;
+	}
+
+	//  GunWeapon 타입으로 캐스팅하여 FireBullet() 호출
+	AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
+	if (EquippedWeapon)
+	{
+		UE_LOG(LogTemp, Warning, TEXT(" Fire(): 무기 발사 시도!"));
+
+		//  FireBullet() 실행 전 확인 로그 추가
+		if (EquippedWeapon->GetBulletCount() > 0)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Fire(): 탄약 개수 충분 - FireBullet() 실행!"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT(" Fire(): 탄약 없음! FireBullet() 실행 불가!"));
+		}
+
+		EquippedWeapon->FireBullet();
+		UE_LOG(LogTemp, Warning, TEXT(" Fire(): FireBullet() 호출 완료!"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT(" Fire(): ChildActor를 AGunWeapon으로 캐스팅 실패! BP_M16이 GunWeapon을 상속받았는지 확인하세요."));
+	}
 
 	// Fire 변수를 true로 설정하여 애니메이션 블루프린트에서 감지 가능하게 함
 	bFire = true;
@@ -337,6 +413,7 @@ void ATSCharacter::StopFire(const FInputActionValue& value)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
+
 
 	// Fire 변수를 false로 설정하여 애니메이션 블루프린트에서 감지 가능하게 함
 	bFire = false;
@@ -421,7 +498,6 @@ void ATSCharacter::ResetMovementAfterFire()
 
 	IsFiring = false;
 }
-
 void ATSCharacter::ResetFireState()
 {
 	bFire = false; // Fire 상태 해제
