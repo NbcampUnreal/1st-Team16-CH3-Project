@@ -13,7 +13,7 @@ ATSMineItem::ATSMineItem()
     ExplosionPlayerDamage = 10.0f;
     ItemType = "Mine";
     bHasExploded = false;
-
+    
     // 기존 ExplosionCollision: 폭발 피해 범위로 사용
     ExplosionCollision = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionCollision"));
     ExplosionCollision->InitSphereRadius(ExplosionRadius);
@@ -32,19 +32,20 @@ ATSMineItem::ATSMineItem()
     TriggerMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
     // 트리거 영역에서 액터가 벗어날 때 HandleTriggerEndOverlap 함수 호출
-    TriggerCollision->OnComponentEndOverlap.AddDynamic(this, &ATSMineItem::HandleTriggerEndOverlap);
+    TriggerCollision->OnComponentEndOverlap.AddDynamic(this, &ATSMineItem::OnItemEndOverlap);
 }
 
-void ATSMineItem::HandleTriggerEndOverlap(
-    UPrimitiveComponent* OverlappedComponent,
+// 트리거에서 벗어나면 폭발
+void ATSMineItem::OnItemEndOverlap(
+    UPrimitiveComponent* OverlappedComp,
     AActor* OtherActor,
     UPrimitiveComponent* OtherComp,
-    int32 OtherBodyIndex
-)
+    int32 OtherBodyIndex)
 {
-    if (!OtherActor || bHasExploded) return;
+    if (!OtherActor || bHasExploded)
+        return;
 
-    // 플레이어나 AI가 트리거 영역에서 벗어났을 경우 폭발 처리
+    // 플레이어나 AI가 트리거에서 벗어났다면 폭발 처리
     if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("MoveCharacter"))
     {
         Explode();
@@ -83,19 +84,20 @@ void ATSMineItem::Explode()
 
     for (AActor* Actor : OverlappingActors)
     {
-        if (!Actor) continue;
+        if (!Actor)
+            continue;
 
+        // 플레이어의 경우, GameState에서 남은 시간을 감소
         if (Actor->ActorHasTag("Player"))
         {
-            // 플레이어의 경우, GameState에서 남은 시간을 감소
             if (ATSGameState* GameState = GetWorld()->GetGameState<ATSGameState>())
             {
                 GameState->ReduceTime(ExplosionPlayerDamage, true);
             }
         }
+        // AI의 경우, ApplyDamage를 통해 피해 적용 --- (AI상호작용 확인 필요)
         else if (Actor->ActorHasTag("MoveCharacter"))
-        {
-            // AI의 경우, ApplyDamage를 통해 피해 적용
+        {            
             UGameplayStatics::ApplyDamage(
                 Actor,
                 ExplosionAIDamage,

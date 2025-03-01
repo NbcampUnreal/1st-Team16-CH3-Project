@@ -20,6 +20,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float BaseHealth;
 	float ItemHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float CurrentHealth;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Food")
