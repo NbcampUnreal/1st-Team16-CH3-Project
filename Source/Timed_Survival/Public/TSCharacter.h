@@ -151,6 +151,11 @@ public:
 	// 총 쏜뒤에 캐릭터가 움직이게하는 함수
 	void ResetMovementAfterFire();
 
+	//테스트
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	UChildActorComponent* WeaponChildActor;
+
+
 	void ResetFireState();
 
 };
