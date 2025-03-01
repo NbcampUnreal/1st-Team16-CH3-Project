@@ -358,11 +358,6 @@ void ATSCharacter::StartFire(const FInputActionValue& value)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
 	}
-  
-  IsFiring = true;
-
-	float FireTime = FireAnimation->GetPlayLength();
-	GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ATSCharacter::ResetMovementAfterFire, FireTime, false);
 
 	//테스트
 	if (!WeaponChildActor)
