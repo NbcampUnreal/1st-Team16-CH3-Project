@@ -17,5 +17,4 @@ public:
 	ATSARBulletItem();
 
 	virtual void ActivateItem(AActor* Activator) override;
-
 };

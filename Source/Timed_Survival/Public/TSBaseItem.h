@@ -24,6 +24,8 @@ public:
 	// 아이템 유형 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FName ItemType;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet")
+	FName WeaponType;
 
 protected:
 	

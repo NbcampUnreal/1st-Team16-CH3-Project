@@ -160,7 +160,7 @@ void ATSBaseItem::ActivateItem(AActor* Activator)
 	ATSGameState* GameState = GetWorld()->GetGameState<ATSGameState>();
 	if (GameState)
 	{
-		GameState->PickWidgetbyItemType(ItemType);
+		GameState->PickWidgetbyItemType(GetItemType());
 	}
 
 }
@@ -174,5 +174,13 @@ void ATSBaseItem::DestroyItem()
 // 아이템 타입 반환 함수
 FName ATSBaseItem::GetItemType() const
 {
-	return ItemType;
+	if (ItemType.IsNone())
+	{
+		return WeaponType;
+	}
+	if (WeaponType.IsNone())
+	{
+		return ItemType;
+	}
+	return ItemType;  // 기본적으로 ItemType을 반환
 }
