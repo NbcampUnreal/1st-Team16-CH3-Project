@@ -92,6 +92,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void ShowClearScore();
 	UFUNCTION(BlueprintCallable, Category = "Menu")
+	void ClearWidget(); // Clear All Widget except HUD
+	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void QuitGame();
 
 	virtual void BeginPlay() override;
