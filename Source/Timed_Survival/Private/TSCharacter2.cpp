@@ -513,6 +513,12 @@ void ATSCharacter2::ResetReloadState()
 	{
 		CurrentShotGunBullet = 2; // 1이면 2로 증가
 	}
+
+	// Test출력용
+	// ================================================================================
+	// ================================================================================
+	UE_LOG(LogTemp, Warning, TEXT("샷건 장전 현재 총알 : %d"), CurrentShotGunBullet);
+
 }
 
 int32 ATSCharacter2::GetCurrentShotGunBullet() const
