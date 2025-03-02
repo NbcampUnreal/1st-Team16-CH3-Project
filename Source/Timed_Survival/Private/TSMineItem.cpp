@@ -13,7 +13,8 @@ ATSMineItem::ATSMineItem()
     ExplosionPlayerDamage = 10.0f;
     ItemType = "Mine";
     bHasExploded = false;
-    
+    bShowOutline = false; // 아웃라인 표시 안함
+
     // 기존 ExplosionCollision: 폭발 피해 범위로 사용
     ExplosionCollision = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionCollision"));
     ExplosionCollision->InitSphereRadius(ExplosionRadius);
@@ -35,7 +36,7 @@ ATSMineItem::ATSMineItem()
     TriggerCollision->OnComponentEndOverlap.AddDynamic(this, &ATSMineItem::OnItemEndOverlap);
 }
 
-// 트리거에서 벗어나면 폭발
+// **트리거에서 벗어나면 폭발**
 void ATSMineItem::OnItemEndOverlap(
     UPrimitiveComponent* OverlappedComp,
     AActor* OtherActor,
@@ -45,7 +46,7 @@ void ATSMineItem::OnItemEndOverlap(
     if (!OtherActor || bHasExploded)
         return;
 
-    // 플레이어나 AI가 트리거에서 벗어났다면 폭발 처리
+    // **플레이어나 AI가 트리거에서 벗어났다면 폭발 처리**
     if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("MoveCharacter"))
     {
         Explode();
