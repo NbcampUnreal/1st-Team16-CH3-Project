@@ -7,22 +7,22 @@
 #include "TSItemInterface.h" // 인터페이스 헤더 파일 추가
 #include "TSBaseItem.generated.h"
 
-class USceneComponent;
 class USphereComponent;
 class UStaticMeshComponent;
-class UMaterialInstanceDynamic;
+class UParticleSystem;
+class USoundBase;
 
 UCLASS()
 class TIMED_SURVIVAL_API ATSBaseItem : public AActor, public ITSItemInterface // 인터페이스 상속
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ATSBaseItem();
 
 protected:
-	
+
 	// 씬 컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	USceneComponent* Scene;
@@ -34,11 +34,6 @@ protected:
 	// 아이템 스태틱 메쉬 컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	UStaticMeshComponent* StaticMesh;
-
-	// 감지 범위 (아웃라인 표시용)
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USphereComponent* DetectionSphere;
-
 	// 파티클
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
 	UParticleSystem* PickupParticle;
@@ -47,27 +42,30 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
 	USoundBase* PickupSound;
 
-	// 아웃라인 효과용 머티리얼
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "meterial")
-	UMaterialInstanceDynamic* OutlineMaterial;
-
-	// 원래 머티리얼 (아웃라인 제거 시 사용)
-	UPROPERTY()
-	UMaterialInterface* OriginalMaterial;
-
-	// 아웃라인 표시 여부 (기본값: true)
-	UPROPERTY(EditAnywhere, Category = "Item")
-	bool bShowOutline;
-
 	// 아이템 유형 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FName ItemType;
 
 	//----------------------------------------------------------------
 
-	// 아웃라인 효과 적용
+	// 테두리 관련 변수
+	UPROPERTY(EditDefaultsOnly, Category = "Outline")
+	float OutlineRadius = 400.0f;  // 테두리 감지 범위
+
+	UPROPERTY(EditDefaultsOnly, Category = "Outline")
+	float CustomDepthValue = 1.0f; // Custom Depth 값 (머터리얼에서 사용)
+
+	bool bEnableOutline = true; // 기본적으로 아웃라인 적용
+
+	// 테두리 효과 적용을 위한 트리거 컴포넌트
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	USphereComponent* OutlineTrigger;
+
+	//----------------------------------------------------------------
+
+	// 플레이어가 감지 범위에 들어왔을 때 (테두리 활성화)
 	UFUNCTION()
-	void OnDetectionOverlap(
+	void OnOutlineTriggerOverlap(
 		UPrimitiveComponent* OverlappedComp,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
@@ -75,9 +73,9 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult);
 
-	// 아웃라인 효과 해제
+	// 플레이어가 감지 범위를 벗어났을 때 (테두리 비활성화)
 	UFUNCTION()
-	void OnDetectionEndOverlap(
+	void OnOutlineTriggerEndOverlap(
 		UPrimitiveComponent* OverlappedComp,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
@@ -102,7 +100,7 @@ protected:
 
 	// 아이템 활성화 시 발동 함수
 	virtual void ActivateItem(AActor* Activator) override;
-	
+
 	// 아이템 제거
 	void DestroyItem();
 

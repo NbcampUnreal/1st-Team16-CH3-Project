@@ -13,7 +13,7 @@ ATSMineItem::ATSMineItem()
     ExplosionPlayerDamage = 10.0f;
     ItemType = "Mine";
     bHasExploded = false;
-    bShowOutline = false; // 아웃라인 표시 안함
+    bEnableOutline = false; // 아웃라인 표시 안함
 
     // 기존 ExplosionCollision: 폭발 피해 범위로 사용
     ExplosionCollision = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionCollision"));
