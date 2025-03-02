@@ -400,12 +400,12 @@ void ATSCharacter2::Fire(const FInputActionValue& value)
 			}
 		}
 
-		// 0.2초 후 다시 발사 가능하도록 설정
+		// 총쏘는 애니메이션 0.3초 설정 -> 1초로하면 왼손이 재장전하는데 샷건 재장전 메쉬를 움직일수가없음
 		GetWorld()->GetTimerManager().SetTimer(
 			ShotgunCooldownTimerHandle,
 			this,
 			&ATSCharacter2::ResetFireState,
-			0.2f,
+			0.3f,
 			false
 		);
 	}
