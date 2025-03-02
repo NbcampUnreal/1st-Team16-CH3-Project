@@ -10,6 +10,8 @@
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
 #include "Blueprint/UserWidget.h"
+#include "EngineUtils.h"
+#include "TSBaseItem.h"
 
 ATSGameState::ATSGameState()
 {	
@@ -117,7 +119,10 @@ void ATSGameState:: BattleSystem()
 }
 
 
+
 // about UI Function
+
+
 void ATSGameState::UpdateHUD()
 {
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
@@ -174,7 +179,7 @@ void ATSGameState::UpdateHUD()
 				}
 				
 				// 3) About Gas Mask HUD========================================================================================
-				if (UProgressBar* GasMask = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("GasMask"))))
+				if (UProgressBar* GasMask = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("Mask"))))
 				{
 					float GasMaskTimePercent = MaskTimeRemaining / SetMaskEffectTime;
 					GasMask->SetPercent(GasMaskTimePercent);
@@ -194,6 +199,67 @@ void ATSGameState::UpdateHUD()
 	}
 
 }
+// 2] Popup HUD
+
+void ATSGameState::PickWidgetbyItemType(FName ItemType)
+{
+	EventItemType = ItemType;
+	
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController);
+		{
+			if (UUserWidget* HUDWidget = TSPlayerController->GetHUDWidget())
+			{
+				TMap<FName, float> WidgetViewTime = {
+					{TEXT("SmallHealing"), 3.0f},
+					{TEXT("MiddleHealing"), 5.0f},
+					{TEXT("BigHealing"), 7.0f},
+					{TEXT("Pistol"), 7.0f},
+					{TEXT("AR"), 7.0f},
+					{TEXT("Mask"),30.0f}//<-이유는 모르겠지만 SetMaskEffectTime 값을 못 받아오고 있어서 수동세팅해주셔야합니다.
+				};
+				if (WidgetViewTime.Contains(EventItemType))
+				{
+					PopUpWidget(EventItemType, HUDWidget, WidgetViewTime[EventItemType]);
+				}
+			}
+		}
+	}	
+	
+}
+
+TMap<FName, FTimerHandle> WidgetTimer;
+
+void ATSGameState::PopUpWidget(FName ItemType, UUserWidget* ItemWidget, float ViewTime)
+{
+	if (!ItemWidget) return;
+
+	UWidget* FoundWidget = ItemWidget->GetWidgetFromName(ItemType);
+	if (!FoundWidget) return;
+
+	FoundWidget->SetVisibility(ESlateVisibility::Visible);
+
+	if (WidgetTimer.Contains(ItemType))
+	{
+		GetWorld()->GetTimerManager().ClearTimer(WidgetTimer[ItemType]);
+		WidgetTimer.Remove(ItemType);
+	}
+
+	FTimerHandle NewWidgetTimerHandle;
+
+	WidgetTimer.Add(ItemType, NewWidgetTimerHandle);
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		NewWidgetTimerHandle,
+		[this, FoundWidget, ItemType]()
+		{
+			FoundWidget->SetVisibility(ESlateVisibility::Hidden);
+			WidgetTimer.Remove(ItemType);
+		},
+		ViewTime, false);
+	
+}
 
 //----------------------- 방독면 ------------------------
 
@@ -207,8 +273,8 @@ void ATSGameState::SetStopTimeReductionEnabled(bool bEnable)
 void ATSGameState::SetMaskEffect(bool bEnable, float Duration)
 {
 	bIsMaskActive = bEnable;
-	SetMaskEffectTime = Duration;
 	MaskTimeRemaining = Duration;
+	GetMaskDuration(Duration);
 
 	if (bEnable)
 	{
@@ -227,6 +293,11 @@ void ATSGameState::SetMaskEffect(bool bEnable, float Duration)
 	}
 
 	UpdateHUD();
+}
+
+void ATSGameState::GetMaskDuration(float Value)
+{
+	SetMaskEffectTime = Value;
 }
 
 // 방독면 타이머 업데이트 함수 (남은 시간 반환이 아니고 업데이트 인것 같아 주석 수정했습니다. 혹시나 의도가 다르다면 연락주세요 -전보경)
@@ -341,3 +412,4 @@ void ATSGameState::UpdateBulletData()
 // void ATSGameState::FindPistolBullet()
 // {
 // }
+

@@ -112,3 +112,8 @@ void ATSMineItem::Explode()
     // 폭발 후 지뢰 아이템 제거
     Destroy();
 }
+
+void ATSMineItem::ActivateItem(AActor* Activator)
+{
+    Super::ActivateItem(Activator);
+}

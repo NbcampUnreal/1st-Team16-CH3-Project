@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h" 
 #include "Particles/ParticleSystemComponent.h"
 #include "Sound/SoundBase.h"
+#include "TSGameState.h"
 
 // Sets default values
 ATSBaseItem::ATSBaseItem()
@@ -44,6 +45,13 @@ ATSBaseItem::ATSBaseItem()
 	OutlineTrigger->OnComponentBeginOverlap.AddDynamic(this, &ATSBaseItem::OnOutlineTriggerOverlap);
 	OutlineTrigger->OnComponentEndOverlap.AddDynamic(this, &ATSBaseItem::OnOutlineTriggerEndOverlap);
 
+}
+
+void ATSBaseItem::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetItemType();
 }
 
 //--------------------------- 아웃라인 온오프 -------------------------------
@@ -150,6 +158,13 @@ void ATSBaseItem::ActivateItem(AActor* Activator)
 			false
 		);
 	}
+
+	ATSGameState* GameState = GetWorld()->GetGameState<ATSGameState>();
+	if (GameState)
+	{
+		GameState->PickWidgetbyItemType(GetItemType());
+	}
+
 }
 
 // 아이템 제거 함수
@@ -161,5 +176,15 @@ void ATSBaseItem::DestroyItem()
 // 아이템 타입 반환 함수
 FName ATSBaseItem::GetItemType() const
 {
+
+	if (ItemType.IsNone())
+	{
+		return WeaponType;
+	}
+	if (WeaponType.IsNone())
+	{
+		return ItemType;
+	}
 	return ItemType;
 }
+
