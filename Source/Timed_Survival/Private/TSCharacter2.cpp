@@ -360,10 +360,6 @@ void ATSCharacter2::Reload(const FInputActionValue& value)
 		);
 
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("총알이 이미 가득 참!"));
-	}
 }
 
 void ATSCharacter2::Fire(const FInputActionValue& value)
@@ -385,6 +381,9 @@ void ATSCharacter2::Fire(const FInputActionValue& value)
 		// 탄약 감소
 		CurrentShotGunBullet = FMath::Clamp(CurrentShotGunBullet - 1, 0, MaxShotGunBullet);
 
+		// Test출력용
+		// ================================================================================
+		// ================================================================================
 		UE_LOG(LogTemp, Warning, TEXT("총알 발사 현재 남은 총알 : %d"), CurrentShotGunBullet);
 
 		// 무기 발사 처리
