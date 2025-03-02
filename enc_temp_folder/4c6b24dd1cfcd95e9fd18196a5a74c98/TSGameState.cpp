@@ -97,13 +97,12 @@ void ATSGameState::OnHPZero()
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
-		// 라이플 캐릭터 죽음애니메이션처리
 		ATSCharacter* PlayerCharacter = Cast<ATSCharacter>(PlayerController->GetPawn());
 		if (PlayerCharacter)
 		{
 			PlayerCharacter->Death();
 		}
-		// 샷건 캐릭터 죽음애니메이션처리
+
 		ATSCharacter2* PlayerCharacter2 = Cast<ATSCharacter2>(PlayerController->GetPawn());
 		if (PlayerCharacter2)
 		{
