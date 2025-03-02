@@ -34,7 +34,7 @@ void ATSGameMode::BeginPlay()
 	CurrentLevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
 
 	// PCY_Test이면 캐릭터 스폰
-	if (CurrentLevelName == "AITest")
+	if (CurrentLevelName == "PCY_Test")
 	{
 		SpawnSelectedCharacter();
 	}

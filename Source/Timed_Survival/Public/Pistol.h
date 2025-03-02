@@ -16,4 +16,5 @@ public:
 
 	virtual void FireBullet() override;
 	virtual void Reload() override;
+	virtual void FinishReload() override;
 };

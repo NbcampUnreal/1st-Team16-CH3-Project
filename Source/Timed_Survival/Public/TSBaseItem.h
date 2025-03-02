@@ -20,6 +20,10 @@ class TIMED_SURVIVAL_API ATSBaseItem : public AActor, public ITSItemInterface //
 public:	
 	// Sets default values for this actor's properties
 	ATSBaseItem();
+	virtual void BeginPlay();
+	// 아이템 유형 이름
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	FName ItemType;
 
 protected:
 	
@@ -42,9 +46,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
 	USoundBase* PickupSound;
 	
-	// 아이템 유형 이름
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	FName ItemType;
+	//// 아이템 유형 이름
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	//FName ItemType;
 
 	// 테두리 관련 변수
 	UPROPERTY(EditDefaultsOnly, Category = "Outline")
