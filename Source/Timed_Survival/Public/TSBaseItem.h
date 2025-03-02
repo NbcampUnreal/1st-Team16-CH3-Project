@@ -16,13 +16,13 @@ UCLASS()
 class TIMED_SURVIVAL_API ATSBaseItem : public AActor, public ITSItemInterface // 인터페이스 상속
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ATSBaseItem();
 
 protected:
-	
+
 	// 씬 컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	USceneComponent* Scene;
@@ -41,17 +41,21 @@ protected:
 	// 사운드(효과음)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
 	USoundBase* PickupSound;
-	
+
 	// 아이템 유형 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FName ItemType;
 
+	//----------------------------------------------------------------
+
 	// 테두리 관련 변수
 	UPROPERTY(EditDefaultsOnly, Category = "Outline")
-	float OutlineRadius = 200.0f;  // 테두리 감지 범위
+	float OutlineRadius = 400.0f;  // 테두리 감지 범위
 
 	UPROPERTY(EditDefaultsOnly, Category = "Outline")
 	float CustomDepthValue = 1.0f; // Custom Depth 값 (머터리얼에서 사용)
+
+	bool bEnableOutline = true; // 기본적으로 아웃라인 적용
 
 	// 테두리 효과 적용을 위한 트리거 컴포넌트
 	UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -96,7 +100,7 @@ protected:
 
 	// 아이템 활성화 시 발동 함수
 	virtual void ActivateItem(AActor* Activator) override;
-	
+
 	// 아이템 제거
 	void DestroyItem();
 
