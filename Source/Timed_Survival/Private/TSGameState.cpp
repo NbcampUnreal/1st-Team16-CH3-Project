@@ -1,6 +1,7 @@
 #include "TSGameState.h"
 #include "TSGameInstance.h"
 #include "TSCharacter.h"
+#include "TSCharacter2.h"
 #include "TSPlayerController.h"
 #include "TSBaseBulletItem.h"
 #include "TSARBulletItem.h"
@@ -96,10 +97,17 @@ void ATSGameState::OnHPZero()
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
+		// 라이플 캐릭터 죽음애니메이션처리
 		ATSCharacter* PlayerCharacter = Cast<ATSCharacter>(PlayerController->GetPawn());
 		if (PlayerCharacter)
 		{
 			PlayerCharacter->Death();
+		}
+		// 샷건 캐릭터 죽음애니메이션처리
+		ATSCharacter2* PlayerCharacter2 = Cast<ATSCharacter2>(PlayerController->GetPawn());
+		if (PlayerCharacter2)
+		{
+			PlayerCharacter2->Death();
 		}
 	}
 }
