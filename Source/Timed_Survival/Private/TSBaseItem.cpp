@@ -31,7 +31,7 @@ ATSBaseItem::ATSBaseItem()
 	StaticMesh->SetGenerateOverlapEvents(false);
 	// 기본적으로 테두리 비활성화
 	StaticMesh->SetRenderCustomDepth(false);
-	StaticMesh->SetCustomDepthStencilValue(1);
+	StaticMesh->SetCustomDepthStencilValue(CustomDepthValue);
 
 	// 테두리 활성화를 위한 감지용 SphereComponent
 	OutlineTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("OutlineTrigger"));
