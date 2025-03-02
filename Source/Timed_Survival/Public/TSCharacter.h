@@ -74,8 +74,8 @@ protected:
 
 public:
 
-	// 발사하는지 애니메이션 확인용 -- 변경 불가
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
+	// 발사하는지 애니메이션 확인용 -- 변경 가능하게
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	bool bFire = false;
 	
 	// 조준 시 적용할 FOV
