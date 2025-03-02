@@ -8,7 +8,7 @@ ATSMineItem::ATSMineItem()
 {
     // 폭발 데미지 관련 초기화
     ExplosionRadius = 300.0f; // 폭발 피해 적용 범위
-	TriggerRadius = 50.0f; // 트리거 영역 반지름
+    TriggerRadius = 50.0f; // 트리거 영역 반지름
     ExplosionAIDamage = 30.0f;
     ExplosionPlayerDamage = 10.0f;
     ItemType = "Mine";
@@ -36,7 +36,7 @@ ATSMineItem::ATSMineItem()
     TriggerCollision->OnComponentEndOverlap.AddDynamic(this, &ATSMineItem::OnItemEndOverlap);
 }
 
-// **트리거에서 벗어나면 폭발**
+// 트리거에서 벗어나면 폭발
 void ATSMineItem::OnItemEndOverlap(
     UPrimitiveComponent* OverlappedComp,
     AActor* OtherActor,
@@ -46,7 +46,7 @@ void ATSMineItem::OnItemEndOverlap(
     if (!OtherActor || bHasExploded)
         return;
 
-    // **플레이어나 AI가 트리거에서 벗어났다면 폭발 처리**
+    // 플레이어나 AI가 트리거에서 벗어났다면 폭발 처리
     if (OtherActor->ActorHasTag("Player") || OtherActor->ActorHasTag("MoveCharacter"))
     {
         Explode();
@@ -98,7 +98,7 @@ void ATSMineItem::Explode()
         }
         // AI의 경우, ApplyDamage를 통해 피해 적용 --- (AI상호작용 확인 필요)
         else if (Actor->ActorHasTag("MoveCharacter"))
-        {            
+        {
             UGameplayStatics::ApplyDamage(
                 Actor,
                 ExplosionAIDamage,
