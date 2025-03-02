@@ -4,7 +4,6 @@
 #include "CoreMinimal.h"
 #include "BaseWeapon.h"
 #include "TSAmmo.h"
-#include "GameFramework/Actor.h"
 #include "GunWeapon.generated.h"
 
 UCLASS()
@@ -35,6 +34,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	bool bIsReload;
 
+	
 	FTimerHandle ReloadTimerHandle;
 
 public:
@@ -43,22 +43,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	float GetReloadDelay() const;
 
+	virtual void FireBullet() override;
+
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void Reload();
 	
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	UFUNCTION()
 	virtual void FinishReload();
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void Fire();
-
-	virtual void FireBullet() override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	float MinDamage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	float MaxDamage;
+	//UFUNCTION(BlueprintCallable, Category = "Weapon") //<-얘 원래 함수 주인 누구에요?
 
 	int32 GetBulletInPlayer() const { return ReserveBullet; }
 	int32 GetBulletCount() const { return BulletCount; }
@@ -67,7 +60,4 @@ public:
 
 	FName GetWeaponType() const { return WeaponType; }
 	void AddBullet(int32 Amount);
-
-protected:
-	virtual void BeginPlay() override;
 };

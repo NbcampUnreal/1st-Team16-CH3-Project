@@ -4,6 +4,8 @@
 #include "GameFramework/GameState.h"
 #include "TSGameState.generated.h"
 
+class ATSBaseItem;
+
 UCLASS()
 class TIMED_SURVIVAL_API ATSGameState : public AGameState
 {
@@ -47,8 +49,21 @@ public:
 	void BattleSystem();
 	
 	// about UI Function 
+	TMap<FTimerHandle, FName> WidgetTimerMap;
+	FName EventItemType;
 	FTimerHandle HUDUpdateTimerHandle;
+	//FTimerHandle HideWidgetTimerHandle;
+	FTimerHandle HideHealingWidgetTimerHandle;
+	FTimerHandle HideMaskWidgetTimerHandle;
 	void UpdateHUD();
+	void PickWidgetbyItemType(FName Type);
+	void PopUpWidget(FName ItemType, UUserWidget* ItemWidget, float ViewTime);
+	void HideWidget(
+		UUserWidget* ItemEffectWidget, 
+		const FName& WidgetName,
+		float ViewTime);
+	void SetHideWidget();
+
 
 	// about Health(Timer) Function - with Item Class
 	void IncreaseTime(float Value);
@@ -84,5 +99,7 @@ public:
 	bool IsMaskActive() const; // 마스크 활성화 여부
 	float GetMaskTimeRemaining() const; // 마스크 남은 시간
 	void UpdateMaskTimer(); // 마스크 타이머 업데이트 함수
+	void GetMaskDuration(float Value); // UI 세팅 위해서 받아오는 함수
 		
+
 };

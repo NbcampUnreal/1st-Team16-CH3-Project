@@ -9,7 +9,7 @@
 ATSMaskItem::ATSMaskItem()
 {
 	StopTimeDuration = 30.0f;
-	ItemType = FName("Mask");
+	ItemType = FName(TEXT("Mask"));
 }
 
 void ATSMaskItem::ActivateItem(AActor* Activator)

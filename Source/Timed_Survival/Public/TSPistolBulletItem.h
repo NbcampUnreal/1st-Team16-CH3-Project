@@ -16,4 +16,6 @@ class TIMED_SURVIVAL_API ATSPistolBulletItem : public ATSBaseBulletItem
 public:
 	ATSPistolBulletItem();
 
+	virtual void ActivateItem(AActor* Activator) override;
+
 };

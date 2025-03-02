@@ -16,4 +16,5 @@ class TIMED_SURVIVAL_API ATSARBulletItem : public ATSBaseBulletItem
 public:
 	ATSARBulletItem();
 
+	virtual void ActivateItem(AActor* Activator) override;
 };

@@ -11,7 +11,7 @@ ATSMineItem::ATSMineItem()
 	TriggerRadius = 50.0f; // 트리거 영역 반지름
     ExplosionAIDamage = 30.0f;
     ExplosionPlayerDamage = 10.0f;
-    ItemType = "Mine";
+    ItemType = FName(TEXT("Mine"));
     bHasExploded = false;
     
     // 기존 ExplosionCollision: 폭발 피해 범위로 사용
