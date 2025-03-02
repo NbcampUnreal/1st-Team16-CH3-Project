@@ -191,6 +191,7 @@ void ATSGameState::UpdateHUD()
 	}
 
 }
+// 2] Popup HUD
 
 void ATSGameState::PickWidgetbyItemType(FName ItemType)
 {
@@ -221,7 +222,7 @@ void ATSGameState::PickWidgetbyItemType(FName ItemType)
 }
 
 TMap<FName, FTimerHandle> WidgetTimer;
-// 2] Popup HUD
+
 void ATSGameState::PopUpWidget(FName ItemType, UUserWidget* ItemWidget, float ViewTime)
 {
 	if (!ItemWidget) return;

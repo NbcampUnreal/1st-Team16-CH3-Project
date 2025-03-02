@@ -19,6 +19,8 @@ public:
 	ATSBigHealingItem();
 
 
+protected:
+	
 	// 아이템 활성화 시
 	virtual void ActivateItem(AActor* Activator) override;
 };
