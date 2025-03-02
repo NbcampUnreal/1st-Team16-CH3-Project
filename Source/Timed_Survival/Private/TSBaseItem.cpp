@@ -27,12 +27,12 @@ ATSBaseItem::ATSBaseItem()
 	// 스태틱 메쉬 컴포넌트
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(Scene);
-	// 기본적으로 테두리 비활성화
-	StaticMesh->SetRenderCustomDepth(false);
-	StaticMesh->SetCustomDepthStencilValue(CustomDepthValue);
 	// 스태틱 메시의 충돌 감지 완전 비활성화
 	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	StaticMesh->SetGenerateOverlapEvents(false);
+	// 기본적으로 테두리 비활성화
+	StaticMesh->SetRenderCustomDepth(false);
+	StaticMesh->SetCustomDepthStencilValue(CustomDepthValue);
 
 	// 테두리 활성화를 위한 감지용 SphereComponent
 	OutlineTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("OutlineTrigger"));
@@ -44,6 +44,7 @@ ATSBaseItem::ATSBaseItem()
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATSBaseItem::OnItemOverlap);
 	OutlineTrigger->OnComponentBeginOverlap.AddDynamic(this, &ATSBaseItem::OnOutlineTriggerOverlap);
 	OutlineTrigger->OnComponentEndOverlap.AddDynamic(this, &ATSBaseItem::OnOutlineTriggerEndOverlap);
+
 }
 
 void ATSBaseItem::BeginPlay()
@@ -64,7 +65,7 @@ void ATSBaseItem::OnOutlineTriggerOverlap(
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	if (OtherActor && OtherActor->ActorHasTag("Player"))
+	if (OtherActor && OtherActor->ActorHasTag("Player") && bEnableOutline)
 	{
 		StaticMesh->SetRenderCustomDepth(true);
 	}
@@ -77,13 +78,14 @@ void ATSBaseItem::OnOutlineTriggerEndOverlap(
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	if (OtherActor && OtherActor->ActorHasTag("Player"))
+	if (OtherActor && OtherActor->ActorHasTag("Player") && bEnableOutline)
 	{
 		StaticMesh->SetRenderCustomDepth(false);
 	}
 }
 
 //--------------------------------------------------------------------
+
 
 // 아이템과 겹쳐질 때 호출되는 함수 (ex.획득)
 void ATSBaseItem::OnItemOverlap(
@@ -109,7 +111,7 @@ void ATSBaseItem::OnItemEndOverlap(
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-		
+
 }
 
 // --------------------------------------------------------------------
@@ -174,6 +176,7 @@ void ATSBaseItem::DestroyItem()
 // 아이템 타입 반환 함수
 FName ATSBaseItem::GetItemType() const
 {
+
 	if (ItemType.IsNone())
 	{
 		return WeaponType;
@@ -182,5 +185,6 @@ FName ATSBaseItem::GetItemType() const
 	{
 		return ItemType;
 	}
-	return ItemType;  // 기본적으로 ItemType을 반환
+	return ItemType;
 }
+
