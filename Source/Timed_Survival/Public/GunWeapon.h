@@ -45,6 +45,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void Reload();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	bool CanReload() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void FinishReload();

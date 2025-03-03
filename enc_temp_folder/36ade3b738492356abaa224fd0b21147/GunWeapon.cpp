@@ -77,9 +77,6 @@ void AGunWeapon::FireBullet()
 	UE_LOG(LogTemp, Warning, TEXT(" FireBullet(): 총알 스폰 시도! 위치: %s, 회전: %s"),
 		*SpawnLocation.ToString(), *SpawnRotation.ToString());
 
-	DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (SpawnRotation.Vector() * 1000.0f),
-		FColor::Red, false, 10.0f, 0, 3.0f);
-
 	//  총알 스폰
 	AActor* Bullet = GetWorld()->SpawnActor<AActor>(BulletClass, SpawnLocation, SpawnRotation);
 	if (!Bullet)
