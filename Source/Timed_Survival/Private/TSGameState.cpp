@@ -126,7 +126,7 @@ void ATSGameState::EnterShelter() // 셸터 다음 레벨로 넘겨주냐 엔딩
 				if (ClearLevelNum != (Maplist.Num() - 1))
 				{
 					CurrentMapNum++;
-					//TSPlayerController->ShowShelterMenu();										
+					TSPlayerController->ShowShelterMenu();										
 					if (Maplist.IsValidIndex(CurrentMapNum))
 					{
 						OpenNextLevel();

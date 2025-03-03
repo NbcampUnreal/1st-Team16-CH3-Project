@@ -25,6 +25,8 @@ ATSPlayerController::ATSPlayerController()
 	GameOverWidgetInstance(nullptr),
 	ClearScoreWidgetClass(nullptr),
 	ClearScoreWidgetInstance(nullptr),
+	ShelterMenuWidgetClass(nullptr),
+	ShelterMenuWidgetInstance(nullptr),
 	OpeningWidgetClass(nullptr),
 	OpeningWidgetInstance(nullptr)
 {
@@ -193,10 +195,27 @@ void ATSPlayerController::ShowClearScore()
 		}
 	}
 }
+void ATSPlayerController::ShowShelterMenu()
+{
+	ClearWidget();
+
+	if (ShelterMenuWidgetClass)
+	{
+		ShelterMenuWidgetInstance = CreateWidget<UUserWidget>(this, ShelterMenuWidgetClass);
+		if (ShelterMenuWidgetInstance)
+		{
+			ShelterMenuWidgetInstance->AddToViewport();
+
+			bShowMouseCursor = true;
+			SetInputMode(FInputModeUIOnly());
+		}
+	}
+}
 
 void ATSPlayerController::QuitGame()
 {
-
+	ATSPlayerController* TSPlayerController;
+	UKismetSystemLibrary::QuitGame(GetWorld(), TSPlayerController, EQuitPreference::Quit, false);	
 }
 
 void ATSPlayerController::ClearWidget() // Clear All Widget except HUD
@@ -223,5 +242,11 @@ void ATSPlayerController::ClearWidget() // Clear All Widget except HUD
 	{
 		ClearScoreWidgetInstance->RemoveFromParent();
 		ClearScoreWidgetInstance= nullptr;
+	}
+
+	if (ShelterMenuWidgetInstance)
+	{
+		ShelterMenuWidgetInstance->RemoveFromParent();
+		ShelterMenuWidgetInstance = nullptr;
 	}
 }
