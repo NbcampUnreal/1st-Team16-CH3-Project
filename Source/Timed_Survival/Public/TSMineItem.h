@@ -70,4 +70,6 @@ protected:
 
     // 폭발 처리 함수
     void Explode();
+
+    virtual void ActivateItem(AActor* Activator) override;
 };

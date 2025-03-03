@@ -8,12 +8,13 @@ ATSMineItem::ATSMineItem()
 {
     // 폭발 데미지 관련 초기화
     ExplosionRadius = 300.0f; // 폭발 피해 적용 범위
-	TriggerRadius = 50.0f; // 트리거 영역 반지름
+    TriggerRadius = 50.0f; // 트리거 영역 반지름
     ExplosionAIDamage = 30.0f;
     ExplosionPlayerDamage = 10.0f;
     ItemType = "Mine";
     bHasExploded = false;
-    
+    bEnableOutline = false; // 아웃라인 표시 안함
+
     // 기존 ExplosionCollision: 폭발 피해 범위로 사용
     ExplosionCollision = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionCollision"));
     ExplosionCollision->InitSphereRadius(ExplosionRadius);
@@ -97,7 +98,7 @@ void ATSMineItem::Explode()
         }
         // AI의 경우, ApplyDamage를 통해 피해 적용 --- (AI상호작용 확인 필요)
         else if (Actor->ActorHasTag("MoveCharacter"))
-        {            
+        {
             UGameplayStatics::ApplyDamage(
                 Actor,
                 ExplosionAIDamage,
@@ -110,4 +111,9 @@ void ATSMineItem::Explode()
 
     // 폭발 후 지뢰 아이템 제거
     Destroy();
+}
+
+void ATSMineItem::ActivateItem(AActor* Activator)
+{
+    Super::ActivateItem(Activator);
 }

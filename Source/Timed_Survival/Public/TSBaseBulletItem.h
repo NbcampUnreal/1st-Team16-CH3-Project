@@ -23,8 +23,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bullet")
 	int32 BulletAmount;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet")
-	FName WeaponType; 
+	/*UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet")
+	FName WeaponType; */
 
 
 	virtual void ActivateItem(AActor* Activator) override;
