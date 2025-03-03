@@ -71,7 +71,7 @@ public:
 	UUserWidget* ClearScoreWidgetInstance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Score")
-	TSubclassOf<UUserWidget> ShelterMenuWidgetClass; // Opening
+	TSubclassOf<UUserWidget> ShelterMenuWidgetClass; // ShelterMenuWidget
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
 	UUserWidget* ShelterMenuWidgetInstance;
 
