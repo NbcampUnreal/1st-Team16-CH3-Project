@@ -40,15 +40,15 @@ public:
 	void SubtractHealthOnSecond();
 	
 	//about game flow
-	TArray<FString> Maplist;
+	TArray<FName> Maplist;
 	int32 MapNum;
 	int32 CurrentMapNum;
 	int32 ClearLevelNum;
 	void StartLevel();
 	void OnGameOver();
 	void EndLevel();
-	void EnterMiddleShelter();
-	void NextLevel();
+	void EnterShelter();
+	void OpenNextLevel();
 	
 
 	// SubtractHealthOnSecont함수에서 CurrentHealth가 0으로 떨어지면 Character.cpp에 Death()함수 호출

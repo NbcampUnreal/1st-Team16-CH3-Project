@@ -1,5 +1,6 @@
 #include "TSGameState.h"
 #include "TSGameInstance.h"
+#include "TSBaseItem.h"
 #include "TSCharacter.h"
 #include "TSCharacter2.h"
 #include "TSPlayerController.h"
@@ -11,7 +12,7 @@
 #include "Components/ProgressBar.h"
 #include "Blueprint/UserWidget.h"
 #include "EngineUtils.h"
-#include "TSBaseItem.h"
+
 
 ATSGameState::ATSGameState()
 {	
@@ -110,32 +111,46 @@ void ATSGameState::OnGameOver()
 void ATSGameState::EndLevel() // 스테이지 클리어
 {
 	ClearLevelNum = CurrentMapNum;
-	EnterMiddleShelter();
+	EnterShelter();
 	//Game instance로 저장할 데이터 넘기기
 }
 
-void ATSGameState::EnterMiddleShelter() // 중간 셸터
+void ATSGameState::EnterShelter() // 셸터 다음 레벨로 넘겨주냐 엔딩으로 보내냐
 {
-	// 초기화 되는 거 초기화
-	// 중간에 스코어 표기 되나요?
-	/*if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 	{
 		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
 		{
-			TSPlayerController->ShowShelterMenu();
-		}
-	}*/
-}
+			if (Maplist.Num() > 0)
+			{
+				if (ClearLevelNum != (Maplist.Num() - 1))
+				{
+					CurrentMapNum++;
+					//TSPlayerController->ShowShelterMenu();										
+					if (Maplist.IsValidIndex(CurrentMapNum))
+					{
+						OpenNextLevel();
+					}
+				}
 
-void ATSGameState::NextLevel()
-{
-	if (Maplist.Num() > 0)
-	{
-		if (ClearLevelNum != (Maplist.Num() - 1))
-		{
-			CurrentMapNum++;
+				else
+				{
+					TSPlayerController->ShowClearScore();
+				}
+			}
 		}
 	}
+	// 초기화 되는 거 초기화
+	// 중간에 스코어 표기 되나요?
+	
+}
+
+void ATSGameState::OpenNextLevel()
+{			
+	if (Maplist.IsValidIndex(CurrentMapNum))
+	{
+		UGameplayStatics::OpenLevel(GetWorld(), Maplist[CurrentMapNum]);
+	}		
 }
 
 void ATSGameState::OnHPZero()
