@@ -458,12 +458,6 @@ void ATSCharacter::StopAiming(const FInputActionValue& value)
 	SpringArmComp->SocketOffset = DefaultCameraOffset;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
-
-	// 조준 중 발사할때 조준을 그만해도 발사하는 버그때문에 조준 해제시 발사중이면 StopFire함수 호출
-	if (bFire)
-	{
-		StopFire(value);
-	}
 }
 
 
