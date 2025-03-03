@@ -363,6 +363,17 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 			ReloadTime,
 			false
 		);
+
+		//Gunweapon 함수 호출
+		if (WeaponChildActor)
+		{
+			AActor* ChildActor = WeaponChildActor->GetChildActor();
+			AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
+			if (EquippedWeapon)
+			{
+				EquippedWeapon->Reload();
+			}
+		}
 	}
 }
 
