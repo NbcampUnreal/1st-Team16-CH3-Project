@@ -292,6 +292,12 @@ void ATSCharacter::StartSprint(const FInputActionValue& value)
 {
 	if (!GetCharacterMovement()) return;
 
+	// 조준 중이면 StopAiming으로 조준 해제
+	if (bIsAiming)
+	{
+		StopAiming(value);
+	}
+
 	if (LastMoveInput.X > 0.0f && FMath::IsNearlyZero(LastMoveInput.Y))
 	{
 		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
@@ -329,6 +335,7 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 	{
 		return;
 	}
+
 	UAnimInstance* AnimInstance = Cast<UAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(AnimInstance) == true && IsValid(ReloadAnimation) == true && AnimInstance->Montage_IsPlaying(ReloadAnimation) == false)
 	{
@@ -344,6 +351,17 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 			ReloadTime,
 			false
 		);
+
+		//Gunweapon 함수 호출
+		if (WeaponChildActor)
+		{
+			AActor* ChildActor = WeaponChildActor->GetChildActor();
+			AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
+			if (EquippedWeapon)
+			{
+				EquippedWeapon->Reload();
+			}
+		}
 	}
 }
 
