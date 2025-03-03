@@ -6,5 +6,11 @@
 ATSPistolBulletItem::ATSPistolBulletItem()
 {
 	BulletAmount = 5;
-	WeaponType = FName("Pistol");
+	//ItemType = FName(TEXT("Pistol"));
+	WeaponType = FName(TEXT("Pistol"));
+}
+
+void ATSPistolBulletItem::ActivateItem(AActor* Activator)
+{
+	Super::ActivateItem(Activator);
 }
