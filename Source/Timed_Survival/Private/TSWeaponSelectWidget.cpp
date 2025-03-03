@@ -3,17 +3,17 @@
 #include "TSPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
+#include "UObject/ConstructorHelpers.h"
+#include "GameFramework/Character.h"
 
 
 void UTSWeaponSelectWidget::NativeOnInitialized()
 {
-	Button->OnClicked;	
+	Super::NativeOnInitialized();
 }
 
 void UTSWeaponSelectWidget::SetStartWeapon()
-{	
-	//static ConstructorHelpers::FClassFinder<AActor> M16Character(TEXT("/Game/TSProject/Blueprints/BP_TS_M16_Character"));
-	//static ConstructorHelpers::FClassFinder<AActor> ShotGunCharacter(TEXT("/Game/TSProject/Blueprints/BP_ShotGun_Character"));
+{
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 	{
 		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
@@ -25,9 +25,6 @@ void UTSWeaponSelectWidget::SetStartWeapon()
 					if (TSubclassOf<ACharacter> ShotGunCharacter = LoadClass<ACharacter>(nullptr, TEXT("/Game/TSProject/Blueprints/BP_ShotGun_Character")))
 					{
 						TSGameInstance->SetSelectedCharacter(ShotGunCharacter);
-						RemoveFromParent();
-						TSPlayerController->SetInputMode(FInputModeGameOnly());
-						UGameplayStatics::OpenLevel(GetWorld(),FName(TEXT("AITest"))); //시작 맵 설정 임시
 					}
 				}
 
@@ -36,11 +33,13 @@ void UTSWeaponSelectWidget::SetStartWeapon()
 					if (TSubclassOf<ACharacter> M16Character = LoadClass<ACharacter>(nullptr, TEXT("/Game/TSProject/Blueprints/BP_TS_M16_Character")))
 					{
 						TSGameInstance->SetSelectedCharacter(M16Character);
-						RemoveFromParent();
-						TSPlayerController->SetInputMode(FInputModeGameOnly());
-						UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("AITest"))); //시작 맵 설정 임시
 					}
 				}
+
+				RemoveFromParent();
+				TSPlayerController->SetInputMode(FInputModeGameOnly());
+				UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("AITest"))); //시작 맵 설정 임시
 			}
 		}
 	}
+}

@@ -11,12 +11,13 @@ UCLASS()
 class TIMED_SURVIVAL_API UTSUserWidgetManager : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UButton* Button;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UTextBlock* TextBlock;
 
-	virtual void NativeOnInitialized() =0; //UMG 생성자
-}
+	UFUNCTION()
+	virtual void NativeOnInitialized() override;
+};

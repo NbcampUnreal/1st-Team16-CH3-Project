@@ -9,7 +9,7 @@ class TIMED_SURVIVAL_API UTSWeaponSelectWidget : public UTSUserWidgetManager
 {
 	GENERATED_BODY()
 	
-	virtual void NativeOnInitialized();
+	void NativeOnInitialized();
 
 	UFUNCTION(BlueprintCallable)
 	void SetStartWeapon();
