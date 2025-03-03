@@ -48,6 +48,12 @@ private:
 	// 조준 시 카메라 위치
 	FVector AimCameraOffset;
 
+	// 위를 쳐다볼 수 있는 최대각도 (AO_Up 최대각도)
+	float MaxLookUpAngle = 30.0f;
+
+	// 아래를 쳐다볼 수 있는 최대각도 (AO_Down 최대각도)
+	float MaxLookDownAngle = -30.0f;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArmComp;
@@ -79,7 +85,7 @@ public:
 	bool bFire = false;
 	
 	// 조준 시 적용할 FOV
-	float AimFOV = 60.0f;
+	float AimFOV = 80.0f;
 
 	//Mvoe Speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MovementSpeed")

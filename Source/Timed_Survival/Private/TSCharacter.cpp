@@ -236,7 +236,10 @@ void ATSCharacter::Tick(float DeltaTime)
 
 void ATSCharacter::Move(const FInputActionValue& value)
 {
-	if (!Controller) return;
+	if (!Controller || bFire)
+	{
+		return;
+	}
 	FVector2D MoveInput = value.Get<FVector2D>();
 
 	if (FMath::IsNearlyZero(MoveInput.X) && FMath::IsNearlyZero(MoveInput.Y))
@@ -283,9 +286,18 @@ void ATSCharacter::Look(const FInputActionValue& value)
 {
 	FVector2D LookInput = value.Get<FVector2D>();
 
+	// 현재 컨트롤러 회전값
+	FRotator ControlRotation = Controller->GetControlRotation();
 
-	AddControllerYawInput(LookInput.X);
-	AddControllerPitchInput(LookInput.Y);
+	// IMC에서 IA_Look에 Negate에 Y축 반전을 꺼도됐지만
+	// 보기편하게 C++에 ControlRotation에 Pitch값에 ' - '를 넣어서 축반전을 넣음
+	float NewPitch = ControlRotation.Pitch - LookInput.Y;
+
+	// Pitch 각도를 -30 ~ 30도로 제한
+	NewPitch = FMath::Clamp(NewPitch, MaxLookDownAngle, MaxLookUpAngle);
+
+	// 제한된 Pitch값을 적용하고, Yaw값은 그대로두어 Pitch값에 Max치만 적용함
+	Controller->SetControlRotation(FRotator(NewPitch, ControlRotation.Yaw + LookInput.X, 0.0f));
 }
 
 void ATSCharacter::StartSprint(const FInputActionValue& value)
@@ -367,10 +379,9 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 
 void ATSCharacter::StartFire(const FInputActionValue& value)
 {
-	if (GetCharacterMovement()->IsFalling()) // 점프 중에는 발사 금지
-	{
-		return;
-	}
+	// 점프나 조준중이 아니면 발사 금지
+	if (GetCharacterMovement()->IsFalling() || !bIsAiming) return;
+
 
 	if (GetCharacterMovement())
 	{
@@ -447,8 +458,8 @@ void ATSCharacter::StartAiming(const FInputActionValue& value)
 
 	bIsAiming = true;
 	CameraComp->SetFieldOfView(AimFOV);
-	SpringArmComp->SocketOffset = FVector(260, -40, -54);
-	SpringArmComp->SetRelativeRotation(FRotator(0, -4, 0));
+	SpringArmComp->SocketOffset = FVector(180, -10, -35);
+	SpringArmComp->SetRelativeRotation(FRotator(-5, 6, 0));
 }
 
 void ATSCharacter::StopAiming(const FInputActionValue& value)
@@ -458,6 +469,12 @@ void ATSCharacter::StopAiming(const FInputActionValue& value)
 	SpringArmComp->SocketOffset = DefaultCameraOffset;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+
+	// 조준 중 발사할때 조준을 그만해도 발사하는 버그때문에 조준 해제시 발사중이면 StopFire함수 호출
+	if (bFire)
+	{
+		StopFire(value);
+	}
 }
 
 

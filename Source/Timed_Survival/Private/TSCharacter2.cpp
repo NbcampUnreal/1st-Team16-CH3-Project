@@ -174,6 +174,9 @@ void ATSCharacter2::BeginPlay()
 	// 기본적으로 장전하는 애니메이션이 안나오도록 false로 설정
 	bIsReloading = false;
 
+	DefaultFOV = CameraComp->FieldOfView;
+	DefaultCameraOffset = SpringArmComp->SocketOffset; // 카메라 컴포넌트 기본 위치를 저장한다.
+
 	MaxShotGunBullet = 2;
 	CurrentShotGunBullet = MaxShotGunBullet;
 
@@ -185,9 +188,6 @@ void ATSCharacter2::BeginPlay()
 	{
 		CurrentShotGunBullet = 2;
 	}
-
-	DefaultFOV = CameraComp->FieldOfView;
-	DefaultCameraOffset = SpringArmComp->SocketOffset; // 카메라 컴포넌트 기본 위치를 저장한다.
 
 	//테스트
 
@@ -292,9 +292,18 @@ void ATSCharacter2::Look(const FInputActionValue& value)
 {
 	FVector2D LookInput = value.Get<FVector2D>();
 
+	// 현재 컨트롤러 회전값
+	FRotator ControlRotation = Controller->GetControlRotation();
 
-	AddControllerYawInput(LookInput.X);
-	AddControllerPitchInput(LookInput.Y);
+	// IMC에서 IA_Look에 Negate에 Y축 반전을 꺼도됐지만
+	// 보기편하게 C++에 ControlRotation에 Pitch값에 ' - '를 넣어서 축반전을 넣음
+	float NewPitch = ControlRotation.Pitch - LookInput.Y;
+
+	// Pitch 각도를 -30 ~ 40도로 제한
+	NewPitch = FMath::Clamp(NewPitch, MaxLookDownAngle, MaxLookUpAngle);
+
+	// 제한된 Pitch값을 적용하고, Yaw값은 그대로두어 Pitch값에 Max치만 적용함
+	Controller->SetControlRotation(FRotator(NewPitch, ControlRotation.Yaw + LookInput.X, 0.0f));
 }
 
 void ATSCharacter2::StartSprint(const FInputActionValue& value)
@@ -371,7 +380,7 @@ void ATSCharacter2::Reload(const FInputActionValue& value)
 
 void ATSCharacter2::Fire(const FInputActionValue& value)
 {
-	if (GetCharacterMovement()->IsFalling()) // 점프 중에는 발사 금지
+	if (GetCharacterMovement()->IsFalling() || !bIsAiming) // 점프나 조준중이 아니면 발사 금지
 	{
 		return;
 	}
@@ -434,9 +443,10 @@ void ATSCharacter2::StartAiming(const FInputActionValue& value)
 
 	bIsAiming = true;
 	CameraComp->SetFieldOfView(AimFOV);
-	SpringArmComp->SocketOffset = FVector(260, -40, -54);
-	SpringArmComp->SetRelativeRotation(FRotator(0, -4, 0));
+	SpringArmComp->SocketOffset = FVector(180, -15, 0);
+	SpringArmComp->SetRelativeRotation(FRotator(-5, 6, 0));
 }
+
 
 void ATSCharacter2::StopAiming(const FInputActionValue& value)
 {
