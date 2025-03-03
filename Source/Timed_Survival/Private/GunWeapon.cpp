@@ -6,6 +6,8 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "TSCharacter.h"
+#include "Camera/CameraComponent.h"
+
 
 AGunWeapon::AGunWeapon()
 {
@@ -69,24 +71,67 @@ void AGunWeapon::FireBullet()
 	BulletCount--;
 	UE_LOG(LogTemp, Warning, TEXT(" FireBullet(): 탄약 감소 - 현재 남은 탄약: %d"), BulletCount);
 
+	UWorld* World = this->GetWorld();
+	if (!World)
+	{
+		UE_LOG(LogTemp, Error, TEXT("FireBullet(): GetWorld()를 찾을 수 없습니다!"));
+		return;
+	}
+
 	//  총알 스폰 위치 및 회전값 설정
-	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.f;
-	FRotator SpawnRotation = GetActorRotation();
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	FVector ShotDirection = FVector::ZeroVector;
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+	if (PlayerController)
+	{
+		PlayerController->GetPlayerViewPoint(CameraLocation, CameraRotation);
+		ShotDirection = CameraRotation.Vector();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("FireBullet(): 플레이어 컨트롤러를 찾을 수 없습니다! 기본값 사용."));
+
+		AActor* OwnerActor = GetOwner();
+		if (OwnerActor)
+		{
+			CameraLocation = OwnerActor->GetActorLocation();
+			CameraRotation = OwnerActor->GetActorRotation();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("FireBullet(): GetOwner()가 NULL입니다! 기본 위치 사용."));
+			CameraLocation = FVector::ZeroVector;
+			CameraRotation = FRotator::ZeroRotator;
+		}
+
+		ShotDirection = CameraRotation.Vector();
+	}
+
+
+	FVector SpawnLocation = GetActorLocation() + (ShotDirection * 50.f);
 
 	//  스폰 시도 로그
-	UE_LOG(LogTemp, Warning, TEXT(" FireBullet(): 총알 스폰 시도! 위치: %s, 회전: %s"),
-		*SpawnLocation.ToString(), *SpawnRotation.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("FireBullet(): 총알 스폰 위치: %s, 방향: %s"),
+		*SpawnLocation.ToString(), *ShotDirection.ToString());
 
-	DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (SpawnRotation.Vector() * 1000.0f),
-		FColor::Red, false, 10.0f, 0, 3.0f);
+	DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (ShotDirection * 1000.0f),
+		FColor::Red, false, 1.0f, 0, 3.0f);
 
 	//  총알 스폰
-	AActor* Bullet = GetWorld()->SpawnActor<AActor>(BulletClass, SpawnLocation, SpawnRotation);
+	AActor* Bullet = GetWorld()->SpawnActor<AActor>(BulletClass, SpawnLocation, CameraRotation);
 	if (!Bullet)
 	{
 		UE_LOG(LogTemp, Error, TEXT(" FireBullet(): 총알 스폰 실패! BulletClass: %s, 위치: %s, 회전: %s"),
-			*BulletClass->GetName(), *SpawnLocation.ToString(), *SpawnRotation.ToString());
+			*BulletClass->GetName(), *SpawnLocation.ToString(), *CameraRotation.ToString());
 		return;
+	}
+
+	UProjectileMovementComponent* ProjectileComp = Bullet->FindComponentByClass<UProjectileMovementComponent>();
+	if (ProjectileComp)
+	{
+		ProjectileComp->Velocity = ShotDirection * ProjectileComp->InitialSpeed;
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("FireBullet(): 총알 스폰 성공! %s"), *Bullet->GetName());
