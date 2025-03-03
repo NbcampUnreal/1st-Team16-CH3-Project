@@ -302,6 +302,12 @@ void ATSCharacter2::StartSprint(const FInputActionValue& value)
 	// 재장전 중이면 Sprint 불가하게 만듬
 	if (!GetCharacterMovement() || bIsReloading) return;
 
+	// 조준 중이면 StopAiming으로 조준 해제
+	if (bIsAiming)
+	{
+		StopAiming(value);
+	}
+
 	if (LastMoveInput.X > 0.0f && FMath::IsNearlyZero(LastMoveInput.Y))
 	{
 		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
@@ -316,7 +322,8 @@ void ATSCharacter2::StopSprint(const FInputActionValue& value)
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
 
-	if (!bIsReloading)
+	// 조준과 장전중이 아니면 기본 속도로 돌아간다.
+	if (!bIsReloading && !bIsAiming) 
 	{
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
@@ -400,12 +407,12 @@ void ATSCharacter2::Fire(const FInputActionValue& value)
 			}
 		}
 
-		// 0.2초 후 다시 발사 가능하도록 설정
+		// 총쏘는 애니메이션 0.3초 설정 -> 1초로하면 왼손이 재장전하는데 샷건 재장전 메쉬를 움직일수가없음
 		GetWorld()->GetTimerManager().SetTimer(
 			ShotgunCooldownTimerHandle,
 			this,
 			&ATSCharacter2::ResetFireState,
-			0.2f,
+			0.3f,
 			false
 		);
 	}
