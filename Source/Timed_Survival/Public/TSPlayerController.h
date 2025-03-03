@@ -43,6 +43,8 @@ public:
 	UInputAction* AimingAction;
 
 	// about UI Function
+	FString CurrentMapName;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
 	TSubclassOf<UUserWidget> HUDWidgetClass; //HUD
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")

@@ -45,21 +45,13 @@ void ATSPlayerController::BeginPlay()
 	}
 
 	//UI
-	if (HUDWidgetClass)
+	CurrentMapName = GetWorld()->GetMapName();
+	if (CurrentMapName.Contains("MainMenuLevel"))
 	{
-		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
-		if (HUDWidgetInstance)
-		{
-			HUDWidgetInstance->AddToViewport();
-		}
-	}
-
-	ATSGameState* TSGameState = GetWorld() ? GetWorld()->GetGameState<ATSGameState>() : nullptr;
-	if (TSGameState)
-	{
-		TSGameState->UpdateHUD();
+		ShowMainMenu();
 	}
 }
+
 
 UUserWidget* ATSPlayerController::GetHUDWidget() const
 {
@@ -147,7 +139,7 @@ void ATSPlayerController::ShowWeaponSelect()
 		HUDWidgetInstance = nullptr;
 	}
 
-	ClearWidget();
+	//ClearWidget();
 
 	if (WeaponSelectWidgetClass)
 	{
