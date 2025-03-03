@@ -45,6 +45,9 @@ public:
 	// about UI Function
 	FString CurrentMapName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputMappingContext* WidgetInputMappingContext; //UI IMC
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
 	TSubclassOf<UUserWidget> HUDWidgetClass; //HUD
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")
@@ -83,6 +86,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "HUD")
 	UUserWidget* GetHUDWidget() const;
+
+	void ChangeToWidgetIMC();
+	void ChangeToIMC();
 
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void StartGame();

@@ -62,6 +62,8 @@ UUserWidget* ATSPlayerController::GetHUDWidget() const
 
 void ATSPlayerController::StartGame()
 {
+	ChangeToIMC();
+
 	if (UTSGameInstance* TSGameInstance = Cast<UTSGameInstance>(UGameplayStatics::GetGameInstance(this)))
 	{
 		TSGameInstance->TotalHealingCount = 0;
@@ -119,6 +121,7 @@ void ATSPlayerController::ShowMainMenu()
 	}
 
 	ClearWidget();
+	ChangeToWidgetIMC();
 
 	if (MainMenuWidgetClass)
 	{
@@ -142,6 +145,7 @@ void ATSPlayerController::ShowWeaponSelect()
 	}
 
 	//ClearWidget();
+	ChangeToWidgetIMC();
 
 	if (WeaponSelectWidgetClass)
 	{
@@ -159,6 +163,7 @@ void ATSPlayerController::ShowWeaponSelect()
 void ATSPlayerController::ShowGameOver()
 {
 	ClearWidget();
+	ChangeToWidgetIMC();
 
 	if (GameOverWidgetClass)
 	{
@@ -182,6 +187,7 @@ void ATSPlayerController::ShowClearScore()
 	}
 
 	ClearWidget();
+	ChangeToWidgetIMC();
 
 	if (ClearScoreWidgetClass)
 	{
@@ -198,6 +204,7 @@ void ATSPlayerController::ShowClearScore()
 void ATSPlayerController::ShowShelterMenu()
 {
 	ClearWidget();
+	ChangeToWidgetIMC();
 
 	if (ShelterMenuWidgetClass)
 	{
@@ -253,5 +260,41 @@ void ATSPlayerController::ClearWidget() // Clear All Widget except HUD
 	{
 		ShelterMenuWidgetInstance->RemoveFromParent();
 		ShelterMenuWidgetInstance = nullptr;
+	}
+}
+
+void ATSPlayerController::ChangeToWidgetIMC()
+{
+	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (InputMappingContext)
+			{
+				Subsystem->RemoveMappingContext(InputMappingContext);
+				Subsystem->AddMappingContext(WidgetInputMappingContext, 1);
+			}
+
+			bShowMouseCursor = true;
+			SetInputMode(FInputModeUIOnly());
+		}
+	}
+}
+
+void ATSPlayerController::ChangeToIMC()
+{
+	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (WidgetInputMappingContext)
+			{
+				Subsystem->RemoveMappingContext(WidgetInputMappingContext);
+				Subsystem->AddMappingContext(InputMappingContext, 0);
+			}
+
+			bShowMouseCursor = false;
+			SetInputMode(FInputModeGameOnly());
+		}
 	}
 }
