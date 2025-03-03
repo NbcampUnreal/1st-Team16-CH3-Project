@@ -28,6 +28,9 @@ ATSGameState::ATSGameState()
 
 	SetMaskEffectTime = 0.0f;
 	MaskTimeRemaining = 0.0f;
+
+	Maplist.Add("ForestLevel");
+	Maplist.Add("OldHouseLevel");
 }
 
 void ATSGameState::BeginPlay()
@@ -50,16 +53,36 @@ void ATSGameState::BeginPlay()
 		0.1f, true);	
 }
 
+
+
 //about Game flow
 void ATSGameState::StartLevel()
 {
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
+		{
+			TSPlayerController->ShowHUD();
+		}
+	}
+
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UTSGameInstance* TSGameInstance = Cast<UTSGameInstance>(GameInstance);
+		if (TSGameInstance)
+		{
+
+		}
+	}
+	//아이템 초기화 될 것들 변수 넣어야함
+	//아이템 스포너 넣어야함
+
 	GetWorldTimerManager().SetTimer( // Subtract Time
 		SubtractHealthTimerHandle,
 		this,
 		&ATSGameState::SubtractHealthOnSecond,
 		0.1f,
 		true);
-
 }
 
 void ATSGameState::OnGameOver()
@@ -70,7 +93,7 @@ void ATSGameState::OnGameOver()
 	{
 		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
 		{
-			TSPlayerController->ShowMainMenu();
+			TSPlayerController->ShowGameOver();
 
 			// 죽는 애니메이션이 끝나는 3초 뒤에 SetPause(true)가 실행하도록함.
 			GetWorld()->GetTimerManager().SetTimer(
@@ -83,14 +106,24 @@ void ATSGameState::OnGameOver()
 	}
 }
 
+void ATSGameState::EndLevel() // 스테이지 클리어
+{
+	ClearLevelName = CurrentMapName;
+	EnterMiddleShelter();
+	//Game instance로 저장할 데이터 넘기기
+}
+
+void ATSGameState::EnterMiddleShelter() // 중간 셸터
+{
+	// 초기화 되는 거 초기화
+	if (ClearLevelName == "ForestLevel")
+}
+
 void ATSGameState::NextLevel()
 {
 
 }
-void ATSGameState::EndLevel()
-{
 
-}
 void ATSGameState::OnHPZero()
 {
 	OnGameOver();

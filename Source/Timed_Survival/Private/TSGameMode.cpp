@@ -38,26 +38,34 @@ void ATSGameMode::BeginPlay()
 	{
 		SpawnSelectedCharacter();
 	}
-	else
+
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 	{
-		// WBP_WeaponSelect UI 표시
-		if (WeaponSelectWidgetClass)
+		ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController);
 		{
-			WeaponSelectWidget = CreateWidget<UUserWidget>(GetWorld(), WeaponSelectWidgetClass);
-			if (WeaponSelectWidget)
-			{
-				WeaponSelectWidget->AddToViewport();
-				APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-				if (PlayerController)
-				{
-					PlayerController->bShowMouseCursor = true;
-					FInputModeUIOnly InputModeData;
-					InputModeData.SetWidgetToFocus(WeaponSelectWidget->TakeWidget());
-					PlayerController->SetInputMode(InputModeData);
-				}
-			}
+			TSPlayerController->ShowHUD();
 		}
 	}
+	//else
+	//{
+	//	// WBP_WeaponSelect UI 표시
+	//	if (WeaponSelectWidgetClass)
+	//	{
+	//		WeaponSelectWidget = CreateWidget<UUserWidget>(GetWorld(), WeaponSelectWidgetClass);
+	//		if (WeaponSelectWidget)
+	//		{
+	//			WeaponSelectWidget->AddToViewport();
+	//			APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//			if (PlayerController)
+	//			{
+	//				PlayerController->bShowMouseCursor = true;
+	//				FInputModeUIOnly InputModeData;
+	//				InputModeData.SetWidgetToFocus(WeaponSelectWidget->TakeWidget());
+	//				PlayerController->SetInputMode(InputModeData);
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 
