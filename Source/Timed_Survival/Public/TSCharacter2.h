@@ -82,7 +82,9 @@ public:
 	// 장전하는 애니메이션 계속 안나오게하는 bool변수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	bool bIsReloading = false;
-	// 전체 총알
+
+
+	// 최대 총알
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotGun")
 	int32 MaxShotGunBullet = 2;
 	// 현재 총알
@@ -173,8 +175,4 @@ public:
 	// 캐릭터 애니메이션 블루프린트사용하기위해 현재 총알수를 반환하는 함수
 	UFUNCTION(BlueprintCallable, Category = "Animation")
 	int32 GetCurrentShotGunBullet() const;
-
-	// 장전중에는 캐릭터 멈춤
-	void ReloadStopSpeed();
-
 };
