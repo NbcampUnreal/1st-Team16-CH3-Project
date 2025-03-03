@@ -214,8 +214,13 @@ void ATSPlayerController::ShowShelterMenu()
 
 void ATSPlayerController::QuitGame()
 {
-	ATSPlayerController* TSPlayerController;
-	UKismetSystemLibrary::QuitGame(GetWorld(), TSPlayerController, EQuitPreference::Quit, false);	
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
+		{
+			UKismetSystemLibrary::QuitGame(GetWorld(), TSPlayerController, EQuitPreference::Quit, false);
+		}
+	}
 }
 
 void ATSPlayerController::ClearWidget() // Clear All Widget except HUD

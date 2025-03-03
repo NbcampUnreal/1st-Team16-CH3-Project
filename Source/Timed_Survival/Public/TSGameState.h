@@ -46,6 +46,7 @@ public:
 	int32 ClearLevelNum;
 	void StartLevel();
 	void OnGameOver();
+	UFUNCTION(BlueprintCallable, Category = "Level")
 	void EndLevel();
 	void EnterShelter();
 	void OpenNextLevel();
