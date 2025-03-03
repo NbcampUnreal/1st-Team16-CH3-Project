@@ -41,8 +41,9 @@ public:
 	
 	//about game flow
 	TArray<FString> Maplist;
-	FString CurrentMapName;
-	FString ClearLevelName;
+	int32 MapNum;
+	int32 CurrentMapNum;
+	int32 ClearLevelNum;
 	void StartLevel();
 	void OnGameOver();
 	void EndLevel();

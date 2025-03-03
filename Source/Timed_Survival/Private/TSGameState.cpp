@@ -29,8 +29,9 @@ ATSGameState::ATSGameState()
 	SetMaskEffectTime = 0.0f;
 	MaskTimeRemaining = 0.0f;
 
-	Maplist.Add("ForestLevel");
-	Maplist.Add("OldHouseLevel");
+	MapNum = 0;
+	Maplist.Add(TEXT("ForestLevel")); // MapNumber 0
+	Maplist.Add(TEXT("OldHouseLevel")); // MapNumber 1
 }
 
 void ATSGameState::BeginPlay()
@@ -108,7 +109,7 @@ void ATSGameState::OnGameOver()
 
 void ATSGameState::EndLevel() // 스테이지 클리어
 {
-	ClearLevelName = CurrentMapName;
+	ClearLevelNum = CurrentMapNum;
 	EnterMiddleShelter();
 	//Game instance로 저장할 데이터 넘기기
 }
@@ -116,12 +117,25 @@ void ATSGameState::EndLevel() // 스테이지 클리어
 void ATSGameState::EnterMiddleShelter() // 중간 셸터
 {
 	// 초기화 되는 거 초기화
-	if (ClearLevelName == "ForestLevel")
+	// 중간에 스코어 표기 되나요?
+	/*if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
+		{
+			TSPlayerController->ShowShelterMenu();
+		}
+	}*/
 }
 
 void ATSGameState::NextLevel()
 {
-
+	if (Maplist.Num() > 0)
+	{
+		if (ClearLevelNum != (Maplist.Num() - 1))
+		{
+			CurrentMapNum++;
+		}
+	}
 }
 
 void ATSGameState::OnHPZero()
