@@ -302,6 +302,12 @@ void ATSCharacter2::StartSprint(const FInputActionValue& value)
 	// 재장전 중이면 Sprint 불가하게 만듬
 	if (!GetCharacterMovement() || bIsReloading) return;
 
+	// 조준 중이면 StopAiming으로 조준 해제
+	if (bIsAiming)
+	{
+		StopAiming(value);
+	}
+
 	if (LastMoveInput.X > 0.0f && FMath::IsNearlyZero(LastMoveInput.Y))
 	{
 		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
@@ -316,7 +322,8 @@ void ATSCharacter2::StopSprint(const FInputActionValue& value)
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
 
-	if (!bIsReloading)
+	// 조준과 장전중이 아니면 기본 속도로 돌아간다.
+	if (!bIsReloading && !bIsAiming) 
 	{
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
