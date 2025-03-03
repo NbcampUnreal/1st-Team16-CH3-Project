@@ -107,7 +107,7 @@ void AGunWeapon::FireBullet()
 		ShotDirection = CameraRotation.Vector();
 	}
 
-	FVector SpawnLocation = CameraLocation + (ShotDirection * 30.0f);
+	FVector SpawnLocation = GetActorLocation() + (ShotDirection * 50.f);
 
 
 	DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (ShotDirection * 1000.0f),
@@ -121,7 +121,7 @@ void AGunWeapon::FireBullet()
 		return;
 	}
 
-	Bullet->SetOwner(GetOwner());
+	
 
 	UProjectileMovementComponent* ProjectileComp = Bullet->FindComponentByClass<UProjectileMovementComponent>();
 	if (ProjectileComp)

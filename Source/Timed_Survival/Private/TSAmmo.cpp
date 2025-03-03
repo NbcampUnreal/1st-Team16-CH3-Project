@@ -13,8 +13,9 @@ ATSAmmo::ATSAmmo()
     CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
     CollisionComponent->InitSphereRadius(5.0f);
     CollisionComponent->SetCollisionProfileName(TEXT("Projectile"));
-    CollisionComponent->SetNotifyRigidBodyCollision(true);
-    CollisionComponent->OnComponentHit.AddDynamic(this, &ATSAmmo::HandleHit);
+    CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    CollisionComponent->SetGenerateOverlapEvents(true);
+    CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ATSAmmo::OnOverlap);
     RootComponent = CollisionComponent;
 
     
@@ -44,48 +45,31 @@ void ATSAmmo::Tick(float DeltaTime)
 
 }
 
-void ATSAmmo::HandleHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
-    UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ATSAmmo::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+    bool bFromSweep, const FHitResult& SweepResult)
 {
-    UE_LOG(LogTemp, Warning, TEXT("HandleHit() 호출됨 - 충돌한 대상: %s"), *OtherActor->GetName());
-
     if (!OtherActor || OtherActor == this || OtherActor == GetOwner())
     {
-        UE_LOG(LogTemp, Warning, TEXT(" HandleHit()가 올바르게 실행되지 않음!"));
+        UE_LOG(LogTemp, Warning, TEXT("OnOverlap(): 충돌한 대상이 없음 또는 자기 자신."));
         return;
     }
 
-    UE_LOG(LogTemp, Warning, TEXT(" 총알이 %s 에 충돌!"), *OtherActor->GetName());
+    UE_LOG(LogTemp, Warning, TEXT("총알이 %s 와(과) 오버랩!"), *OtherActor->GetName());
 
     if (ImpactEffect)
     {
-        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.Location, FRotator::ZeroRotator);
+        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, SweepResult.Location, FRotator::ZeroRotator);
     }
 
     //  데미지 적용
-    AController* InstigatorController = nullptr;
-
-    if (GetOwner())
-    {
-        APawn* InstigatorPawn = Cast<APawn>(GetOwner());
-        if (InstigatorPawn)
-        {
-            InstigatorController = InstigatorPawn->GetController();
-        }
-    }
-    if (!InstigatorController)
-    {
-        UE_LOG(LogTemp, Error, TEXT("HandleHit(): InstigatorController가 NULL입니다! 데미지를 적용할 수 없습니다."));
-        return;
-    }
-
+ 
     float AppliedDamage = Damage;
-    FVector ShotDirection = GetVelocity().GetSafeNormal();
-    UE_LOG(LogTemp, Warning, TEXT("HandleHit() :적용된 데미지: %f"), AppliedDamage);
+    UGameplayStatics::ApplyDamage(OtherActor, AppliedDamage, nullptr, this, UDamageType::StaticClass());
 
-    UGameplayStatics::ApplyDamage(OtherActor, AppliedDamage, GetInstigatorController(), this, UDamageType::StaticClass());
 
-    UE_LOG(LogTemp, Warning, TEXT("총알이 충돌 후 삭제됩니다."));
+    //  총알 삭제
+    UE_LOG(LogTemp, Warning, TEXT("총알이 오버랩 후 삭제됩니다."));
     Destroy();
 }
 

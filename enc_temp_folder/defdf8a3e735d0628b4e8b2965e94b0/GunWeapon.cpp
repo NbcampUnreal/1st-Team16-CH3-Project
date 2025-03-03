@@ -107,7 +107,7 @@ void AGunWeapon::FireBullet()
 		ShotDirection = CameraRotation.Vector();
 	}
 
-	FVector SpawnLocation = CameraLocation + (ShotDirection * 30.0f);
+	FVector SpawnLocation = GetActorLocation() + (ShotDirection * 50.f);
 
 
 	DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (ShotDirection * 1000.0f),
@@ -121,7 +121,17 @@ void AGunWeapon::FireBullet()
 		return;
 	}
 
-	Bullet->SetOwner(GetOwner());
+	AActor* GunOwner = GetOwner();
+	APawn* GunOwnerPawn = Cast<APawn>(GunOwner);
+
+	if (GunOwnerPawn)
+	{
+		Bullet->SetOwner(GunOwnerPawn);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("FireBullet(): GunWeapon의 Owner가 Pawn이 아닙니다!"));
+	}
 
 	UProjectileMovementComponent* ProjectileComp = Bullet->FindComponentByClass<UProjectileMovementComponent>();
 	if (ProjectileComp)
