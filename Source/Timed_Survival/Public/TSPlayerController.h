@@ -43,6 +43,11 @@ public:
 	UInputAction* AimingAction;
 
 	// about UI Function
+	FString CurrentMapName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputMappingContext* WidgetInputMappingContext; //UI IMC
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
 	TSubclassOf<UUserWidget> HUDWidgetClass; //HUD
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")
@@ -58,15 +63,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Menu")
 	UUserWidget* WeaponSelectWidgetInstance;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Menu")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Score")
 	TSubclassOf<UUserWidget> GameOverWidgetClass; //Game Over Menu
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Menu")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
 	UUserWidget* GameOverWidgetInstance;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Menu")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Score")
 	TSubclassOf<UUserWidget> ClearScoreWidgetClass; // ClearScore Menu
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Menu")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
 	UUserWidget* ClearScoreWidgetInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Score")
+	TSubclassOf<UUserWidget> ShelterMenuWidgetClass; // ShelterMenuWidget
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
+	UUserWidget* ShelterMenuWidgetInstance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Opening")
 	TSubclassOf<UUserWidget> OpeningWidgetClass; // Opening
@@ -76,6 +86,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "HUD")
 	UUserWidget* GetHUDWidget() const;
+
+	void ChangeToWidgetIMC();
+	void ChangeToIMC();
 
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void StartGame();
@@ -87,10 +100,12 @@ public:
 	void ShowMainMenu();
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void ShowWeaponSelect();
-	UFUNCTION(BlueprintCallable, Category = "Menu")
+	UFUNCTION(BlueprintCallable, Category = "Score")
 	void ShowGameOver();
-	UFUNCTION(BlueprintCallable, Category = "Menu")
+	UFUNCTION(BlueprintCallable, Category = "Score")
 	void ShowClearScore();
+	UFUNCTION(BlueprintCallable, Category = "Score")
+	void ShowShelterMenu();
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void ClearWidget(); // Clear All Widget except HUD
 	UFUNCTION(BlueprintCallable, Category = "Menu")
