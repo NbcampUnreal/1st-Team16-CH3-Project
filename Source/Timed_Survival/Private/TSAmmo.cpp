@@ -1,5 +1,6 @@
 
 #include "TSAmmo.h"
+#include "TSCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -15,6 +16,9 @@ ATSAmmo::ATSAmmo()
     CollisionComponent->SetCollisionProfileName(TEXT("Projectile"));
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     CollisionComponent->SetGenerateOverlapEvents(true);
+    CollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);  //  모든 충돌 무시
+    CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);  // 적 캐릭터만 오버랩 감지
+    CollisionComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);  // 벽이나 환경과 충돌 감지
     CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ATSAmmo::OnOverlap);
     RootComponent = CollisionComponent;
 
@@ -28,6 +32,7 @@ ATSAmmo::ATSAmmo()
     ProjectileMovement->InitialSpeed = 5000.f;
     ProjectileMovement->MaxSpeed = 5000.f;
     ProjectileMovement->bRotationFollowsVelocity = true;
+    ProjectileMovement->bSweepCollision = true;
     ProjectileMovement->bShouldBounce = false;
     ProjectileMovement->ProjectileGravityScale = 0.0f;
 }
@@ -35,7 +40,7 @@ ATSAmmo::ATSAmmo()
 void ATSAmmo::BeginPlay()
 {
 	Super::BeginPlay();
-    SetLifeSpan(10.0f);
+    SetLifeSpan(5.0f);
 	
 }
 
@@ -45,6 +50,12 @@ void ATSAmmo::Tick(float DeltaTime)
 
 }
 
+void ATSAmmo::SetDamage(float NewDamage)
+{
+    Damage = NewDamage;
+}
+
+
 void ATSAmmo::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
     bool bFromSweep, const FHitResult& SweepResult)
@@ -52,6 +63,18 @@ void ATSAmmo::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
     if (!OtherActor || OtherActor == this || OtherActor == GetOwner())
     {
         UE_LOG(LogTemp, Warning, TEXT("OnOverlap(): 충돌한 대상이 없음 또는 자기 자신."));
+        return;
+    }
+
+    if (OtherActor->IsA(ATSCharacter::StaticClass()))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("OnOverlap(): 플레이어 캐릭터와 충돌 -> 무시"));
+        return;
+    }
+
+    if (OtherComp == CollisionComponent)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("OnOverlap(): 자기 자신의 CollisionComponent와 충돌 -> 무시"));
         return;
     }
 
@@ -67,13 +90,9 @@ void ATSAmmo::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
     float AppliedDamage = Damage;
     UGameplayStatics::ApplyDamage(OtherActor, AppliedDamage, nullptr, this, UDamageType::StaticClass());
 
+    UE_LOG(LogTemp, Warning, TEXT("총알이 %s 에 %f 데미지를 입힘!"), *OtherActor->GetName(), AppliedDamage);
 
     //  총알 삭제
     UE_LOG(LogTemp, Warning, TEXT("총알이 오버랩 후 삭제됩니다."));
     Destroy();
 }
-
-void ATSAmmo::SetDamage(float NewDamage)
-    {
-        Damage = NewDamage;
-    }

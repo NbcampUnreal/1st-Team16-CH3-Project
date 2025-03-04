@@ -17,8 +17,8 @@ AGunWeapon::AGunWeapon()
 	BulletCount = 10;
 	MaxBulletCount = 10;
 	Damage = 10;
-	MinDamage = 5.0f;
-	MaxDamage = 15.0f;
+	MinDamage = 10.0f;
+	MaxDamage = 20.0f;
 	ReloadDelay = 2.0f;
 	bIsReload = false;
 }
@@ -134,9 +134,9 @@ void AGunWeapon::FireBullet()
 
 	//문제
 	ATSAmmo* Ammo = Cast<ATSAmmo>(Bullet);
-	float RandomDamage = FMath::RandRange(MinDamage, MaxDamage);
 	if (Ammo)
 	{
+		float RandomDamage = FMath::RandRange(MinDamage, MaxDamage);
 		Ammo->SetDamage(RandomDamage);
 		UE_LOG(LogTemp, Warning, TEXT("FireBullet(): 총알의 데미지 설정 완료 - %f"), RandomDamage);
 	}
