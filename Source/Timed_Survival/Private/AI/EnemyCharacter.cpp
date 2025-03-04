@@ -3,9 +3,11 @@
 
 #include "AI/EnemyCharacter.h"
 #include "AI/EnemyAIController.h"
+#include "AI/Animation/TSEnemyAnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 AEnemyCharacter::AEnemyCharacter()
+	: bIsNowAttacking(false)
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -34,20 +36,58 @@ void AEnemyCharacter::BeginPlay()
 	}
 }
 
-//void AEnemyCharacter::TakeDamage(int32 Damage)
-//{
-//	if (CurrentHP > 0)
-//	{
-//		CurrentHP = FMath::Clamp(CurrentHP - Damage, 0, MaxHP);
-//	}
-//}
-//
-//void AEnemyCharacter::TakeHeadShot(int32 Damage)
-//{
-//	// 데미지값을 어디서 할지 고민좀 해보겠습니다..
-//}
+float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if (CurrentHP > 0)
+	{
+		CurrentHP -= FMath::Clamp(CurrentHP - DamageAmount, 0, 100);
+	}
+	else if (CurrentHP <= 0)
+	{
+		AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
+		if (true == ::IsValid(AIController))
+		{
+			AIController->EndAI();
+		}
+		AIOnDeath();
+	}
+	return DamageAmount;
+}
 
 void AEnemyCharacter::AIOnDeath()
 {
 	Destroy();
+}
+
+void AEnemyCharacter::BeginAttack()
+{
+	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
+	checkf(IsValid(AnimInstance) == true, TEXT("Invalid AnimInstance"));
+
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	if (IsValid(AnimInstance) == true && IsValid(AttackMontage) == true && AnimInstance->Montage_IsPlaying(AttackMontage) == false)
+	{
+		AnimInstance->Montage_Play(AttackMontage);
+
+		bIsNowAttacking = true;
+
+		if (OnAttackMontageEndedDelegate.IsBound() == false)
+		{
+			OnAttackMontageEndedDelegate.BindUObject(this, &ThisClass::EndAttack);
+			AnimInstance->Montage_SetEndDelegate(OnAttackMontageEndedDelegate, AttackMontage);
+		}
+	}
+}
+
+void AEnemyCharacter::EndAttack(UAnimMontage* InMontage, bool bInterruped)
+{
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	bIsNowAttacking = false;
+
+	if (OnAttackMontageEndedDelegate.IsBound() == true)
+	{
+		OnAttackMontageEndedDelegate.Unbind();
+	}
 }
