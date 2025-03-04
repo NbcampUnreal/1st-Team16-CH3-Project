@@ -83,7 +83,7 @@ void ATSGameMode::SpawnSelectedCharacter()
 	if (!PlayerController) return;
 
 	// 캐릭터 스폰 위치 지정 (임시로 (0,0,0)에서 스폰)
-	FVector SpawnLocation = FVector(0.0f, 0.0f, 300.0f);
+	FVector SpawnLocation = FVector(0.0f, 0.0f, 0.0f);
 	FRotator SpawnRotation = FRotator::ZeroRotator;
 
 	// 캐릭터 스폰

@@ -3,16 +3,17 @@
 #include "TSPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
-#include "UObject/ConstructorHelpers.h"
 #include "GameFramework/Character.h"
 
 
 void UTSWeaponSelectWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
+	
+
 }
 
-void UTSWeaponSelectWidget::SetStartWeapon()
+void UTSWeaponSelectWidget::SetStartWeapon(UWidget* Widget)
 {
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 	{
@@ -20,17 +21,17 @@ void UTSWeaponSelectWidget::SetStartWeapon()
 		{
 			if (UTSGameInstance* TSGameInstance = Cast<UTSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld())))
 			{
-				if (GetWidgetFromName(TEXT("ShotGunButton")))
+				if (Widget == GetWidgetFromName(TEXT("ShotGunButton")))
 				{
-					if (TSubclassOf<ACharacter> ShotGunCharacter = LoadClass<ACharacter>(nullptr, TEXT("/Game/TSProject/Blueprints/BP_ShotGun_Character")))
+					if (TSubclassOf<ACharacter> ShotGunCharacter = LoadClass<ACharacter>(nullptr, TEXT("/Game/TSProject/Blueprints/BP_ShotGun_Character.BP_ShotGun_Character_C")))
 					{
 						TSGameInstance->SetSelectedCharacter(ShotGunCharacter);
 					}
 				}
 
-				if (GetWidgetFromName(TEXT("M16Button")))
+				if (Widget == GetWidgetFromName(TEXT("M16Button")))
 				{
-					if (TSubclassOf<ACharacter> M16Character = LoadClass<ACharacter>(nullptr, TEXT("/Game/TSProject/Blueprints/BP_TS_M16_Character")))
+					if (TSubclassOf<ACharacter> M16Character = LoadClass<ACharacter>(nullptr, TEXT("/Game/TSProject/Blueprints/BP_TS_M16_Character.BP_TS_M16_Character_C")))
 					{
 						TSGameInstance->SetSelectedCharacter(M16Character);
 					}
