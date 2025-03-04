@@ -84,7 +84,12 @@ public:
 	UUserWidget* OpeningWidgetInstance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponEvent")
-	TSubclassOf<UUserWidget> AimWidgetClass; // ShelterMenuWidget
+	TSubclassOf<UUserWidget> ShotEventWidgetClass; // ShotEventWidget
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponEvent")
+	UUserWidget* ShotEventWidgetInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponEvent")
+	TSubclassOf<UUserWidget> AimWidgetClass; // AimWidget
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponEvent")
 	UUserWidget* AimWidgetInstance;
 
@@ -111,6 +116,8 @@ public:
 	void ShowClearScore();
 	UFUNCTION(BlueprintCallable, Category = "Score")
 	void ShowShelterMenu();
+	UFUNCTION(BlueprintCallable, Category = "WeaponEvent")
+	void ShowShotEventWidget();
 	UFUNCTION(BlueprintCallable, Category = "WeaponEvent")
 	void ShowAimWidget();
 	UFUNCTION(BlueprintCallable, Category = "Menu")

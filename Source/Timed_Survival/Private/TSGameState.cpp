@@ -24,7 +24,6 @@ ATSGameState::ATSGameState()
 	HealingCount = 0;
 
 	CurrentBulletCount = 0;
-	BulletCountInWeapon = 0;
 	MaxBulletCount = 0;
 
 	SetMaskEffectTime = 0.0f;
@@ -48,11 +47,13 @@ void ATSGameState::BeginPlay()
 		&ATSGameState::UpdateHUD,
 		0.1f, true);
 
-	GetWorldTimerManager().SetTimer(
+	/*GetWorldTimerManager().SetTimer(
 		BulletDataUpdateTimerHandel,
-		this,
-		&ATSGameState::UpdateBulletData,
-		0.1f, true);	
+		[this, CurrentBullet]()
+		{
+			UpdateBulletData(CurrentBullet);
+		},
+		0.1f, true);*/	
 }
 
 
@@ -218,28 +219,17 @@ void ATSGameState::UpdateHUD()
 
 				// 2) About Bullet HUD========================================================================================
 				
-				// 2)-1 AR Bullet Count
-				if (UTextBlock* CountARBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBullet"))))
+				// 2)-1 AR Bullet
+				if (UTextBlock* CountM16Bullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("M16BulletReload"))))
 				{
-					
-					CountARBullet->SetText(FText::FromString(FString::Printf(TEXT("AR : %d"),CurrentBulletCount)));
+					CountM16Bullet->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentBulletCount, MaxBulletCount)));
 				}
-				// 2)-2 AR Bullet Reload
-				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ARBulletReload"))))
+				// 2)-2 ShotGun Bullet
+				if (UTextBlock* CountShotGunBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ShotGunBullet"))))
 				{
-
+					CountShotGunBullet->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentBulletCount, MaxBulletCount)));
 				}
-				// 2)-3 Pistol Bullet Count
-				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("PistolBullet"))))
-				{
-
-				}
-				// 2)-4 Pistol Bullet Reload
-				if (UTextBlock* CountBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("PistolBulletReload"))))
-				{
-
-				}
-				
+								
 				// 3) About Gas Mask HUD========================================================================================
 				if (UProgressBar* GasMask = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("Mask"))))
 				{
@@ -445,33 +435,15 @@ void ATSGameState::SubtractHealthOnSecond()
 
 // GunWeapon Bullet Data Function
 
-void ATSGameState::UpdateBulletData()
+int32 ATSGameState::UpdateBulletData(int32 ReserveBullet)
 {
-	if (!GetWorld()) return;
-
-	AGunWeapon* BulletData = GetWorld()->SpawnActor<AGunWeapon>(AGunWeapon::StaticClass());
-	
-	if (!BulletData)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No BulletData!"));
-		return;
-	}
-
-	CurrentBulletCount = BulletData->GetBulletInPlayer();	
-	BulletCountInWeapon = BulletData->GetBulletCount();
-	MaxBulletCount = BulletData->GetMaxBulletCount();
-	FName WeaponType = BulletData->GetWeaponType();
-
-	BulletData->Destroy();
+	return CurrentBulletCount = ReserveBullet;
 }
 
+void ATSGameState::GetWeaponBulletData(int32 CurrentBullet, int32 Maxbullet)
+{
+	CurrentBulletCount = CurrentBullet;
+	MaxBulletCount = Maxbullet;
+}
 
-// void ATSGameState::FindARBullet()
-// {
-// 	TArray<AActor*> FoundBullets;
-// 	//UGameplayStatics::GetAllActorsOfClass(GetWorld(),TSubclassOf<AActor>ATSBaseBulletItem,)
-// }
-// void ATSGameState::FindPistolBullet()
-// {
-// }
 
