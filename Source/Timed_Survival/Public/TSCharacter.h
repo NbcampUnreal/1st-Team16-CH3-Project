@@ -78,6 +78,7 @@ protected:
 	FTimerHandle ReloadTimerHandle;
 	// Reset Fire
 	FTimerHandle FireTimerHandle;
+	// 발사속도 타이머핸들
 
 public:
 
