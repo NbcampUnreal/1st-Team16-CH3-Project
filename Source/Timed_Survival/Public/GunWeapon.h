@@ -26,8 +26,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	int32 BulletCount;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	int32 MaxBulletCount;
+	
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<class ATSAmmo> BulletClass;
@@ -39,6 +38,9 @@ protected:
 
 public:
 	AGunWeapon();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	int32 MaxBulletCount; // 총알 데이터가 필요해서 퍼블릭으로 뺐습니다 -전보경
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	float GetReloadDelay() const;

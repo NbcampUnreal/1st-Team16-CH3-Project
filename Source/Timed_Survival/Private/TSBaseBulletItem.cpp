@@ -35,12 +35,7 @@ void ATSBaseBulletItem::ActivateItem(AActor* Activator)
             
         }
     }
-     // Call GameState
-    ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
-    if (GameState)
-    {
-        GameState->UpdateBulletData();
-    }
+   
 
 
     DestroyItem();

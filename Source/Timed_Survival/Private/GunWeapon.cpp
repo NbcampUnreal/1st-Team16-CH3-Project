@@ -71,6 +71,12 @@ void AGunWeapon::FireBullet()
     BulletCount--;
     UE_LOG(LogTemp, Warning, TEXT("FireBullet(): 탄약 감소 - 현재 남은 탄약: %d"), BulletCount);
 
+    ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
+    if (GameState)
+    {
+        GameState->SetM16BulletCount(BulletCount); // 탄약증가
+    }
+
     UWorld* World = GetWorld();
     if (!World)
     {
@@ -180,6 +186,12 @@ void AGunWeapon::FinishReload()
 	BulletCount = MaxBulletCount;
 
 	bIsReload = false;
+
+    ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
+    if (GameState)
+    {
+        GameState->SetM16BulletCount(BulletCount);
+    }
 
 	UE_LOG(LogTemp, Warning, TEXT("FinishReload(): 리로드 후 탄약: %d, 예비 탄약: %d"), BulletCount, ReserveBullet);
 }

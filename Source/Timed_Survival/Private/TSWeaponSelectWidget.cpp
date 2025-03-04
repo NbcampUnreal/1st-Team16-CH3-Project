@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 #include "GameFramework/Character.h"
+#include "TSGameState.h"
 
 
 void UTSWeaponSelectWidget::NativeOnInitialized()
@@ -40,6 +41,7 @@ void UTSWeaponSelectWidget::SetStartWeapon(UWidget* Widget)
 				RemoveFromParent();
 				TSPlayerController->SetInputMode(FInputModeGameOnly());
 				UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("AITest"))); //시작 맵 설정 임시
+								
 			}
 		}
 	}

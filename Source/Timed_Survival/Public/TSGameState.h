@@ -76,11 +76,17 @@ public:
 	void UpdateHealth();
 
 	// about Bullet Items
-	int32 CurrentBulletCount;
-	int32 MaxBulletCount;
+	int32 CurrentM16BulletCount;
+	int32 CurrentShotGunBulletCount;
+	int32 BulletInM16;
+	int32 BulletInShotGun;
+	int32 MaxShotGun;
+	int32 MaxM16;
 	FTimerHandle BulletDataUpdateTimerHandel;
-	int32 UpdateBulletData(int32 CurrentBullet);
-	void GetWeaponBulletData(int32 CurrentBullet, int32 Maxbullet);
+	void UpdateBulletCount();
+	void GetWeaponBulletData();
+	void SetM16BulletCount(int32 CurrentBullet);
+	void SetShotGunBulletCount(int32 CurrentBullet);
 
 	// 방독면 관련 변수
 	bool bIsStopTimeReductionEnabled = true; // 시간 감소 활성화 여부
