@@ -18,5 +18,23 @@ void AAR::FireBullet()
     {
         return;
     }
+}
+
+void AAR::Reload()
+    {
+        if (bIsReload || BulletCount == MaxBulletCount)
+        {
+            return;
+        }
+
+        bIsReload = true;
+
+        GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &AAR::FinishReload, ReloadDelay, false);
+    }
+
+    void AAR::FinishReload()
+    {
+        BulletCount = MaxBulletCount;
+        bIsReload = false;
 
 }

@@ -3,7 +3,8 @@
 
 #include "CoreMinimal.h"
 #include "BaseWeapon.h"
-
+#include "TSAmmo.h"
+#include "GameFramework/Actor.h"
 #include "GunWeapon.generated.h"
 
 UCLASS()
@@ -28,12 +29,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	int32 MaxBulletCount;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	TSubclassOf<AActor> BulletClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	TSubclassOf<class ATSAmmo> BulletClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	bool bIsReload;
-	
+
 	FTimerHandle ReloadTimerHandle;
 
 public:
@@ -42,15 +43,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	float GetReloadDelay() const;
 
-	virtual void FireBullet() override;
-
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void Reload();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	bool CanReload() const;
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual void FinishReload();
 
-	//UFUNCTION(BlueprintCallable, Category = "Weapon") //<-얘 원래 함수 주인 누구에요?
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void Fire();
+
+	virtual void FireBullet() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	float MinDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	float MaxDamage;
 
 	int32 GetBulletInPlayer() const { return ReserveBullet; }
 	int32 GetBulletCount() const { return BulletCount; }
@@ -59,4 +70,7 @@ public:
 
 	FName GetWeaponType() const { return WeaponType; }
 	void AddBullet(int32 Amount);
+
+protected:
+	virtual void BeginPlay() override;
 };

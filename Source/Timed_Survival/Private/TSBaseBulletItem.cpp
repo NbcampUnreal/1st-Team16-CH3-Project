@@ -4,6 +4,8 @@
 #include "TSBaseBulletItem.h"
 #include "TSCharacter.h"
 #include "GunWeapon.h"
+#include "TSGameState.h"
+#include "Kismet/GameplayStatics.h"
 
 ATSBaseBulletItem::ATSBaseBulletItem()
 {
@@ -33,6 +35,13 @@ void ATSBaseBulletItem::ActivateItem(AActor* Activator)
             
         }
     }
+     // Call GameState
+    ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
+    if (GameState)
+    {
+        GameState->UpdateBulletData();
+    }
+
 
     DestroyItem();
 }
