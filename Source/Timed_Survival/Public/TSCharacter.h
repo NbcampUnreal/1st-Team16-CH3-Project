@@ -12,6 +12,7 @@ class UCameraComponent;
 class ABaseWeapon;
 class UAniMontage;
 class FTimerhandle;
+class AGunWeapon;
 struct FInputActionValue;
 
 UCLASS()
@@ -87,6 +88,10 @@ public:
 	// 조준 시 적용할 FOV
 	float AimFOV = 80.0f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CurrentBullet")
+	// GunWeapon에 총알 갯수를 반환해주는 변수 -- ABP_에서 사용해야해서 UPROPERTY로 생성
+	int32 CurrentBullet;
+
 	//Mvoe Speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MovementSpeed")
 	float NormalSpeed;
@@ -161,7 +166,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	UChildActorComponent* WeaponChildActor;
 
-
+	// 총 발사상태를 안쏘는 상태로 초기화해주는 함수
 	void ResetFireState();
 
+	// CurrentBullet 값을 설정하는 함수 추가
+	void SetCurrentBullet(int32 NewBulletCount)
+	{
+		CurrentBullet = NewBulletCount;
+	}
+
+	// 현재 탄약 개수를 가져오는 Getter 추가
+	int32 GetCurrentBullet() const
+	{
+		return CurrentBullet;
+	}
 };
