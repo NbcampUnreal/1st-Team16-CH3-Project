@@ -29,7 +29,6 @@ ATSCharacter::ATSCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bUseControllerRotationYaw = false;
-
 }
 
 // 무기 타입으로 무기 찾는 함수(총알 추가용)
@@ -506,9 +505,22 @@ void ATSCharacter::Death()
 
 
 // About Health
-void ATSCharacter::TakeDamage()
+float ATSCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	float ResultDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
+	//if (CurrentHP > 0)
+	//{
+	//	CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, 100);
+	//	UE_LOG(LogTemp, Warning, TEXT("남은 체력 : %f"), CurrentHP);
+
+	//	if (CurrentHP <= 0)
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("사망"), CurrentHP);
+	//		Death();
+	//	}
+	//}
+	return ResultDamage;
 }
 
 void ATSCharacter::EnableMovementAfterReload()
