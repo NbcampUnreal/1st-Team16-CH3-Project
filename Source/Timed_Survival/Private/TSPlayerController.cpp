@@ -28,7 +28,9 @@ ATSPlayerController::ATSPlayerController()
 	ShelterMenuWidgetClass(nullptr),
 	ShelterMenuWidgetInstance(nullptr),
 	OpeningWidgetClass(nullptr),
-	OpeningWidgetInstance(nullptr)
+	OpeningWidgetInstance(nullptr),
+	AimWidgetClass(nullptr),
+	AimWidgetInstance(nullptr)
 {
 }
 
@@ -99,6 +101,8 @@ void ATSPlayerController::ShowHUD()
 			}
 		}
 	}
+
+	ShowAimWidget();
 }
 
 void ATSPlayerController::ShowOpening()
@@ -219,6 +223,21 @@ void ATSPlayerController::ShowShelterMenu()
 	}
 }
 
+void ATSPlayerController::ShowAimWidget()
+{
+	if (AimWidgetClass)
+	{
+		AimWidgetInstance = CreateWidget<UUserWidget>(this, AimWidgetClass);
+		if (AimWidgetInstance)
+		{
+			AimWidgetInstance->AddToViewport();
+
+			bShowMouseCursor = false;
+			SetInputMode(FInputModeGameOnly());
+		}
+	}
+}
+
 void ATSPlayerController::QuitGame()
 {
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
@@ -260,6 +279,12 @@ void ATSPlayerController::ClearWidget() // Clear All Widget except HUD
 	{
 		ShelterMenuWidgetInstance->RemoveFromParent();
 		ShelterMenuWidgetInstance = nullptr;
+	}
+
+	if (AimWidgetInstance)
+	{
+		AimWidgetInstance->RemoveFromParent();
+		AimWidgetInstance = nullptr;
 	}
 }
 
