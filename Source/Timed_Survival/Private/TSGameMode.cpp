@@ -38,26 +38,34 @@ void ATSGameMode::BeginPlay()
 	{
 		SpawnSelectedCharacter();
 	}
-	else
+
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 	{
-		// WBP_WeaponSelect UI 표시
-		if (WeaponSelectWidgetClass)
+		ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController);
 		{
-			WeaponSelectWidget = CreateWidget<UUserWidget>(GetWorld(), WeaponSelectWidgetClass);
-			if (WeaponSelectWidget)
-			{
-				WeaponSelectWidget->AddToViewport();
-				APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-				if (PlayerController)
-				{
-					PlayerController->bShowMouseCursor = true;
-					FInputModeUIOnly InputModeData;
-					InputModeData.SetWidgetToFocus(WeaponSelectWidget->TakeWidget());
-					PlayerController->SetInputMode(InputModeData);
-				}
-			}
+			TSPlayerController->ShowHUD();
 		}
 	}
+	//else
+	//{
+	//	// WBP_WeaponSelect UI 표시
+	//	if (WeaponSelectWidgetClass)
+	//	{
+	//		WeaponSelectWidget = CreateWidget<UUserWidget>(GetWorld(), WeaponSelectWidgetClass);
+	//		if (WeaponSelectWidget)
+	//		{
+	//			WeaponSelectWidget->AddToViewport();
+	//			APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//			if (PlayerController)
+	//			{
+	//				PlayerController->bShowMouseCursor = true;
+	//				FInputModeUIOnly InputModeData;
+	//				InputModeData.SetWidgetToFocus(WeaponSelectWidget->TakeWidget());
+	//				PlayerController->SetInputMode(InputModeData);
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 
@@ -66,7 +74,9 @@ void ATSGameMode::BeginPlay()
 // 캐릭터랑 컨트롤러가 있다면 (0, 0, 0)위치로 캐릭터를 스폰하고 조정할 수있게 함.
 void ATSGameMode::SpawnSelectedCharacter()
 {
+
 	UTSGameInstance* GameInstance = Cast<UTSGameInstance>(GetGameInstance());
+
 	if (!GameInstance || !GameInstance->SelectedCharacterClass) return;
 
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);

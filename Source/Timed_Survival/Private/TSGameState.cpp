@@ -1,5 +1,6 @@
 #include "TSGameState.h"
 #include "TSGameInstance.h"
+#include "TSBaseItem.h"
 #include "TSCharacter.h"
 #include "TSCharacter2.h"
 #include "TSPlayerController.h"
@@ -11,7 +12,7 @@
 #include "Components/ProgressBar.h"
 #include "Blueprint/UserWidget.h"
 #include "EngineUtils.h"
-#include "TSBaseItem.h"
+
 
 ATSGameState::ATSGameState()
 {	
@@ -28,6 +29,10 @@ ATSGameState::ATSGameState()
 
 	SetMaskEffectTime = 0.0f;
 	MaskTimeRemaining = 0.0f;
+
+	MapNum = 0;
+	Maplist.Add(TEXT("ForestLevel")); // MapNumber 0
+	Maplist.Add(TEXT("OldHouseLevel")); // MapNumber 1
 }
 
 void ATSGameState::BeginPlay()
@@ -50,16 +55,36 @@ void ATSGameState::BeginPlay()
 		0.1f, true);	
 }
 
+
+
 //about Game flow
 void ATSGameState::StartLevel()
 {
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
+		{
+			TSPlayerController->ShowHUD();
+		}
+	}
+
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UTSGameInstance* TSGameInstance = Cast<UTSGameInstance>(GameInstance);
+		if (TSGameInstance)
+		{
+
+		}
+	}
+	//아이템 초기화 될 것들 변수 넣어야함
+	//아이템 스포너 넣어야함
+
 	GetWorldTimerManager().SetTimer( // Subtract Time
 		SubtractHealthTimerHandle,
 		this,
 		&ATSGameState::SubtractHealthOnSecond,
 		0.1f,
 		true);
-
 }
 
 void ATSGameState::OnGameOver()
@@ -70,7 +95,7 @@ void ATSGameState::OnGameOver()
 	{
 		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
 		{
-			TSPlayerController->ShowMainMenu();
+			TSPlayerController->ShowGameOver();
 
 			// 죽는 애니메이션이 끝나는 3초 뒤에 SetPause(true)가 실행하도록함.
 			GetWorld()->GetTimerManager().SetTimer(
@@ -83,14 +108,51 @@ void ATSGameState::OnGameOver()
 	}
 }
 
-void ATSGameState::NextLevel()
+void ATSGameState::EndLevel() // 스테이지 클리어
 {
-
+	ClearLevelNum = CurrentMapNum;
+	EnterShelter();
+	//Game instance로 저장할 데이터 넘기기
 }
-void ATSGameState::EndLevel()
+
+void ATSGameState::EnterShelter() // 셸터 다음 레벨로 넘겨주냐 엔딩으로 보내냐
 {
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
+		{
+			if (Maplist.Num() > 0)
+			{
+				if (ClearLevelNum != (Maplist.Num() - 1))
+				{
+					CurrentMapNum++;
+					TSPlayerController->ShowShelterMenu();										
+					if (Maplist.IsValidIndex(CurrentMapNum))
+					{
+						OpenNextLevel();
+					}
+				}
 
+				else
+				{
+					TSPlayerController->ShowClearScore();
+				}
+			}
+		}
+	}
+	// 초기화 되는 거 초기화
+	// 중간에 스코어 표기 되나요?
+	
 }
+
+void ATSGameState::OpenNextLevel()
+{			
+	if (Maplist.IsValidIndex(CurrentMapNum))
+	{
+		UGameplayStatics::OpenLevel(GetWorld(), Maplist[CurrentMapNum]);
+	}		
+}
+
 void ATSGameState::OnHPZero()
 {
 	OnGameOver();

@@ -38,11 +38,19 @@ public:
 
 	// CurrentHealth가 지속적으로 감소하는 함수 + 0으로 떨어지는지 확인하기위한 함수 추가
 	void SubtractHealthOnSecond();
-
+	
+	//about game flow
+	TArray<FName> Maplist;
+	int32 MapNum;
+	int32 CurrentMapNum;
+	int32 ClearLevelNum;
 	void StartLevel();
 	void OnGameOver();
-	void NextLevel();
+	UFUNCTION(BlueprintCallable, Category = "Level")
 	void EndLevel();
+	void EnterShelter();
+	void OpenNextLevel();
+	
 
 	// SubtractHealthOnSecont함수에서 CurrentHealth가 0으로 떨어지면 Character.cpp에 Death()함수 호출
 	void OnHPZero();
@@ -52,18 +60,9 @@ public:
 	TMap<FTimerHandle, FName> WidgetTimerMap;
 	FName EventItemType;
 	FTimerHandle HUDUpdateTimerHandle;
-	//FTimerHandle HideWidgetTimerHandle;
-	FTimerHandle HideHealingWidgetTimerHandle;
-	FTimerHandle HideMaskWidgetTimerHandle;
 	void UpdateHUD();
 	void PickWidgetbyItemType(FName Type);
 	void PopUpWidget(FName ItemType, UUserWidget* ItemWidget, float ViewTime);
-	void HideWidget(
-		UUserWidget* ItemEffectWidget, 
-		const FName& WidgetName,
-		float ViewTime);
-	void SetHideWidget();
-
 
 	// about Health(Timer) Function - with Item Class
 	void IncreaseTime(float Value);
