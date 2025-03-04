@@ -42,14 +42,17 @@ private:
 	// 기본 FOV 저장
 	float DefaultFOV;   
 
-	// 조준 시 적용할 FOV
-	float AimFOV = 60.0f;   
-
 	// 기본 카메라 위치 저장
 	FVector DefaultCameraOffset;
 
 	// 조준 시 카메라 위치
 	FVector AimCameraOffset;
+
+	// 위를 쳐다볼 수 있는 최대각도 (AO_Up 최대각도)
+	float MaxLookUpAngle = 30.0f;
+
+	// 아래를 쳐다볼 수 있는 최대각도 (AO_Down 최대각도)
+	float MaxLookDownAngle = -30.0f;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -64,10 +67,6 @@ protected:
 	// Reload Animation
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* ReloadAnimation;
-	// Fire Animation
-	UPROPERTY(EditAnywhere, Category = "Animation")
-	UAnimMontage* FireAnimation;
-
 
 
 	// Aim Rotation
@@ -80,7 +79,14 @@ protected:
 	FTimerHandle FireTimerHandle;
 
 public:
+
+	// 발사하는지 애니메이션 확인용 -- 변경 가능하게
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	bool bFire = false;
 	
+	// 조준 시 적용할 FOV
+	float AimFOV = 80.0f;
+
 	//Mvoe Speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MovementSpeed")
 	float NormalSpeed;
@@ -98,13 +104,6 @@ public:
 	// 무기 타입으로 무기 찾는 함수(총알 추가용)
 	AGunWeapon* FindWeaponByType(FName WeaponType);
 
-
-	// 테스트
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void EquipWeapon(ABaseWeapon* NewWeapon);
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
-	ABaseWeapon* CurrentWeapon;
 
 protected:
 
@@ -133,7 +132,9 @@ protected:
 	UFUNCTION()
 	void Reload(const FInputActionValue& value);
 	UFUNCTION()
-	void Fire(const FInputActionValue& value);
+	void StartFire(const FInputActionValue& value);
+	UFUNCTION()
+	void StopFire(const FInputActionValue& value);
 	UFUNCTION()
 	void StartAiming(const FInputActionValue& value);
 	UFUNCTION()
@@ -155,4 +156,12 @@ public:
 
 	// 총 쏜뒤에 캐릭터가 움직이게하는 함수
 	void ResetMovementAfterFire();
+
+	//테스트
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	UChildActorComponent* WeaponChildActor;
+
+
+	void ResetFireState();
+
 };

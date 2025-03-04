@@ -4,6 +4,8 @@
 #include "GameFramework/GameState.h"
 #include "TSGameState.generated.h"
 
+class ATSBaseItem;
+
 UCLASS()
 class TIMED_SURVIVAL_API ATSGameState : public AGameState
 {
@@ -14,12 +16,13 @@ public:
 
 	virtual void BeginPlay() override;
 
-	//about Game flow
+	//about Health
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float HealthBarMax;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float BaseHealth;
 	float ItemHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float CurrentHealth;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Food")
@@ -31,23 +34,35 @@ public:
 	FTimerHandle SubtractHealthTimerHandle;
 
 	// OnGameOver()에서 애니메이션끝나고 Pause되도록하는 TimerHandle
-	FTimerHandle TimerHandle;
+	FTimerHandle PauseForDeadAnimTimerHandle; //<- 이름 헷갈려서 변수 이름 수정했습니다.
 
 	// CurrentHealth가 지속적으로 감소하는 함수 + 0으로 떨어지는지 확인하기위한 함수 추가
 	void SubtractHealthOnSecond();
-
+	
+	//about game flow
+	TArray<FName> Maplist;
+	int32 MapNum;
+	int32 CurrentMapNum;
+	int32 ClearLevelNum;
 	void StartLevel();
 	void OnGameOver();
-	void NextLevel();
+	UFUNCTION(BlueprintCallable, Category = "Level")
 	void EndLevel();
+	void EnterShelter();
+	void OpenNextLevel();
+	
 
 	// SubtractHealthOnSecont함수에서 CurrentHealth가 0으로 떨어지면 Character.cpp에 Death()함수 호출
 	void OnHPZero();
 	void BattleSystem();
 	
 	// about UI Function 
+	TMap<FTimerHandle, FName> WidgetTimerMap;
+	FName EventItemType;
 	FTimerHandle HUDUpdateTimerHandle;
 	void UpdateHUD();
+	void PickWidgetbyItemType(FName Type);
+	void PopUpWidget(FName ItemType, UUserWidget* ItemWidget, float ViewTime);
 
 	// about Health(Timer) Function - with Item Class
 	void IncreaseTime(float Value);
@@ -61,7 +76,10 @@ public:
 	void UpdateHealth();
 
 	// about Bullet Items
-	void GetBulletData();
+	int32 CurrentBulletCount;
+	int32 BulletCountInWeapon;
+	int32 MaxBulletCount;
+	FTimerHandle BulletDataUpdateTimerHandel;
 	void UpdateBulletData();
 
 	/*void FindARBullet();
@@ -70,7 +88,8 @@ public:
 	// 방독면 관련 변수
 	bool bIsStopTimeReductionEnabled = true; // 시간 감소 활성화 여부
 	bool bIsMaskActive = false; // 마스크 활성화 여부
-	float MaskTimeRemaining = 0.0f; // 마스크 남은 시간
+	float SetMaskEffectTime; // 마스트 효과 시간
+	float MaskTimeRemaining; // 마스크 남은 시간
 	FTimerHandle MaskEffectTimerHandle; // 마스크 효과 타이머 핸들
 	
 	// 방독면 관련 함수
@@ -79,5 +98,7 @@ public:
 	bool IsMaskActive() const; // 마스크 활성화 여부
 	float GetMaskTimeRemaining() const; // 마스크 남은 시간
 	void UpdateMaskTimer(); // 마스크 타이머 업데이트 함수
+	void GetMaskDuration(float Value); // UI 세팅 위해서 받아오는 함수
 		
+
 };
