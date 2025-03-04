@@ -120,5 +120,5 @@ void AEnemyCharacter::UpdateOverheadHP()
 			}
 		}
 	}
-	
 }
+
