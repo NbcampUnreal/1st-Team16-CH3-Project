@@ -5,7 +5,7 @@
 #include "AI/EnemyAIController.h"
 #include "AI/EnemyCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "TSCharacter.h"
+#include "GameFramework/Character.h"
 
 
 UBTTask_TurnToTarget::UBTTask_TurnToTarget()
@@ -22,8 +22,7 @@ EBTNodeResult::Type UBTTask_TurnToTarget::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(AIController->GetPawn());
 	checkf(IsValid(Enemy) == true, TEXT("Invalid Enemy"));
-
-	if (ATSCharacter* Player = Cast<ATSCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AIController->TargetActorKey)))
+	if (ACharacter* Player = Cast<ACharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AIController->TargetActorKey)))
 	{
 		FVector LookVector = Player->GetActorLocation() - Enemy->GetActorLocation();
 		LookVector.Z = 0.f;
