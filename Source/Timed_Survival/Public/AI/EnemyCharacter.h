@@ -27,6 +27,8 @@ public:
 
 	void AIOnDeath();
 
+	void OnCheckHit();
+
 protected:
 	virtual void BeginAttack();
 	virtual void EndAttack(UAnimMontage* InMontage, bool bInterruped);
@@ -46,5 +48,7 @@ protected:
 	int32 MaxHP;
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Stats")
 	float Damage;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Stats")
+	float AttackRange;
 
 };
