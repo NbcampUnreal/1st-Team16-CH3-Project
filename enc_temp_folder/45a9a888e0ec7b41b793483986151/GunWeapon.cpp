@@ -192,7 +192,7 @@ void AGunWeapon::StartFire()
         FireTimerHandle,
         this,
         &AGunWeapon::FireBullet,
-        0.13f, // 0.5초 간격으로 실행
+        0.1f, // 0.5초 간격으로 실행
         true // 반복 실행설정
     );
 }
