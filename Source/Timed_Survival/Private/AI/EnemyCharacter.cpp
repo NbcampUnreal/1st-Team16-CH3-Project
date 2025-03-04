@@ -9,6 +9,11 @@
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
 #include "TSPlayerController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 AEnemyCharacter::AEnemyCharacter()
 	: bIsNowAttacking(false)
@@ -27,13 +32,23 @@ AEnemyCharacter::AEnemyCharacter()
 	OverheadHPBar->SetupAttachment(GetMesh());
 	OverheadHPBar->SetWidgetSpace(EWidgetSpace::Screen);
 
+	AttackRange = 40.f;
+
 }
 
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 	UpdateOverheadHP();
+
+	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
+	if (IsValid(AnimInstance) == true)
+	{
+		
+	}
+
 
 	if (false == IsPlayerControlled())
 	{
@@ -69,6 +84,57 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 void AEnemyCharacter::AIOnDeath()
 {
 	Destroy();
+}
+
+#include "DrawDebugHelpers.h"
+
+// ...
+
+void AEnemyCharacter::OnCheckHit()
+{
+    AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
+    if (IsValid(AIController) == true)
+    {
+        ACharacter* Player = Cast<ACharacter>(AIController->GetBlackboardComponent()->GetValueAsObject(AIController->TargetActorKey));
+        if (IsValid(Player) == true)
+        {
+            FHitResult HitResult;
+            FCollisionQueryParams Params(NAME_None, false, this);
+            const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
+            const FVector End = Start + GetActorForwardVector() * AttackRange;
+            const float Radius = 50.f;
+            // 콜리전 오버랩 체크
+            bool bOnHit = GetWorld()->SweepSingleByChannel(
+                HitResult,
+                Start,
+                End,
+                FQuat::Identity,
+                ECollisionChannel::ECC_GameTraceChannel2,
+                FCollisionShape::MakeSphere(Radius),
+                Params
+            );
+
+            // ApplyDamage() 호출
+            if (bOnHit == true)
+            {
+				UKismetSystemLibrary::PrintString(this, TEXT("OnCheckHit()"));
+                /*UGameplayStatics::ApplyDamage(
+                    Player,
+                    Damage,
+                    GetInstigator()->GetController(),
+                    this,
+                    UDamageType::StaticClass()
+                );*/
+            }
+            if (AEnemyAIController::ShowAIDebug == 1)
+            {
+                FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
+                float CapsuleHalfHeight = AttackRange * 0.5f;
+
+                DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, Radius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), FColor::Red, false, 5.0f);
+            }
+        }
+    }
 }
 
 void AEnemyCharacter::BeginAttack()
