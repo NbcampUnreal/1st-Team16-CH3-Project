@@ -30,8 +30,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Spawning")
 	AActor* SpawnRandomItem();
 
+	FVector GetRandomPointInVolume() const; // 랜덤 좌표
 	FTSItemSpawnRow* GetRandomItem() const;
 	AActor* SpawnItem(TSubclassOf<AActor> ItemClass); //스폰함수 (템플릿 지정_AActor의 하위 클래스 포함)
-	FVector GetRandomPointInVolume() const; // 랜덤 좌표
-
+	
 };

@@ -22,7 +22,7 @@ ATSBaseItem::ATSBaseItem()
 	// 충돌 감지 스피어 컴포넌트 (아이템 획득 범위)
 	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
 	Collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
-	Collision->SetupAttachment(StaticMesh);
+	Collision->SetupAttachment(Scene);
 
 	// 스태틱 메쉬 컴포넌트
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));

@@ -3,6 +3,7 @@
 
 #include "TSItemSpawnVolume.h"
 #include "Components/BoxComponent.h"
+#include "Engine/World.h"
 
 
 ATSItemSpawnVolume::ATSItemSpawnVolume()
