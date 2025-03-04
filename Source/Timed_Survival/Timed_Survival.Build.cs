@@ -13,6 +13,8 @@ public class Timed_Survival : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "NavigationSystem", "GameplayTasks" });
 
+		PublicIncludePaths.AddRange(new string[] { "Timed_Survival" });
+
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 		

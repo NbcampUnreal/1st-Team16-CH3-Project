@@ -85,7 +85,6 @@ void ATSAmmo::HandleHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 
     UGameplayStatics::ApplyDamage(OtherActor, AppliedDamage, GetInstigatorController(), this, UDamageType::StaticClass());
 
-    UE_LOG(LogTemp, Warning, TEXT("총알이 충돌 후 삭제됩니다."));
     Destroy();
 }
 

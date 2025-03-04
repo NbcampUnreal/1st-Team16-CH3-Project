@@ -25,7 +25,16 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Character Selection")
 	TSubclassOf<ACharacter> SelectedCharacterClass;
 
+	//// 선택된 캐릭터 정보 저장 수정
+	//UPROPERTY(BlueprintReadWrite, Category = "Character Selection")
+	//static ConstructorHelpers::FClassFinder<AActor> SelectedCharacterClass;
+
+
 	// 선택된 캐릭터 설정 함수
 	UFUNCTION(BlueprintCallable, Category = "Character Selection")
 	void SetSelectedCharacter(TSubclassOf<ACharacter> CharacterClass);
+
+	//// 선택된 캐릭터 설정 함수 수정
+	//UFUNCTION(BlueprintCallable, Category = "Character Selection")
+	//void SetSelectedCharacter(static ConstructorHelpers::FClassFinder<AActor> CharacterClass);
 };

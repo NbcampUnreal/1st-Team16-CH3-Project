@@ -25,6 +25,8 @@ ATSPlayerController::ATSPlayerController()
 	GameOverWidgetInstance(nullptr),
 	ClearScoreWidgetClass(nullptr),
 	ClearScoreWidgetInstance(nullptr),
+	ShelterMenuWidgetClass(nullptr),
+	ShelterMenuWidgetInstance(nullptr),
 	OpeningWidgetClass(nullptr),
 	OpeningWidgetInstance(nullptr)
 {
@@ -45,21 +47,13 @@ void ATSPlayerController::BeginPlay()
 	}
 
 	//UI
-	if (HUDWidgetClass)
+	CurrentMapName = GetWorld()->GetMapName();
+	if (CurrentMapName.Contains("MainMenuLevel"))
 	{
-		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
-		if (HUDWidgetInstance)
-		{
-			HUDWidgetInstance->AddToViewport();
-		}
-	}
-
-	ATSGameState* TSGameState = GetWorld() ? GetWorld()->GetGameState<ATSGameState>() : nullptr;
-	if (TSGameState)
-	{
-		TSGameState->UpdateHUD();
+		ShowMainMenu();
 	}
 }
+
 
 UUserWidget* ATSPlayerController::GetHUDWidget() const
 {
@@ -68,6 +62,8 @@ UUserWidget* ATSPlayerController::GetHUDWidget() const
 
 void ATSPlayerController::StartGame()
 {
+	ChangeToIMC();
+
 	if (UTSGameInstance* TSGameInstance = Cast<UTSGameInstance>(UGameplayStatics::GetGameInstance(this)))
 	{
 		TSGameInstance->TotalHealingCount = 0;
@@ -125,6 +121,7 @@ void ATSPlayerController::ShowMainMenu()
 	}
 
 	ClearWidget();
+	ChangeToWidgetIMC();
 
 	if (MainMenuWidgetClass)
 	{
@@ -147,7 +144,8 @@ void ATSPlayerController::ShowWeaponSelect()
 		HUDWidgetInstance = nullptr;
 	}
 
-	ClearWidget();
+	//ClearWidget();
+	ChangeToWidgetIMC();
 
 	if (WeaponSelectWidgetClass)
 	{
@@ -165,6 +163,7 @@ void ATSPlayerController::ShowWeaponSelect()
 void ATSPlayerController::ShowGameOver()
 {
 	ClearWidget();
+	ChangeToWidgetIMC();
 
 	if (GameOverWidgetClass)
 	{
@@ -188,6 +187,7 @@ void ATSPlayerController::ShowClearScore()
 	}
 
 	ClearWidget();
+	ChangeToWidgetIMC();
 
 	if (ClearScoreWidgetClass)
 	{
@@ -201,10 +201,33 @@ void ATSPlayerController::ShowClearScore()
 		}
 	}
 }
+void ATSPlayerController::ShowShelterMenu()
+{
+	ClearWidget();
+	ChangeToWidgetIMC();
+
+	if (ShelterMenuWidgetClass)
+	{
+		ShelterMenuWidgetInstance = CreateWidget<UUserWidget>(this, ShelterMenuWidgetClass);
+		if (ShelterMenuWidgetInstance)
+		{
+			ShelterMenuWidgetInstance->AddToViewport();
+
+			bShowMouseCursor = true;
+			SetInputMode(FInputModeUIOnly());
+		}
+	}
+}
 
 void ATSPlayerController::QuitGame()
 {
-
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
+		{
+			UKismetSystemLibrary::QuitGame(GetWorld(), TSPlayerController, EQuitPreference::Quit, false);
+		}
+	}
 }
 
 void ATSPlayerController::ClearWidget() // Clear All Widget except HUD
@@ -231,5 +254,47 @@ void ATSPlayerController::ClearWidget() // Clear All Widget except HUD
 	{
 		ClearScoreWidgetInstance->RemoveFromParent();
 		ClearScoreWidgetInstance= nullptr;
+	}
+
+	if (ShelterMenuWidgetInstance)
+	{
+		ShelterMenuWidgetInstance->RemoveFromParent();
+		ShelterMenuWidgetInstance = nullptr;
+	}
+}
+
+void ATSPlayerController::ChangeToWidgetIMC()
+{
+	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (InputMappingContext)
+			{
+				Subsystem->RemoveMappingContext(InputMappingContext);
+				Subsystem->AddMappingContext(WidgetInputMappingContext, 1);
+			}
+
+			bShowMouseCursor = true;
+			SetInputMode(FInputModeUIOnly());
+		}
+	}
+}
+
+void ATSPlayerController::ChangeToIMC()
+{
+	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (WidgetInputMappingContext)
+			{
+				Subsystem->RemoveMappingContext(WidgetInputMappingContext);
+				Subsystem->AddMappingContext(InputMappingContext, 0);
+			}
+
+			bShowMouseCursor = false;
+			SetInputMode(FInputModeGameOnly());
+		}
 	}
 }

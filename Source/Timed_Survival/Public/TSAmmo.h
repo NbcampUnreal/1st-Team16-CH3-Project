@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "TSAmmo.generated.h"
 
+
 UCLASS()
 class TIMED_SURVIVAL_API ATSAmmo : public AActor
 {
