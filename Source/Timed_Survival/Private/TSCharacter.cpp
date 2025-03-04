@@ -379,12 +379,19 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 
 void ATSCharacter::StartFire(const FInputActionValue& value)
 {
+	// 점프중이거나, 조준중이 아니면 return;
 	if (GetCharacterMovement()->IsFalling() || !bIsAiming) return;
 
 	if (!WeaponChildActor)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Fire(): WeaponChildActor가 nullptr입니다!"));
 		return;
+	}
+
+	// 총알없으면 총쏘는 애니메이션 안나가게 
+	if (CurrentBullet <= 0)
+	{
+		bFire = false;
 	}
 
 	AActor* ChildActor = WeaponChildActor->GetChildActor();

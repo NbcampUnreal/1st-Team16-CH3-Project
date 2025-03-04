@@ -192,7 +192,7 @@ void AGunWeapon::StartFire()
         FireTimerHandle,
         this,
         &AGunWeapon::FireBullet,
-        0.13f, // 0.5초 간격으로 실행
+        0.14f, // 0.14초 간격으로 반복해서 총쏘는 애니메이션이랑 비슷하게 발사되게 설정
         true // 반복 실행설정
     );
 }
