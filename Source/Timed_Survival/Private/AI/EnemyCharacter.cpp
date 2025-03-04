@@ -5,6 +5,10 @@
 #include "AI/EnemyAIController.h"
 #include "AI/Animation/TSEnemyAnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Components/TextBlock.h"
+#include "Components/ProgressBar.h"
+#include "TSPlayerController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -23,18 +27,28 @@ AEnemyCharacter::AEnemyCharacter()
 	CurrentHP = 100;
 	MaxHP = 100;
 	Damage = 10.f;
+
+	OverheadHPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadHPBar"));
+	OverheadHPBar->SetupAttachment(GetMesh());
+	OverheadHPBar->SetWidgetSpace(EWidgetSpace::Screen);
+
 	AttackRange = 40.f;
+
 }
 
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	UpdateOverheadHP();
+
 	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(AnimInstance) == true)
 	{
 		
 	}
+
 
 	if (false == IsPlayerControlled())
 	{
@@ -154,3 +168,23 @@ void AEnemyCharacter::EndAttack(UAnimMontage* InMontage, bool bInterruped)
 		OnAttackMontageEndedDelegate.Unbind();
 	}
 }
+
+void AEnemyCharacter::UpdateOverheadHP()
+{
+	if (!OverheadHPBar) return;
+
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
+		{
+			UUserWidget* ShotEventWidgetInstance = OverheadHPBar->GetUserWidgetObject();
+			if (!ShotEventWidgetInstance) return;
+			if (UProgressBar* HPBar = Cast<UProgressBar>(ShotEventWidgetInstance->GetWidgetFromName(TEXT("AI_HPBar"))))
+			{
+				
+				HPBar->SetPercent(CurrentHP / MaxHP);
+			}
+		}
+	}
+}
+
