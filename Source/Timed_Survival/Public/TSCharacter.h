@@ -31,8 +31,11 @@ private:
 	// 조준을 하고있는지 판단
 	bool bIsAiming = false;
 
-	// 이동키를 입력하고 있는지 확인
+	// 이동키를 입력하고 있는지 판단
 	bool IsMovingForward = false;
+
+	// 재장전중인지 판다
+	bool bIsReloading = false;
 
 	// 마지막 입력된 이동 값 저장
 	FVector2D LastMoveInput; 
