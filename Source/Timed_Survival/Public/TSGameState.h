@@ -77,13 +77,10 @@ public:
 
 	// about Bullet Items
 	int32 CurrentBulletCount;
-	int32 BulletCountInWeapon;
 	int32 MaxBulletCount;
 	FTimerHandle BulletDataUpdateTimerHandel;
-	void UpdateBulletData();
-
-	/*void FindARBullet();
-	void FindPistolBullet();*/
+	int32 UpdateBulletData(int32 CurrentBullet);
+	void GetWeaponBulletData(int32 CurrentBullet, int32 Maxbullet);
 
 	// 방독면 관련 변수
 	bool bIsStopTimeReductionEnabled = true; // 시간 감소 활성화 여부
