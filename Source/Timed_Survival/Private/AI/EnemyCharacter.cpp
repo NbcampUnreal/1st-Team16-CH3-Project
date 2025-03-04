@@ -26,6 +26,7 @@ AEnemyCharacter::AEnemyCharacter()
 	OverheadHPBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadHPBar"));
 	OverheadHPBar->SetupAttachment(GetMesh());
 	OverheadHPBar->SetWidgetSpace(EWidgetSpace::Screen);
+
 }
 
 void AEnemyCharacter::BeginPlay()
