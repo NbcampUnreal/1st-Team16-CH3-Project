@@ -83,6 +83,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Opening")
 	UUserWidget* OpeningWidgetInstance;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponEvent")
+	TSubclassOf<UUserWidget> AimWidgetClass; // ShelterMenuWidget
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponEvent")
+	UUserWidget* AimWidgetInstance;
+
 
 	UFUNCTION(BlueprintPure, Category = "HUD")
 	UUserWidget* GetHUDWidget() const;
@@ -106,6 +111,8 @@ public:
 	void ShowClearScore();
 	UFUNCTION(BlueprintCallable, Category = "Score")
 	void ShowShelterMenu();
+	UFUNCTION(BlueprintCallable, Category = "WeaponEvent")
+	void ShowAimWidget();
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void ClearWidget(); // Clear All Widget except HUD
 	UFUNCTION(BlueprintCallable, Category = "Menu")

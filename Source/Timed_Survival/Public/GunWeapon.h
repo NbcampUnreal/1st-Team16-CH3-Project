@@ -58,10 +58,10 @@ public:
 	virtual void FireBullet() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	float MinDamage;
+	float MinDamage = 10.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	float MaxDamage;
+	float MaxDamage = 20.0f;
 
 	int32 GetBulletInPlayer() const { return ReserveBullet; }
 	int32 GetBulletCount() const { return BulletCount; }
