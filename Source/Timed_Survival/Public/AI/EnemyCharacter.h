@@ -9,6 +9,7 @@
 DECLARE_DELEGATE_TwoParams(FOnAttackMontageEnded, UAnimMontage*, bool /*bInterrupted*/)
 
 class UAnimMontage;
+class UWidgetComponent;
 
 UCLASS()
 class TIMED_SURVIVAL_API AEnemyCharacter : public ATS_EnemyCharacterBase
@@ -19,13 +20,21 @@ class TIMED_SURVIVAL_API AEnemyCharacter : public ATS_EnemyCharacterBase
 
 public:
 	AEnemyCharacter();
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	UWidgetComponent* OverheadDamageNum;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	UWidgetComponent* OverheadHPBar;
+
 	virtual void BeginPlay() override;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 		AController* EventInstigator, AActor* DamageCauser) override;
 
 	void AIOnDeath();
+	void UpdateOverheadHP();
+
+	void OnCheckHit();
 
 protected:
 	virtual void BeginAttack();
@@ -46,5 +55,7 @@ protected:
 	int32 MaxHP;
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Stats")
 	float Damage;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Stats")
+	float AttackRange;
 
 };

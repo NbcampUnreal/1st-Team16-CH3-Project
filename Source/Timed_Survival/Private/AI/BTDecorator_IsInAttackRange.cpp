@@ -4,7 +4,7 @@
 #include "AI/BTDecorator_IsInAttackRange.h"
 #include "AI/EnemyAIController.h"
 #include "AI/EnemyCharacter.h"
-#include "TSCharacter.h"
+#include "GameFrameWork/Character.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 const float UBTDecorator_IsInAttackRange::AttackRange = 200.f;
@@ -25,7 +25,7 @@ bool UBTDecorator_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeCompo
 	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(AIController->GetPawn());
 	checkf(IsValid(Enemy) == true, TEXT("Invalid Enemey"));
 
-	ATSCharacter* TargetPlayer = Cast<ATSCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AEnemyAIController::TargetActorKey));
+	ACharacter* TargetPlayer = Cast<ACharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AEnemyAIController::TargetActorKey));
 	if (IsValid(TargetPlayer) == true && TargetPlayer->IsPlayerControlled() == true)
 	{
 		return Enemy->GetDistanceTo(TargetPlayer) <= AttackRange;

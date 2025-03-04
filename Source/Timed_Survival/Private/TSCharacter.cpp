@@ -29,7 +29,6 @@ ATSCharacter::ATSCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bUseControllerRotationYaw = false;
-
 }
 
 // 무기 타입으로 무기 찾는 함수(총알 추가용)
@@ -379,12 +378,19 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 
 void ATSCharacter::StartFire(const FInputActionValue& value)
 {
+	// 점프중이거나, 조준중이 아니면 return;
 	if (GetCharacterMovement()->IsFalling() || !bIsAiming) return;
 
 	if (!WeaponChildActor)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Fire(): WeaponChildActor가 nullptr입니다!"));
 		return;
+	}
+
+	// 총알없으면 총쏘는 애니메이션 안나가게 
+	if (CurrentBullet <= 0)
+	{
+		bFire = false;
 	}
 
 	AActor* ChildActor = WeaponChildActor->GetChildActor();
@@ -394,6 +400,7 @@ void ATSCharacter::StartFire(const FInputActionValue& value)
 		return;
 	}
 
+	// childActor가 없으면 return;
 	AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
 	if (!EquippedWeapon)
 	{
@@ -414,7 +421,7 @@ void ATSCharacter::StartFire(const FInputActionValue& value)
 	}
 
 	// 총 발사 실행
-	EquippedWeapon->FireBullet();
+	EquippedWeapon->StartFire();
 
 	// 총 발사 후 다시 탄약 개수 업데이트
 	CurrentBullet = EquippedWeapon->GetBulletCount();
@@ -431,6 +438,13 @@ void ATSCharacter::StopFire(const FInputActionValue& value)
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
 
+	// GunWeapon에 StopFire()호출해서 타이머핸들 Clear해준다.
+	AActor* ChildActor = WeaponChildActor->GetChildActor();
+	AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->StopFire();
+	}
 
 	// Fire 변수를 false로 설정하여 애니메이션 블루프린트에서 감지 가능하게 함
 	bFire = false;
@@ -451,7 +465,7 @@ void ATSCharacter::StartAiming(const FInputActionValue& value)
 
 	bIsAiming = true;
 	CameraComp->SetFieldOfView(AimFOV);
-	SpringArmComp->SocketOffset = FVector(180, -10, -35);
+	SpringArmComp->SocketOffset = FVector(180, -50, -35);
 	SpringArmComp->SetRelativeRotation(FRotator(-5, 6, 0));
 }
 
@@ -491,9 +505,22 @@ void ATSCharacter::Death()
 
 
 // About Health
-void ATSCharacter::TakeDamage()
+float ATSCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	float ResultDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
+	//if (CurrentHP > 0)
+	//{
+	//	CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, 100);
+	//	UE_LOG(LogTemp, Warning, TEXT("남은 체력 : %f"), CurrentHP);
+
+	//	if (CurrentHP <= 0)
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("사망"), CurrentHP);
+	//		Death();
+	//	}
+	//}
+	return ResultDamage;
 }
 
 void ATSCharacter::EnableMovementAfterReload()
