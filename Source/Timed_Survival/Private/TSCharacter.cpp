@@ -451,7 +451,7 @@ void ATSCharacter::StartAiming(const FInputActionValue& value)
 
 	bIsAiming = true;
 	CameraComp->SetFieldOfView(AimFOV);
-	SpringArmComp->SocketOffset = FVector(180, -10, -35);
+	SpringArmComp->SocketOffset = FVector(180, -50, -35);
 	SpringArmComp->SetRelativeRotation(FRotator(-5, 6, 0));
 }
 
