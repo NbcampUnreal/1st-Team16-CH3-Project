@@ -21,6 +21,7 @@ class TIMED_SURVIVAL_API AEnemyAIController : public AAIController
 public:
 	AEnemyAIController();
 
+	void EndAI();
 protected:
 	virtual void BeginPlay() override;
 
@@ -28,7 +29,6 @@ protected:
 
 	void BeginAI(APawn* InPawn);
 
-	void EndAI();
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AIPerception")
