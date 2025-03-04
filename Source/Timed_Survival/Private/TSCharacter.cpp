@@ -379,54 +379,47 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 
 void ATSCharacter::StartFire(const FInputActionValue& value)
 {
-	// 점프나 조준중이 아니면 발사 금지
 	if (GetCharacterMovement()->IsFalling() || !bIsAiming) return;
 
-
-	if (GetCharacterMovement())
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
-	}
-
-	//테스트
 	if (!WeaponChildActor)
 	{
-		UE_LOG(LogTemp, Error, TEXT(" Fire(): WeaponChildActor가 nullptr입니다! 블루프린트에서 설정되었는지 확인하세요."));
+		UE_LOG(LogTemp, Error, TEXT("Fire(): WeaponChildActor가 nullptr입니다!"));
 		return;
 	}
 
 	AActor* ChildActor = WeaponChildActor->GetChildActor();
 	if (!ChildActor)
 	{
-		UE_LOG(LogTemp, Error, TEXT(" Fire(): WeaponChildActor->GetChildActor()가 nullptr입니다! BP_M16이 올바르게 설정되었는지 확인하세요."));
+		UE_LOG(LogTemp, Error, TEXT("Fire(): WeaponChildActor->GetChildActor()가 nullptr입니다!"));
 		return;
 	}
 
-	//  GunWeapon 타입으로 캐스팅하여 FireBullet() 호출
 	AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
-	if (EquippedWeapon)
+	if (!EquippedWeapon)
 	{
-		UE_LOG(LogTemp, Warning, TEXT(" Fire(): 무기 발사 시도!"));
-
-		//  FireBullet() 실행 전 확인 로그 추가
-		if (EquippedWeapon->GetBulletCount() > 0)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Fire(): 탄약 개수 충분 - FireBullet() 실행!"));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT(" Fire(): 탄약 없음! FireBullet() 실행 불가!"));
-		}
-
-		EquippedWeapon->FireBullet();
-		UE_LOG(LogTemp, Warning, TEXT(" Fire(): FireBullet() 호출 완료!"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT(" Fire(): ChildActor를 AGunWeapon으로 캐스팅 실패! BP_M16이 GunWeapon을 상속받았는지 확인하세요."));
+		UE_LOG(LogTemp, Error, TEXT("Fire(): ChildActor를 AGunWeapon으로 캐스팅 실패!"));
+		return;
 	}
 
-	// Fire 변수를 true로 설정하여 애니메이션 블루프린트에서 감지 가능하게 함
+	// 현재 탄약 개수 가져오기
+	CurrentBullet = EquippedWeapon->GetBulletCount();
+
+	UE_LOG(LogTemp, Warning, TEXT("Fire(): 현재 탄약 개수: %d"), CurrentBullet);
+
+	// 탄약이 없으면 발사하지 않음
+	if (CurrentBullet <= 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Fire(): 탄약 없음! 발사 불가!"));
+		return;
+	}
+
+	// 총 발사 실행
+	EquippedWeapon->FireBullet();
+
+	// 총 발사 후 다시 탄약 개수 업데이트
+	CurrentBullet = EquippedWeapon->GetBulletCount();
+	UE_LOG(LogTemp, Warning, TEXT("Fire(): 발사 후 남은 탄약 개수: %d"), CurrentBullet);
+
 	bFire = true;
 }
 
