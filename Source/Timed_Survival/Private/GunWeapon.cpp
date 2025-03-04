@@ -1,4 +1,6 @@
 #include "GunWeapon.h"
+#include "TSGameState.h"
+#include "TSAmmo.h"
 #include "TSCharacter.h"  // 🔹 여기에서만 포함하면 순환 종속 문제 해결
 #include "TimerManager.h"
 #include "Engine/World.h"
@@ -37,6 +39,7 @@ void AGunWeapon::Fire()
 void AGunWeapon::AddBullet(int32 Amount)
 {
 	ReserveBullet += Amount; // 예비 탄약에 추가
+		
 	//디버그용
 	UE_LOG(LogTemp, Warning, TEXT("%s 탄약 추가됨! 현재 탄약: %d"), *WeaponType.ToString(), ReserveBullet);
 }
