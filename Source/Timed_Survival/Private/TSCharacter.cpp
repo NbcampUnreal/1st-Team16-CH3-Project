@@ -342,10 +342,17 @@ void ATSCharacter::StopCrouch(const FInputActionValue& value)
 
 void ATSCharacter::Reload(const FInputActionValue& value)
 {
-	if (GetCharacterMovement()->IsFalling())
+	if (GetCharacterMovement()->IsFalling()) return;
+
+	// 이미 재장전 중이면 return
+	if (bIsReloading) return;
+
+	if (bFire)
 	{
-		return;
+		StopFire(value);
 	}
+
+	bIsReloading = true;
 
 	UAnimInstance* AnimInstance = Cast<UAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(AnimInstance) == true && IsValid(ReloadAnimation) == true && AnimInstance->Montage_IsPlaying(ReloadAnimation) == false)
@@ -380,6 +387,12 @@ void ATSCharacter::StartFire(const FInputActionValue& value)
 {
 	// 점프중이거나, 조준중이 아니면 return;
 	if (GetCharacterMovement()->IsFalling() || !bIsAiming) return;
+
+	// 장전중이면 return;
+	if (bIsReloading)
+	{
+		return;
+	}
 
 	if (!WeaponChildActor)
 	{
@@ -525,6 +538,7 @@ float ATSCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 
 void ATSCharacter::EnableMovementAfterReload()
 {
+	bIsReloading = false;
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 }
 
