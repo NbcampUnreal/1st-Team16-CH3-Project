@@ -29,6 +29,8 @@ ATSPlayerController::ATSPlayerController()
 	ShelterMenuWidgetInstance(nullptr),
 	OpeningWidgetClass(nullptr),
 	OpeningWidgetInstance(nullptr),
+	ShotEventWidgetClass(nullptr),
+	ShotEventWidgetInstance(nullptr),
 	AimWidgetClass(nullptr),
 	AimWidgetInstance(nullptr)
 {
@@ -223,6 +225,21 @@ void ATSPlayerController::ShowShelterMenu()
 	}
 }
 
+void ATSPlayerController::ShowShotEventWidget()
+{
+	if (ShotEventWidgetClass)
+	{
+		ShotEventWidgetInstance = CreateWidget<UUserWidget>(this, ShotEventWidgetClass);
+		if (ShotEventWidgetInstance)
+		{
+			ShotEventWidgetInstance->AddToViewport();
+
+			bShowMouseCursor = false;
+			SetInputMode(FInputModeGameOnly());
+		}
+	}
+}
+
 void ATSPlayerController::ShowAimWidget()
 {
 	if (AimWidgetClass)
@@ -281,6 +298,12 @@ void ATSPlayerController::ClearWidget() // Clear All Widget except HUD
 		ShelterMenuWidgetInstance = nullptr;
 	}
 
+	if (ShotEventWidgetInstance)
+	{
+		ShotEventWidgetInstance->RemoveFromParent();
+		ShotEventWidgetInstance = nullptr;
+	}
+	
 	if (AimWidgetInstance)
 	{
 		AimWidgetInstance->RemoveFromParent();
