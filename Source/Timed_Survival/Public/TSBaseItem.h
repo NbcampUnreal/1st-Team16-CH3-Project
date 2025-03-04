@@ -27,6 +27,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bullet")
 	FName WeaponType;
 
+	// 아웃라인 활성화 함수
+	UFUNCTION(BlueprintCallable, Category = "Outline")
+	void EnableOutline(bool bEnable);
+
 protected:
 
 	// 씬 컴포넌트
@@ -67,6 +71,9 @@ protected:
 	// 테두리 효과 적용을 위한 트리거 컴포넌트
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* OutlineTrigger;
+
+	
+
 
 	//----------------------------------------------------------------
 

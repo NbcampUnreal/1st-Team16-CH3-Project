@@ -14,24 +14,25 @@ class TIMED_SURVIVAL_API ATSItemSpawnVolume : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+
+public:
 	ATSItemSpawnVolume();
-    
+
+protected:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
 	USceneComponent* Scene;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
 	UBoxComponent* SpawningBox;
 
-	//데이터 테이블 가져오기
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
-	UDataTable* ItemDataTable;
+	UDataTable* ItemDataTable; // 스폰할 데이터 테이블
 
-	//랜덤한 아이템을 스폰 시키는 함수
-	UFUNCTION(BlueprintCallable, Category = "Spawning")
-	AActor* SpawnRandomItem();
+	// 자식 클래스에서 구현할 함수 (BeginPlay에서 각각 호출)
+	virtual void BeginPlay() override;
 
-	FVector GetRandomPointInVolume() const; // 랜덤 좌표
-	FTSItemSpawnRow* GetRandomItem() const;
-	AActor* SpawnItem(TSubclassOf<AActor> ItemClass); //스폰함수 (템플릿 지정_AActor의 하위 클래스 포함)
-	
+	// 아이템을 스폰하는 기본 함수 (공통 사용)
+	AActor* SpawnItems(TSubclassOf<AActor> ItemClass);
+	FVector GetRandomPointInVolume() const;
 };

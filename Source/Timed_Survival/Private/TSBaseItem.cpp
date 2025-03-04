@@ -84,6 +84,15 @@ void ATSBaseItem::OnOutlineTriggerEndOverlap(
 	}
 }
 
+// 아웃라인 활성화 함수
+void ATSBaseItem::EnableOutline(bool bEnable)
+{
+	if (StaticMesh)
+	{
+		StaticMesh->SetRenderCustomDepth(bEnable);
+	}
+}
+
 //--------------------------------------------------------------------
 
 
