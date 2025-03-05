@@ -5,6 +5,8 @@
 #include "TSGameState.generated.h"
 
 class ATSBaseItem;
+class UTSWidgetManager;
+class UTSUserWidgetManager;
 
 UCLASS()
 class TIMED_SURVIVAL_API ATSGameState : public AGameState
@@ -60,9 +62,11 @@ public:
 	TMap<FTimerHandle, FName> WidgetTimerMap;
 	FName EventItemType;
 	FTimerHandle HUDUpdateTimerHandle;
+	UTSUserWidgetManager* WidgetManager;
 	void UpdateHUD();
 	void PickWidgetbyItemType(FName Type);
 	void PopUpWidget(FName ItemType, UUserWidget* ItemWidget, float ViewTime);
+	void WidgetsViewFront();
 
 	// about Health(Timer) Function - with Item Class
 	void IncreaseTime(float Value);

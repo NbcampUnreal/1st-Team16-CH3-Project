@@ -25,6 +25,7 @@ public:
 	UWidgetComponent* OverheadDamageNum;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	UWidgetComponent* OverheadHPBar;
+	FTimerHandle UpdateHPBarTimerHandle;
 
 	virtual void BeginPlay() override;
 
@@ -33,6 +34,7 @@ public:
 
 	void AIOnDeath();
 	void UpdateOverheadHP();
+	/*void SetOverheadWidgetViewFront();*/
 
 	void OnCheckHit();
 

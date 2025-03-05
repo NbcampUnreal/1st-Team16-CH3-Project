@@ -12,6 +12,8 @@
 #include "Components/ProgressBar.h"
 #include "Blueprint/UserWidget.h"
 #include "EngineUtils.h"
+#include "TSUserWidgetManager.h"
+#include <Components/WidgetComponent.h>
 
 
 ATSGameState::ATSGameState()
@@ -24,10 +26,10 @@ ATSGameState::ATSGameState()
 	HealingCount = 0;
 	CurrentM16BulletCount = 0;
 	CurrentShotGunBulletCount = 0;
-	BulletInM16 = 0;
-	BulletInShotGun = 0;
-	MaxShotGun = 0;
-	MaxM16 = 0;
+	BulletInM16 = 10;
+	BulletInShotGun = 2;
+	MaxShotGun = 2;
+	MaxM16 = 10;
 
 	SetMaskEffectTime = 0.0f;
 	MaskTimeRemaining = 0.0f;
@@ -35,7 +37,6 @@ ATSGameState::ATSGameState()
 	MapNum = 0;
 	Maplist.Add(TEXT("ForestLevel")); // MapNumber 0
 	Maplist.Add(TEXT("OldHouseLevel")); // MapNumber 1
-
 
 }
 
@@ -58,7 +59,6 @@ void ATSGameState::BeginPlay()
 		&ATSGameState::UpdateBulletCount,
 		0.1f, true);	
 }
-
 
 
 //about Game flow
@@ -191,7 +191,6 @@ void ATSGameState:: BattleSystem()
 
 // about UI Function
 
-
 void ATSGameState::UpdateHUD()
 {
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
@@ -208,7 +207,7 @@ void ATSGameState::UpdateHUD()
 				//1)-1 Health Text
 				if (UTextBlock* HealthText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("HealthText"))))
 				{
-					HealthText->SetText(FText::FromString(FString::Printf(TEXT("HealthTest : %.1f"),CurrentHealth)));
+					HealthText->SetText(FText::FromString(FString::Printf(TEXT("HealthTest : %.1f"), CurrentHealth)));
 				}
 
 				// 1)-2 Health Bar percent
@@ -224,17 +223,34 @@ void ATSGameState::UpdateHUD()
 				}
 
 				// 2) About Bullet HUD========================================================================================
-				
+				GetWeaponBulletData();
+
 				// 2)-1 AR Bullet
-				if (UTextBlock* CountM16Bullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("M16BulletReload"))))
+				if (ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0))			
 				{
-					CountM16Bullet->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentM16BulletCount, MaxM16)));
+					if (PlayerCharacter->IsA(ATSCharacter::StaticClass()))
+					{
+						if (UTextBlock* CountM16Bullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("M16BulletReload"))))
+						{
+							CountM16Bullet->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentM16BulletCount, MaxM16)));
+							CountM16Bullet->SetVisibility(ESlateVisibility::Visible);
+						}
+					}
 				}
+				
 				// 2)-2 ShotGun Bullet
-				if (UTextBlock* CountShotGunBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ShotGunBulletReload"))))
+				if (ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0))
 				{
-					CountShotGunBullet->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentShotGunBulletCount, MaxShotGun)));
+					if (PlayerCharacter->IsA(ATSCharacter2::StaticClass()))
+					{
+						if (UTextBlock* CountShotGunBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ShotGunBulletReload"))))
+						{
+							CountShotGunBullet->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentShotGunBulletCount, MaxShotGun)));
+							CountShotGunBullet->SetVisibility(ESlateVisibility::Visible);
+						}
+					}
 				}
+				
 								
 				// 3) About Gas Mask HUD========================================================================================
 				if (UProgressBar* GasMask = Cast<UProgressBar>(HUDWidget->GetWidgetFromName(TEXT("Mask"))))
@@ -318,6 +334,7 @@ void ATSGameState::PopUpWidget(FName ItemType, UUserWidget* ItemWidget, float Vi
 		ViewTime, false);
 	
 }
+
 
 //----------------------- 방독면 ------------------------
 
