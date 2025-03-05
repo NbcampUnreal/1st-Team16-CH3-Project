@@ -30,6 +30,7 @@ ATSCharacter2::ATSCharacter2()
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bUseControllerRotationYaw = false;
 
+	Tags.Add(TEXT("Player"));
 }
 
 // 무기 타입으로 무기 찾는 함수(총알 추가용)
