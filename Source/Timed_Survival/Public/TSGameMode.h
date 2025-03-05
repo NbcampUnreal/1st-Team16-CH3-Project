@@ -18,6 +18,9 @@ protected:
 
 	void SpawnSelectedCharacter();
 
+	// 맵에 배치된 모든 스폰 포인트에서 아이템 생성
+	void SpawnItemsFromActors();
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> WeaponSelectWidgetClass;

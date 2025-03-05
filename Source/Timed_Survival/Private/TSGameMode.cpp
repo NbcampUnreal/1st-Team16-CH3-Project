@@ -1,6 +1,7 @@
 #include "TSGameMode.h"
 #include "TSCharacter.h"
 #include "TSGameInstance.h"
+#include "TSItemSpawnPoint.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "TSPlayerController.h"
@@ -66,6 +67,8 @@ void ATSGameMode::BeginPlay()
 	//		}
 	//	}
 	//}
+
+	SpawnItemsFromActors(); // 아이템 스폰포인트에 아이템 스폰
 }
 
 
@@ -92,5 +95,26 @@ void ATSGameMode::SpawnSelectedCharacter()
 	{
 		// 플레이어 컨트롤러가 새로운 캐릭터를 조종하도록 설정
 		PlayerController->Possess(NewCharacter);
+	}
+}
+
+
+
+// ============================================================================================================
+// 모든 스폰 포인트에서 아이템 스폰
+void ATSGameMode::SpawnItemsFromActors()
+{
+	TArray<AActor*> FoundSpawnPoints;
+
+	// 맵에 있는 모든 TSItemSpawnPoint 가져오기
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATSItemSpawnPoint::StaticClass(), FoundSpawnPoints);
+
+	for (AActor* SpawnPoint : FoundSpawnPoints)
+	{
+		ATSItemSpawnPoint* ItemSpawn = Cast<ATSItemSpawnPoint>(SpawnPoint);
+		if (ItemSpawn)
+		{
+			ItemSpawn->SpawnItem();
+		}
 	}
 }
