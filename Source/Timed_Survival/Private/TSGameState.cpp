@@ -577,7 +577,6 @@ void ATSGameState::UpdateBulletCount()
 	CurrentShotGunBulletCount = BulletInShotGun;
 }
 
-
 void ATSGameState::SetM16BulletCount(int32 CurrentBullet)
 {
 	BulletInM16 = CurrentBullet;

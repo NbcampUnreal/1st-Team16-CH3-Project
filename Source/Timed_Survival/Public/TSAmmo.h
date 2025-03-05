@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "TSAmmo.generated.h"
 
 
@@ -35,6 +36,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class USphereComponent* CollisionComponent;
+
+	UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovement; }
 	
 
 private:
@@ -47,7 +50,4 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage", meta = (AllowPrivateAccess = "true"))
 	float Damage;
-
-public:
-	UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovement; }
 };
