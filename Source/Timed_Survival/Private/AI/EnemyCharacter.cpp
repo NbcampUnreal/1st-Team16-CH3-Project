@@ -37,6 +37,8 @@ AEnemyCharacter::AEnemyCharacter()
 
 	AttackRange = 40.f;
 
+	BeforeTakeDamage = MaxHP;
+	AfterTakeDamage = MaxHP;
 }
 
 void AEnemyCharacter::BeginPlay()
@@ -46,7 +48,7 @@ void AEnemyCharacter::BeginPlay()
 
 	UpdateOverheadHP();
 
-	GetWorldTimerManager().SetTimer( //HUD Timer
+	GetWorldTimerManager().SetTimer( //Overhead Timer
 		UpdateHPBarTimerHandle,
 		this,
 		&AEnemyCharacter::UpdateOverheadHP,
@@ -76,7 +78,10 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (CurrentHP > 0)
 	{
+		BeforeTakeDamage = AfterTakeDamage;
 		CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, 100);
+		AfterTakeDamage = CurrentHP;
+
 		if (CurrentHP <= 0)
 		{
 			AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
@@ -173,6 +178,8 @@ void AEnemyCharacter::EndAttack(UAnimMontage* InMontage, bool bInterruped)
 	}
 }
 
+//about OverHead UI
+
 void AEnemyCharacter::UpdateOverheadHP()
 {
 	if (!OverheadHPBar) return;
@@ -183,6 +190,8 @@ void AEnemyCharacter::UpdateOverheadHP()
 		{
 			UUserWidget* ShotEventWidgetInstance = OverheadHPBar->GetUserWidgetObject();
 			if (!ShotEventWidgetInstance) return;
+
+			//1) HP Bar
 			if (UProgressBar* HPBar = Cast<UProgressBar>(ShotEventWidgetInstance->GetWidgetFromName(TEXT("AI_HPBar"))))
 			{
 				HPBar->SetPercent(CurrentHP / MaxHP);
@@ -198,10 +207,15 @@ void AEnemyCharacter::UpdateOverheadHP()
 				OverheadHPBar->SetWorldRotation(HPBarView);
 				SetActorRotation(HPBarView);
 			}
+
+			//2)Damage Num
+			if (UTextBlock* DamageNum = Cast<UTextBlock>(ShotEventWidgetInstance->GetWidgetFromName(TEXT("Damage"))))
+			{
+				float DamageValue = BeforeTakeDamage - AfterTakeDamage;
+				int32 Damageint32 = FMath::RoundToInt(DamageValue);
+				DamageNum->SetText(FText::FromString(FString::Printf(TEXT("%d"), Damageint32)));
+			}
 		}
 	}
 }
-//void AEnemyCharacter::SetOverheadWidgetViewFront()
-//{
-//
-//}
+
