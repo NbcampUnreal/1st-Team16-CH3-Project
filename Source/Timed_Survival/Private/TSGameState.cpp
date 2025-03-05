@@ -47,6 +47,8 @@ void ATSGameState::BeginPlay()
 	UpdateHUD();
 	StartLevel();
 
+	RespawnHealth = CurrentHealth; // 초기 리스폰 체력을 현재 체력 값으로 설정
+
 	GetWorldTimerManager().SetTimer( //HUD Timer
 		HUDUpdateTimerHandle,
 		this,
@@ -59,6 +61,29 @@ void ATSGameState::BeginPlay()
 		&ATSGameState::UpdateBulletCount,
 		0.1f, true);	
 }
+
+//-------------------- 리스폰 관련 함수 --------------------
+
+// 리스폰 데이터 저장
+void ATSGameState::SetRespawnPoint(const FVector& NewLocation, float NewHealth)
+{
+	RespawnLocation = NewLocation;
+	RespawnHealth = NewHealth;
+}
+
+// 리스폰 위치 반환
+FVector ATSGameState::GetRespawnLocation() const
+{
+	return RespawnLocation;
+}
+
+// 리스폰 체력 반환
+float ATSGameState::GetRespawnHealth() const
+{
+	return RespawnHealth;
+}
+// -------------------------------------------------------------
+
 
 
 //about Game flow
