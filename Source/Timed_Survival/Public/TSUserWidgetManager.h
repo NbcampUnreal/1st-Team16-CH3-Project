@@ -18,4 +18,11 @@ public:
 	
 	UFUNCTION()
 	virtual void NativeOnInitialized() override;
+
+	UFUNCTION(BlueprintCallable, Category = "Event")
+	void CallMainMenu();
+	UFUNCTION(BlueprintCallable, Category = "Event")
+	void CallGameStage();
+	UFUNCTION(BlueprintCallable, Category = "Event")
+	void QuitGame();
 };
