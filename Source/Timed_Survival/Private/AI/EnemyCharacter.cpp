@@ -5,17 +5,19 @@
 #include "AI/EnemyAIController.h"
 #include "AI/Animation/TSEnemyAnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Character.h"
 #include "Components/WidgetComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
+#include "Components/CapsuleComponent.h"
 #include "TSPlayerController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
-#include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "TSGameState.h"
 #include "Engine/TimerHandle.h"
+#include "Engine/HitResult.h"
+
 
 
 AEnemyCharacter::AEnemyCharacter()
@@ -87,7 +89,8 @@ void AEnemyCharacter::OnCheckHit()
         {
 			ATSGameState* GameState = Cast<ATSGameState>(GetWorld()->GetGameState());
             FHitResult HitResult;
-            FCollisionQueryParams Params(NAME_None, false, this);
+            FCollisionQueryParams Params;
+			Params.AddIgnoredActor(this);
             const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
             const FVector End = Start + GetActorForwardVector() * AttackRange;
             const float Radius = 50.f;
@@ -102,10 +105,10 @@ void AEnemyCharacter::OnCheckHit()
                 Params
             );
 
+			UKismetSystemLibrary::PrintString(this, TEXT("OnCheckHit()"));
             // ApplyDamage() 호출
             if (bOnHit == true)
             {
-				UKismetSystemLibrary::PrintString(this, TEXT("OnCheckHit()"));
 				if (IsValid(GameState))
 				{
 					GameState->ReduceTime(Damage,true);
