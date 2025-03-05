@@ -19,9 +19,9 @@
 ATSGameState::ATSGameState()
 {	
 	HealthBarMax = 180.0;
-	BaseHealth = 3.0f; // unit of time : min
+	BaseHealth = 15.0f; // unit of time : min
 	ItemHealth = 0.0f;
-	CurrentHealth = BaseHealth * 60.0f; // change unit of time : sec
+	CurrentHealth = BaseHealth * 1.0f; // change unit of time : sec
 		
 	HealingCount = 0;
 	CurrentM16BulletCount = 0;
@@ -236,11 +236,12 @@ void ATSGameState::UpdateHUD()
 				float TotalHealthSet = CurrentHealth / HealthBarMax; // HealthBar 비율 세팅
 				int32 Bundle = (int32)TotalHealthSet; // HealthBar 몫
 				float HealthPercent = TotalHealthSet - Bundle; // HealthBar 반영 비율
+				int32 HealthNum = FMath::FloorToInt(CurrentHealth);
 
 				//1)-1 Health Text
 				if (UTextBlock* HealthText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("HealthText"))))
 				{
-					HealthText->SetText(FText::FromString(FString::Printf(TEXT("HealthTest : %.1f"), CurrentHealth)));
+					HealthText->SetText(FText::FromString(FString::Printf(TEXT("HealthTest : %d"), HealthNum)));
 				}
 
 				// 1)-2 Health Bar percent
@@ -423,7 +424,7 @@ void ATSGameState::PopUpGameOver()
 					UTSGameInstance* TSGameInstance = Cast<UTSGameInstance>(GameInstance);
 					if (TSGameInstance)
 					{
-						if (UTextBlock* PlayTime = Cast<UTextBlock>(GameOverWidget->GetWidgetFromName(TEXT("PlayTime01_data"))))
+						if (UTextBlock* PlayTime = Cast<UTextBlock>(GameOverWidget->GetWidgetFromName(TEXT("Playtime_Count"))))
 						{
 							float TimeData = TSGameInstance->PlayTimeInCurrentLevel();
 							int32 Minutes = FMath::FloorToInt(TimeData / 60);
@@ -432,12 +433,12 @@ void ATSGameState::PopUpGameOver()
 							PlayTime->SetText(FText::FromString(FString::Printf(TEXT("%02d:%05.2f"), Minutes, Seconds)));
 						}
 
-						if (UTextBlock* KillCount = Cast<UTextBlock>(GameOverWidget->GetWidgetFromName(TEXT("Killdata"))))
+						if (UTextBlock* KillCount = Cast<UTextBlock>(GameOverWidget->GetWidgetFromName(TEXT("KillScore_Num"))))
 						{
 							KillCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), TSGameInstance->TotalKillCount)));
 						}
 
-						if (UTextBlock* HealCount = Cast<UTextBlock>(GameOverWidget->GetWidgetFromName(TEXT("Healdata"))))
+						if (UTextBlock* HealCount = Cast<UTextBlock>(GameOverWidget->GetWidgetFromName(TEXT("HealingScore_Num"))))
 						{
 							HealCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), TSGameInstance->TotalHealingCount)));
 						}
