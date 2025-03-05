@@ -491,14 +491,13 @@ void ATSGameState::UpdateBulletCount()
 
 void ATSGameState::GetWeaponBulletData()
 {
-	// 지워야할 듯
-	/*ATSCharacter2* ShotGunPlayer = GetWorld()->SpawnActor<ATSCharacter2>(ATSCharacter2::StaticClass());	
-	if (ShotGunPlayer)
-	{
-		MaxShotGun = ShotGunPlayer->MaxShotGunBullet;
-	}
+	//ATSCharacter2* ShotGunPlayer = GetWorld()->SpawnActor<ATSCharacter2>(ATSCharacter2::StaticClass());	
+	//if (ShotGunPlayer)
+	//{
+	//	MaxShotGun = ShotGunPlayer->MaxShotGunBullet;
+	//}
 
-	AGunWeapon* M16Player = GetWorld()->SpawnActor<AGunWeapon>(AGunWeapon::StaticClass());
+	/*AGunWeapon* M16Player = GetWorld()->SpawnActor<AGunWeapon>(AGunWeapon::StaticClass());
 	if (M16Player)
 	{
 		MaxM16 = M16Player->MaxBulletCount;
