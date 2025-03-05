@@ -69,6 +69,11 @@ UUserWidget* ATSPlayerController::GetClearScoreWidget() const
 	return ClearScoreWidgetInstance;
 }
 
+UUserWidget* ATSPlayerController::GetGameOverWidget() const
+{
+	return GameOverWidgetInstance;
+}
+
 void ATSPlayerController::StartGame()
 {
 	ChangeToIMC();

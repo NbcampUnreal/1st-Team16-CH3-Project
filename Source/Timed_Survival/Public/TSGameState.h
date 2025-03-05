@@ -75,6 +75,7 @@ public:
 	void PickWidgetbyItemType(FName Type);
 	void PopUpWidget(FName ItemType, UUserWidget* ItemWidget, float ViewTime);
 	void PopUpClearScore();
+	void PopUpGameOver();
 
 	// about Health(Timer) Function - with Item Class
 	void IncreaseTime(float Value);

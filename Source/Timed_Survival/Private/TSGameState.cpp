@@ -409,6 +409,45 @@ void ATSGameState::PopUpClearScore()
 	}
 }
 
+//Game Over UI
+void ATSGameState::PopUpGameOver()
+{
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController);
+		{
+			if (UUserWidget* GameOverWidget = TSPlayerController->GetGameOverWidget())
+			{
+				if (UGameInstance* GameInstance = GetGameInstance())
+				{
+					UTSGameInstance* TSGameInstance = Cast<UTSGameInstance>(GameInstance);
+					if (TSGameInstance)
+					{
+						if (UTextBlock* PlayTime = Cast<UTextBlock>(GameOverWidget->GetWidgetFromName(TEXT("PlayTime01_data"))))
+						{
+							float TimeData = TSGameInstance->PlayTimeInCurrentLevel();
+							int32 Minutes = FMath::FloorToInt(TimeData / 60);
+							float Seconds = TimeData - (Minutes * 60);
+
+							PlayTime->SetText(FText::FromString(FString::Printf(TEXT("%02d:%05.2f"), Minutes, Seconds)));
+						}
+
+						if (UTextBlock* KillCount = Cast<UTextBlock>(GameOverWidget->GetWidgetFromName(TEXT("Killdata"))))
+						{
+							KillCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), TSGameInstance->TotalKillCount)));
+						}
+
+						if (UTextBlock* HealCount = Cast<UTextBlock>(GameOverWidget->GetWidgetFromName(TEXT("Healdata"))))
+						{
+							HealCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), TSGameInstance->TotalHealingCount)));
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 
 //----------------------- 방독면 ------------------------
 

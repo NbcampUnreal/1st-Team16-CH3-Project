@@ -97,6 +97,8 @@ public:
 	UUserWidget* GetHUDWidget() const;
 	UFUNCTION(BlueprintPure, Category = "Score")
 	UUserWidget* GetClearScoreWidget() const;
+	UFUNCTION(BlueprintPure, Category = "Score")
+	UUserWidget* GetGameOverWidget() const;
 
 	void ChangeToWidgetIMC();
 	void ChangeToIMC();
