@@ -16,12 +16,13 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "TSGameState.h"
+#include "Engine/TimerHandle.h"
 
 
 AEnemyCharacter::AEnemyCharacter()
 	: bIsNowAttacking(false)
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	AIControllerClass = AEnemyAIController::StaticClass();
 
@@ -45,7 +46,6 @@ void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 	UpdateOverheadHP();
 
 	GetWorldTimerManager().SetTimer( //Overhead Timer
@@ -59,7 +59,6 @@ void AEnemyCharacter::BeginPlay()
 	{
 		
 	}
-
 
 	if (false == IsPlayerControlled())
 	{
@@ -95,6 +94,7 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	return DamageAmount;
 }
 
+
 void AEnemyCharacter::AIOnDeath()
 {
 	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("AIDeath")));
@@ -106,6 +106,7 @@ void AEnemyCharacter::AIOnDeath()
 
 	Destroy();
 }
+
 
 void AEnemyCharacter::OnCheckHit()
 {
@@ -152,6 +153,11 @@ void AEnemyCharacter::OnCheckHit()
     }
 }
 
+void AEnemyCharacter::DestroyedAI()
+{
+	Destroy();
+}
+
 void AEnemyCharacter::BeginAttack()
 {
 	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
@@ -172,6 +178,8 @@ void AEnemyCharacter::BeginAttack()
 	}
 }
 
+
+
 void AEnemyCharacter::EndAttack(UAnimMontage* InMontage, bool bInterruped)
 {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
@@ -182,6 +190,28 @@ void AEnemyCharacter::EndAttack(UAnimMontage* InMontage, bool bInterruped)
 	{
 		OnAttackMontageEndedDelegate.Unbind();
 	}
+}
+
+void AEnemyCharacter::AIOnDeath()
+{
+	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
+	checkf(IsValid(AnimInstance) == true, TEXT("Invalid AnimInstance"));
+
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	if (IsValid(AnimInstance) == true && IsValid(DeathMontage) == true && AnimInstance->Montage_IsPlaying(DeathMontage) == false)
+	{
+		AnimInstance->Montage_Play(DeathMontage);
+		AnimInstance->Montage_JumpToSection(TEXT("DeathMontage"), DeathMontage);
+	}
+
+	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("AIDeath")));
+	GetWorldTimerManager().SetTimer(
+		DeathTimer,
+		this,
+		&AEnemyCharacter::DestroyedAI,
+		2.5f,
+		false
+	);
 }
 
 //about OverHead UI

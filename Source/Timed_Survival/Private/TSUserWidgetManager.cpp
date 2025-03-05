@@ -29,7 +29,3 @@ void UTSUserWidgetManager::QuitGame()
 		}
 	}
 }
-
-
-
-

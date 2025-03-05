@@ -33,6 +33,14 @@ public:
 	int32 HealingCount;
 	int32 GetRandomValue;
 
+	// 리스폰 관련
+	FVector RespawnLocation; // 리스폰 위치 저장
+	FVector GetRespawnLocation() const; // 반환 함수
+	float RespawnHealth; // 리스폰 시 복구 할 체력 저장
+	float GetRespawnHealth() const; // 반환 함수
+	void SetRespawnPoint(const FVector& NewLocation, float NewHealth); // 리스폰 데이터 저장 함수
+
+
 	FTimerHandle SubtractHealthTimerHandle;
 
 	// OnGameOver()에서 애니메이션끝나고 Pause되도록하는 TimerHandle
