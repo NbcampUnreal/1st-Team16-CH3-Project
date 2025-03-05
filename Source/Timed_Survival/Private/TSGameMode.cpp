@@ -1,6 +1,9 @@
 #include "TSGameMode.h"
 #include "TSCharacter.h"
+#include "TSGameState.h"
+#include "GameFramework/Character.h"
 #include "TSGameInstance.h"
+#include "TSItemSpawnPoint.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "TSPlayerController.h"
@@ -66,6 +69,8 @@ void ATSGameMode::BeginPlay()
 	//		}
 	//	}
 	//}
+
+	SpawnItemsFromActors(); // 아이템 스폰포인트에 아이템 스폰
 }
 
 
@@ -92,5 +97,84 @@ void ATSGameMode::SpawnSelectedCharacter()
 	{
 		// 플레이어 컨트롤러가 새로운 캐릭터를 조종하도록 설정
 		PlayerController->Possess(NewCharacter);
+	}
+}
+
+
+
+// ============================================================================================================
+// 모든 스폰 포인트에서 아이템 스폰
+void ATSGameMode::SpawnItemsFromActors()
+{
+	TArray<AActor*> FoundSpawnPoints;
+
+	// 맵에 있는 모든 TSItemSpawnPoint 가져오기
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATSItemSpawnPoint::StaticClass(), FoundSpawnPoints);
+
+	for (AActor* SpawnPoint : FoundSpawnPoints)
+	{
+		ATSItemSpawnPoint* ItemSpawn = Cast<ATSItemSpawnPoint>(SpawnPoint);
+		if (ItemSpawn)
+		{
+			ItemSpawn->SpawnItem();
+		}
+	}
+}
+
+// ============================================================================================================
+
+void ATSGameMode::SpawnEnemies()
+{
+
+}
+
+// ============================================================================================================
+
+// 플레이어 리스폰 함수
+void ATSGameMode::RespawnPlayer(AController* PlayerController)
+{
+	if (!PlayerController) return;
+
+	ATSGameState* TSGameStateRef = GetWorld()->GetGameState<ATSGameState>();
+	if (!TSGameStateRef) return;
+
+	// 저장된 리스폰 위치 가져오기
+	FVector RespawnLocation = TSGameStateRef->GetRespawnLocation();
+	FRotator RespawnRotation = FRotator::ZeroRotator;
+
+	// 기존 플레이어 삭제를 위한 변수 설정
+	ACharacter* OldPlayer = Cast<ACharacter>(PlayerController->GetPawn());
+	TSubclassOf<ACharacter> PlayerClass = nullptr;
+
+	if (OldPlayer && OldPlayer->ActorHasTag(TEXT("Player")))
+	{
+		PlayerClass = OldPlayer->GetClass(); // 기존 캐릭터 클래스 저장
+		UE_LOG(LogTemp, Warning, TEXT("Destroying old player...")); // 테스트 로그 ------
+		OldPlayer->Destroy(); // 기존 캐릭터 삭제
+	}
+
+	// 새로운 캐릭터 생성 (기존 클래스 유지)
+	ACharacter* NewCharacter = nullptr;
+	if (PlayerClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Spawning new player at: %s"), *RespawnLocation.ToString());
+		NewCharacter = GetWorld()->SpawnActor<ACharacter>(PlayerClass, RespawnLocation, RespawnRotation);
+	}
+
+	// 컨트롤러 연결
+	if (NewCharacter)
+	{
+		NewCharacter->Tags.Add(TEXT("Player"));
+		PlayerController->Possess(NewCharacter);
+
+		// 리스폰 후 GameState의 CurrentHealth를 리스폰 체력으로 설정
+		TSGameStateRef->CurrentHealth = TSGameStateRef->GetRespawnHealth();
+		UE_LOG(LogTemp, Warning, TEXT("Respawn successful! Health restored to: %f"), TSGameStateRef->CurrentHealth);
+
+		//// UI 갱신
+		//if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
+		//{
+		//	TSPlayerController->ShowHUD();
+		//}
 	}
 }

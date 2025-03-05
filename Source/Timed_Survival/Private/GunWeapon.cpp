@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/Character.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 AGunWeapon::AGunWeapon()
@@ -71,6 +72,12 @@ void AGunWeapon::FireBullet()
     BulletCount--;
     UE_LOG(LogTemp, Warning, TEXT("FireBullet(): 탄약 감소 - 현재 남은 탄약: %d"), BulletCount);
 
+    ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
+    if (GameState)
+    {
+        GameState->SetM16BulletCount(BulletCount); // 탄약증가
+    }
+
     UWorld* World = GetWorld();
     if (!World)
     {
@@ -118,10 +125,32 @@ void AGunWeapon::FireBullet()
         return;
     }
 
-    UProjectileMovementComponent* ProjectileComp = Bullet->FindComponentByClass<UProjectileMovementComponent>();
-    if (ProjectileComp)
+    ATSAmmo* Ammo = Cast<ATSAmmo>(Bullet);
+    if (Ammo)
     {
-        ProjectileComp->Velocity = ShotDirection * ProjectileComp->InitialSpeed;
+        UProjectileMovementComponent* ProjectileComp = Ammo->GetProjectileMovementComponent();
+        if (ProjectileComp)
+        {
+            FVector ForwardVector = CameraRotation.Vector();
+            ProjectileComp->SetVelocityInLocalSpace(ForwardVector * ProjectileComp->InitialSpeed);
+            ProjectileComp->Activate();
+            UE_LOG(LogTemp, Warning, TEXT("총알이 발사됨! 방향: %s, 속도: %f"), *ForwardVector.ToString(), ProjectileComp->InitialSpeed);
+        }
+
+        AActor* OwnerActor = GetOwner(); //  소유자 가져오기
+        if (OwnerActor)
+        {
+            Ammo->CollisionComponent->IgnoreActorWhenMoving(GetOwner(), true);
+            UE_LOG(LogTemp, Warning, TEXT("총알이 %s(소유자)와 충돌을 무시합니다."), *GetOwner()->GetName())
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("GetOwner()가 nullptr입니다! 총알과의 충돌 무시 불가"));
+        }
+
+        int32 RandomDamage = FMath::RandRange(MinDamage, MaxDamage);
+        Ammo->SetDamage(RandomDamage);
+        UE_LOG(LogTemp, Warning, TEXT("FireBullet(): 총알의 데미지 설정 완료 - %d"), RandomDamage);
     }
 
     UE_LOG(LogTemp, Warning, TEXT("FireBullet(): 총알 스폰 성공! %s"), *Bullet->GetName());
@@ -139,14 +168,9 @@ void AGunWeapon::FireBullet()
         }
     }
 
+    Bullet->SetOwner(this);
+
     // 데미지 설정 (옵션)
-    ATSAmmo* Ammo = Cast<ATSAmmo>(Bullet);
-    if (Ammo)
-    {
-        int32 RandomDamage = FMath::RandRange(MinDamage, MaxDamage);
-        Ammo->SetDamage(RandomDamage);
-        UE_LOG(LogTemp, Warning, TEXT("FireBullet(): 총알의 데미지 설정 완료 - %d"), RandomDamage);
-    }
 }
 
 
@@ -180,6 +204,12 @@ void AGunWeapon::FinishReload()
 	BulletCount = MaxBulletCount;
 
 	bIsReload = false;
+
+    ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
+    if (GameState)
+    {
+        GameState->SetM16BulletCount(BulletCount);
+    }
 
 	UE_LOG(LogTemp, Warning, TEXT("FinishReload(): 리로드 후 탄약: %d, 예비 탄약: %d"), BulletCount, ReserveBullet);
 }

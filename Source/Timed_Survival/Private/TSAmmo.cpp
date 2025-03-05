@@ -16,9 +16,12 @@ ATSAmmo::ATSAmmo()
     CollisionComponent->SetCollisionProfileName(TEXT("Projectile"));
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     CollisionComponent->SetGenerateOverlapEvents(true);
+
     CollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);  //  모든 충돌 무시
-    CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);  // 적 캐릭터만 오버랩 감지
-    CollisionComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);  // 벽이나 환경과 충돌 감지
+    CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+    CollisionComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Overlap); // 적과 충돌 감지
+    CollisionComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Ignore); // 다른 총알과 충돌 방지
+    CollisionComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);  // 벽이나 환경과 충돌 감지
     CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ATSAmmo::OnOverlap);
     RootComponent = CollisionComponent;
 
@@ -35,11 +38,18 @@ ATSAmmo::ATSAmmo()
     ProjectileMovement->bSweepCollision = true;
     ProjectileMovement->bShouldBounce = false;
     ProjectileMovement->ProjectileGravityScale = 0.0f;
+    ProjectileMovement->bAutoActivate = true;
 }
 
 void ATSAmmo::BeginPlay()
 {
 	Super::BeginPlay();
+    
+    if (GetOwner())
+    {
+        CollisionComponent->IgnoreActorWhenMoving(GetOwner(), true);
+    }
+
     SetLifeSpan(5.0f);
 	
 }

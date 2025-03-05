@@ -26,8 +26,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	int32 BulletCount;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	int32 MaxBulletCount;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	int32 MinDamage = 10.0f;
@@ -51,6 +50,9 @@ protected:
 
 public:
 	AGunWeapon();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	int32 MaxBulletCount; // 총알 데이터가 필요해서 퍼블릭으로 뺐습니다 -전보경
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	float GetReloadDelay() const;
