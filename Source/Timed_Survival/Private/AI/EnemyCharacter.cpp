@@ -100,17 +100,17 @@ void AEnemyCharacter::OnCheckHit()
                 Start,
                 End,
                 FQuat::Identity,
-                ECollisionChannel::ECC_GameTraceChannel2,
+                ECollisionChannel::ECC_Pawn,
                 FCollisionShape::MakeSphere(Radius),
                 Params
             );
 
-			UKismetSystemLibrary::PrintString(this, TEXT("OnCheckHit()"));
             // ApplyDamage() 호출
             if (bOnHit == true)
             {
 				if (IsValid(GameState))
 				{
+					UKismetSystemLibrary::PrintString(this, TEXT("OnCheckHit()"));
 					GameState->ReduceTime(Damage,true);
 				}
             }
