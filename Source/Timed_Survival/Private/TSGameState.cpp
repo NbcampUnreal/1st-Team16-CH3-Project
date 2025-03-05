@@ -142,9 +142,17 @@ void ATSGameState::OnGameOver()
 
 void ATSGameState::EndLevel() // 스테이지 클리어
 {
-	ClearLevelNum = CurrentMapNum;
-	EnterShelter();
-	//Game instance로 저장할 데이터 넘기기
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		ClearLevelNum = CurrentMapNum;
+		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
+		{
+			TSPlayerController->ShowClearScore();
+			PopUpClearScore();
+			//EnterShelter();
+			//Game instance로 저장할 데이터 넘기기
+		}
+	}
 }
 
 void ATSGameState::EnterShelter() // 셸터 다음 레벨로 넘겨주냐 엔딩으로 보내냐
@@ -248,8 +256,7 @@ void ATSGameState::UpdateHUD()
 				}
 
 				// 2) About Bullet HUD========================================================================================
-				GetWeaponBulletData();
-
+				
 				// 2)-1 AR Bullet
 				if (ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0))			
 				{
@@ -370,14 +377,14 @@ void ATSGameState::PopUpClearScore()
 	{
 		ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController);
 		{
-			if (UUserWidget* HUDWidget = TSPlayerController->GetHUDWidget())
+			if (UUserWidget* ClearScoreWidget = TSPlayerController->GetClearScoreWidget())
 			{
 				if (UGameInstance* GameInstance = GetGameInstance())
 				{
 					UTSGameInstance* TSGameInstance = Cast<UTSGameInstance>(GameInstance);
 					if (TSGameInstance)
 					{
-						if (UTextBlock* PlayTime = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("PlayTime01_data"))))
+						if (UTextBlock* PlayTime = Cast<UTextBlock>(ClearScoreWidget->GetWidgetFromName(TEXT("PlayTime01_data"))))
 						{
 							float TimeData = TSGameInstance->PlayTimeInCurrentLevel();
 							int32 Minutes = FMath::FloorToInt(TimeData / 60);
@@ -386,12 +393,51 @@ void ATSGameState::PopUpClearScore()
 							PlayTime->SetText(FText::FromString(FString::Printf(TEXT("%02d:%05.2f"), Minutes, Seconds)));
 						}
 
-						if (UTextBlock* KillCount = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Killdata"))))
+						if (UTextBlock* KillCount = Cast<UTextBlock>(ClearScoreWidget->GetWidgetFromName(TEXT("Killdata"))))
 						{
 							KillCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), TSGameInstance->TotalKillCount)));
 						}
 
-						if (UTextBlock* HealCount = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Healdata"))))
+						if (UTextBlock* HealCount = Cast<UTextBlock>(ClearScoreWidget->GetWidgetFromName(TEXT("Healdata"))))
+						{
+							HealCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), TSGameInstance->TotalHealingCount)));
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+//Game Over UI
+void ATSGameState::PopUpGameOver()
+{
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController);
+		{
+			if (UUserWidget* GameOverWidget = TSPlayerController->GetGameOverWidget())
+			{
+				if (UGameInstance* GameInstance = GetGameInstance())
+				{
+					UTSGameInstance* TSGameInstance = Cast<UTSGameInstance>(GameInstance);
+					if (TSGameInstance)
+					{
+						if (UTextBlock* PlayTime = Cast<UTextBlock>(GameOverWidget->GetWidgetFromName(TEXT("PlayTime01_data"))))
+						{
+							float TimeData = TSGameInstance->PlayTimeInCurrentLevel();
+							int32 Minutes = FMath::FloorToInt(TimeData / 60);
+							float Seconds = TimeData - (Minutes * 60);
+
+							PlayTime->SetText(FText::FromString(FString::Printf(TEXT("%02d:%05.2f"), Minutes, Seconds)));
+						}
+
+						if (UTextBlock* KillCount = Cast<UTextBlock>(GameOverWidget->GetWidgetFromName(TEXT("Killdata"))))
+						{
+							KillCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), TSGameInstance->TotalKillCount)));
+						}
+
+						if (UTextBlock* HealCount = Cast<UTextBlock>(GameOverWidget->GetWidgetFromName(TEXT("Healdata"))))
 						{
 							HealCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), TSGameInstance->TotalHealingCount)));
 						}
@@ -529,21 +575,6 @@ void ATSGameState::UpdateBulletCount()
 {
 	CurrentM16BulletCount = BulletInM16;
 	CurrentShotGunBulletCount = BulletInShotGun;
-}
-
-void ATSGameState::GetWeaponBulletData()
-{
-	//ATSCharacter2* ShotGunPlayer = GetWorld()->SpawnActor<ATSCharacter2>(ATSCharacter2::StaticClass());	
-	//if (ShotGunPlayer)
-	//{
-	//	MaxShotGun = ShotGunPlayer->MaxShotGunBullet;
-	//}
-
-	//AGunWeapon* M16Player = GetWorld()->SpawnActor<AGunWeapon>(AGunWeapon::StaticClass());
-	//if (M16Player)
-	//{
-	//	MaxM16 = M16Player->MaxBulletCount;
-	//}
 }
 
 void ATSGameState::SetM16BulletCount(int32 CurrentBullet)

@@ -75,6 +75,7 @@ public:
 	void PickWidgetbyItemType(FName Type);
 	void PopUpWidget(FName ItemType, UUserWidget* ItemWidget, float ViewTime);
 	void PopUpClearScore();
+	void PopUpGameOver();
 
 	// about Health(Timer) Function - with Item Class
 	void IncreaseTime(float Value);
@@ -96,7 +97,6 @@ public:
 	int32 MaxM16;
 	FTimerHandle BulletDataUpdateTimerHandel;
 	void UpdateBulletCount();
-	void GetWeaponBulletData();
 	void SetM16BulletCount(int32 CurrentBullet);
 	void SetShotGunBulletCount(int32 CurrentBullet);
 

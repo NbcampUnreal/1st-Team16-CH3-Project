@@ -78,7 +78,6 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	return DamageAmount;
 }
 
-
 void AEnemyCharacter::OnCheckHit()
 {
     AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
