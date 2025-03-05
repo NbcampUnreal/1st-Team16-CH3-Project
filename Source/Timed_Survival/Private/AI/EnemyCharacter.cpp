@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "TSGameState.h"
 
 
@@ -44,6 +45,12 @@ void AEnemyCharacter::BeginPlay()
 
 
 	UpdateOverheadHP();
+
+	GetWorldTimerManager().SetTimer( //HUD Timer
+		UpdateHPBarTimerHandle,
+		this,
+		&AEnemyCharacter::UpdateOverheadHP,
+		0.1f, true);
 
 	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(AnimInstance) == true)
@@ -178,10 +185,23 @@ void AEnemyCharacter::UpdateOverheadHP()
 			if (!ShotEventWidgetInstance) return;
 			if (UProgressBar* HPBar = Cast<UProgressBar>(ShotEventWidgetInstance->GetWidgetFromName(TEXT("AI_HPBar"))))
 			{
-				
 				HPBar->SetPercent(CurrentHP / MaxHP);
+				OverheadHPBar->SetTranslucentSortPriority(-1);
+
+				ACharacter* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
+				APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(Player, 0);				
+				FVector CameraLocation = PlayerCamera->GetCameraLocation();
+
+				FVector HPBarLocation = OverheadHPBar->GetComponentLocation();
+
+				FRotator HPBarView = UKismetMathLibrary::FindLookAtRotation(HPBarLocation, CameraLocation); // AILocation or CameraLocation 
+				OverheadHPBar->SetWorldRotation(HPBarView);
+				SetActorRotation(HPBarView);
 			}
 		}
 	}
 }
-
+//void AEnemyCharacter::SetOverheadWidgetViewFront()
+//{
+//
+//}

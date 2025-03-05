@@ -6,17 +6,23 @@
 
 class UButton;
 class UTextBlock;
+class UWidgetComponent;
 
 UCLASS()
 class TIMED_SURVIVAL_API UTSUserWidgetManager : public UUserWidget
 {
 	GENERATED_BODY()
 
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UButton* Button;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UTextBlock* TextBlock;
+public:
+
+	
+
+	//static void AddWidget(UWidgetComponent* Widget);
+	//static void RemoveWidget(UWidgetComponent* Widget);
+
+	//static TArray<UWidgetComponent*> GetAllWidgets();
+
+	/*void SetWidgetsShowFront();*/
 
 	UFUNCTION()
 	virtual void NativeOnInitialized() override;
