@@ -31,8 +31,11 @@ private:
 	// 조준을 하고있는지 판단
 	bool bIsAiming = false;
 
-	// 이동키를 입력하고 있는지 확인
+	// 이동키를 입력하고 있는지 판단
 	bool IsMovingForward = false;
+
+	// 재장전중인지 판다
+	bool bIsReloading = false;
 
 	// 마지막 입력된 이동 값 저장
 	FVector2D LastMoveInput; 
@@ -78,6 +81,7 @@ protected:
 	FTimerHandle ReloadTimerHandle;
 	// Reset Fire
 	FTimerHandle FireTimerHandle;
+	// 발사속도 타이머핸들
 
 public:
 
@@ -100,7 +104,7 @@ public:
 
 
 	// about Health
-	void TakeDamage();
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	// 무기 리스트 담을 배열
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")

@@ -10,9 +10,9 @@
 
 AGunWeapon::AGunWeapon()
 {
-	ReserveBullet = 10; // 예비 탄약
-	BulletCount = 10;
-	MaxBulletCount = 10;
+	ReserveBullet = 30; // 예비 탄약
+	BulletCount = 30;
+	MaxBulletCount = 30;
 	Damage = 10;
 	MinDamage = 10.0f;
 	MaxDamage = 20.0f;
@@ -145,13 +145,13 @@ void AGunWeapon::FireBullet()
         }
     }
 
-    // 🔹 데미지 설정 (옵션)
+    // 데미지 설정 (옵션)
     ATSAmmo* Ammo = Cast<ATSAmmo>(Bullet);
     if (Ammo)
     {
-        float RandomDamage = FMath::RandRange(MinDamage, MaxDamage);
+        int32 RandomDamage = FMath::RandRange(MinDamage, MaxDamage);
         Ammo->SetDamage(RandomDamage);
-        UE_LOG(LogTemp, Warning, TEXT("FireBullet(): 총알의 데미지 설정 완료 - %f"), RandomDamage);
+        UE_LOG(LogTemp, Warning, TEXT("FireBullet(): 총알의 데미지 설정 완료 - %d"), RandomDamage);
     }
 }
 
@@ -194,4 +194,29 @@ void AGunWeapon::FinishReload()
     }
 
 	UE_LOG(LogTemp, Warning, TEXT("FinishReload(): 리로드 후 탄약: %d, 예비 탄약: %d"), BulletCount, ReserveBullet);
+}
+
+void AGunWeapon::StartFire()
+{
+    if (bIsFiring || BulletCount <= 0 || bIsReload) return;
+
+    bIsFiring = true; 
+    FireBullet(); // 즉시 1발 발사
+
+    GetWorld()->GetTimerManager().SetTimer(
+        FireTimerHandle,
+        this,
+        &AGunWeapon::FireBullet,
+        0.14f, // 0.14초 간격으로 반복해서 총쏘는 애니메이션이랑 비슷하게 발사되게 설정
+        true // 반복 실행설정
+    );
+}
+
+void AGunWeapon::StopFire()
+{
+    // 발사 중이 아니면 실행 X.
+    if (!bIsFiring) return; 
+
+    bIsFiring = false; 
+    GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
 }

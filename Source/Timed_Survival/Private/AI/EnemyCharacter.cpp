@@ -15,6 +15,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "TSGameState.h"
+
 
 AEnemyCharacter::AEnemyCharacter()
 	: bIsNowAttacking(false)
@@ -74,28 +76,25 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (CurrentHP > 0)
 	{
-		CurrentHP -= FMath::Clamp(CurrentHP - DamageAmount, 0, 100);
-	}
-	else if (CurrentHP <= 0)
-	{
-		AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
-		if (true == ::IsValid(AIController))
+		CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, 100);
+		if (CurrentHP <= 0)
 		{
-			AIController->EndAI();
+			AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
+			if (true == ::IsValid(AIController))
+			{
+				AIController->EndAI();
+			}
+			AIOnDeath();
 		}
-		AIOnDeath();
 	}
 	return DamageAmount;
 }
 
 void AEnemyCharacter::AIOnDeath()
 {
+	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("AIDeath")));
 	Destroy();
 }
-
-#include "DrawDebugHelpers.h"
-
-// ...
 
 void AEnemyCharacter::OnCheckHit()
 {
@@ -105,6 +104,7 @@ void AEnemyCharacter::OnCheckHit()
         ACharacter* Player = Cast<ACharacter>(AIController->GetBlackboardComponent()->GetValueAsObject(AIController->TargetActorKey));
         if (IsValid(Player) == true)
         {
+			ATSGameState* GameState = Cast<ATSGameState>(GetWorld()->GetGameState());
             FHitResult HitResult;
             FCollisionQueryParams Params(NAME_None, false, this);
             const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
@@ -125,13 +125,10 @@ void AEnemyCharacter::OnCheckHit()
             if (bOnHit == true)
             {
 				UKismetSystemLibrary::PrintString(this, TEXT("OnCheckHit()"));
-                /*UGameplayStatics::ApplyDamage(
-                    Player,
-                    Damage,
-                    GetInstigator()->GetController(),
-                    this,
-                    UDamageType::StaticClass()
-                );*/
+				if (IsValid(GameState))
+				{
+					GameState->ReduceTime(Damage,true);
+				}
             }
             if (AEnemyAIController::ShowAIDebug == 1)
             {

@@ -28,13 +28,25 @@ protected:
 
 	
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	int32 MinDamage = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	int32 MaxDamage = 20.0f;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<class ATSAmmo> BulletClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	bool bIsReload;
 
+	// 발사 상태를 확인하기위한 boolean변수
+	bool bIsFiring = false;
+
 	FTimerHandle ReloadTimerHandle;
+
+	// M16용 발사속도 타이머핸들
+	FTimerHandle FireTimerHandle;
 
 public:
 	AGunWeapon();
@@ -59,11 +71,10 @@ public:
 
 	virtual void FireBullet() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	float MinDamage = 10.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	float MaxDamage = 20.0f;
+	// M16용 총 발사 스피드 조절용 함수
+	void StartFire();
+	// M16용 사격 중지 함수
+	void StopFire();
 
 	int32 GetBulletInPlayer() const { return ReserveBullet; }
 	int32 GetBulletCount() const { return BulletCount; }
