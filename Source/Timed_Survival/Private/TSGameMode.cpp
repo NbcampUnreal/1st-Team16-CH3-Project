@@ -6,6 +6,7 @@
 #include "TSItemSpawnPoint.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerStart.h"
 #include "TSPlayerController.h"
 
 // ============================================================================================================
@@ -76,26 +77,50 @@ void ATSGameMode::BeginPlay()
 
 
 // ============================================================================================================
-// 캐릭터랑 컨트롤러가 있다면 (0, 0, 0)위치로 캐릭터를 스폰하고 조정할 수있게 함.
+// 기본 PlayerStart에서 시작, 이후 리스폰지점에서 시작
 void ATSGameMode::SpawnSelectedCharacter()
 {
 
-	UTSGameInstance* GameInstance = Cast<UTSGameInstance>(GetGameInstance());
+	//UTSGameInstance* GameInstance = Cast<UTSGameInstance>(GetGameInstance());
+	//if (!GameInstance || !GameInstance->SelectedCharacterClass) return;
 
-	if (!GameInstance || !GameInstance->SelectedCharacterClass) return;
+	//APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//if (!PlayerController) return;
+
+	//// 캐릭터 스폰 위치 지정 (임시로 (0,0,0)에서 스폰)
+	//FVector SpawnLocation = FVector(0.0f, 0.0f, 0.0f);
+	//FRotator SpawnRotation = FRotator::ZeroRotator;
+
+	//// 캐릭터 스폰
+	//ACharacter* NewCharacter = GetWorld()->SpawnActor<ACharacter>(GameInstance->SelectedCharacterClass, SpawnLocation, SpawnRotation);
+	//if (NewCharacter)
+	//{
+	//	// 플레이어 컨트롤러가 새로운 캐릭터를 조종하도록 설정
+	//	PlayerController->Possess(NewCharacter);
+	//}
+
+	UTSGameInstance* TSGameInstance = Cast<UTSGameInstance>(GetGameInstance());
+	if (!TSGameInstance || !TSGameInstance->SelectedCharacterClass) return;
 
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (!PlayerController) return;
 
-	// 캐릭터 스폰 위치 지정 (임시로 (0,0,0)에서 스폰)
-	FVector SpawnLocation = FVector(0.0f, 0.0f, 0.0f);
-	FRotator SpawnRotation = FRotator::ZeroRotator;
+	ATSGameState* TSGameState = GetWorld()->GetGameState<ATSGameState>();
 
-	// 캐릭터 스폰
-	ACharacter* NewCharacter = GetWorld()->SpawnActor<ACharacter>(GameInstance->SelectedCharacterClass, SpawnLocation, SpawnRotation);
+	// 기본적으로 PlayerStart에서 가져오기
+	AActor* PlayerStart = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass());
+	FVector DefaultLocation = PlayerStart ? PlayerStart->GetActorLocation() : FVector(0.0f, 0.0f, 0.0f);
+
+	// 체크포인트가 있다면 체크포인트 위치에서 시작
+	FVector SpawnLocation = (TSGameState && TSGameState->GetRespawnLocation() != FVector::ZeroVector)
+		? TSGameState->GetRespawnLocation()
+		: DefaultLocation;
+
+	FRotator SpawnRotation = PlayerStart ? PlayerStart->GetActorRotation() : FRotator::ZeroRotator;
+
+	ACharacter* NewCharacter = GetWorld()->SpawnActor<ACharacter>(TSGameInstance->SelectedCharacterClass, SpawnLocation, SpawnRotation);
 	if (NewCharacter)
 	{
-		// 플레이어 컨트롤러가 새로운 캐릭터를 조종하도록 설정
 		PlayerController->Possess(NewCharacter);
 	}
 }

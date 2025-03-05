@@ -19,7 +19,7 @@ ATSItemSpawnPoint::ATSItemSpawnPoint()
     SmallHealingProbability = 40.0f;
 }
 
-// **아이템을 스폰하는 함수**
+// 아이템을 스폰하는 함수
 void ATSItemSpawnPoint::SpawnItem()
 {
     TSubclassOf<ATSBaseItem> ItemClass = GetItemClass();
@@ -29,10 +29,10 @@ void ATSItemSpawnPoint::SpawnItem()
         return;
     }
 
-    // **아이템 스폰**
+    // 아이템 스폰
     SpawnedItem = GetWorld()->SpawnActor<AActor>(ItemClass, GetActorLocation(), GetActorRotation());
 
-    // **스폰된 아이템이 TSBaseItem을 상속받는다면 아웃라인 활성화**
+    // 스폰된 아이템이 TSBaseItem을 상속받는다면 아웃라인 활성화
     ATSBaseItem* BaseItem = Cast<ATSBaseItem>(SpawnedItem);
     if (BaseItem && ItemType != ETSItemType::Mine)  // 지뢰는 예외 처리
     {
@@ -40,7 +40,7 @@ void ATSItemSpawnPoint::SpawnItem()
     }
 }
 
-// **아이템 클래스를 결정하는 함수**
+// 아이템 클래스를 결정하는 함수
 TSubclassOf<ATSBaseItem> ATSItemSpawnPoint::GetItemClass()
 {
     switch (ItemType)
@@ -56,7 +56,7 @@ TSubclassOf<ATSBaseItem> ATSItemSpawnPoint::GetItemClass()
     }
 }
 
-// **힐링 아이템 확률 조정 (블루프린트 설정 유지)**
+// 힐링 아이템 확률 조정 (블루프린트 설정 유지)
 TSubclassOf<ATSBaseItem> ATSItemSpawnPoint::GetHealingItemClass()
 {
     float TotalProbability = BigHealingProbability + MiddleHealingProbability + SmallHealingProbability;
