@@ -47,6 +47,18 @@ void AEnemyCharacter::BeginPlay()
 
 	UpdateOverheadHP();
 
+	GetWorldTimerManager().SetTimer( //Overhead Timer
+		UpdateHPBarTimerHandle,
+		this,
+		&AEnemyCharacter::UpdateOverheadHP,
+		0.1f, true);
+
+	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
+	if (IsValid(AnimInstance) == true)
+	{
+		
+	}
+
 	if (false == IsPlayerControlled())
 	{
 		bUseControllerRotationYaw = false;
@@ -77,7 +89,6 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	}
 	return DamageAmount;
 }
-
 
 void AEnemyCharacter::OnCheckHit()
 {
@@ -187,7 +198,7 @@ void AEnemyCharacter::AIOnDeath()
 	);
 }
 
-
+//about OverHead UI
 
 void AEnemyCharacter::UpdateOverheadHP()
 {
@@ -203,6 +214,25 @@ void AEnemyCharacter::UpdateOverheadHP()
 			{
 				
 				HPBar->SetPercent(CurrentHP / MaxHP);
+				OverheadHPBar->SetTranslucentSortPriority(-1);
+
+				ACharacter* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
+				APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(Player, 0);				
+				FVector CameraLocation = PlayerCamera->GetCameraLocation();
+
+				FVector HPBarLocation = OverheadHPBar->GetComponentLocation();
+
+				FRotator HPBarView = UKismetMathLibrary::FindLookAtRotation(HPBarLocation, CameraLocation);
+				OverheadHPBar->SetWorldRotation(HPBarView);
+				SetActorRotation(HPBarView);
+			}
+
+			//2)Damage Num
+			if (UTextBlock* DamageNum = Cast<UTextBlock>(ShotEventWidgetInstance->GetWidgetFromName(TEXT("Damage"))))
+			{
+				float DamageValue = BeforeTakeDamage - AfterTakeDamage;
+				int32 Damageint32 = FMath::RoundToInt(DamageValue);
+				DamageNum->SetText(FText::FromString(FString::Printf(TEXT("%d"), Damageint32)));
 			}
 		}
 	}

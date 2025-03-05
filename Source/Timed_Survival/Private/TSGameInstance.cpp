@@ -3,6 +3,7 @@
 UTSGameInstance::UTSGameInstance()
 {
 	TotalHealingCount = 0;
+	TotalKillCount = 0;
 
 	SelectedCharacterClass = nullptr;
 
@@ -19,7 +20,18 @@ void UTSGameInstance::SetSelectedCharacter(TSubclassOf<ACharacter> CharacterClas
 	SelectedCharacterClass = CharacterClass;
 }
 
-//void UTSGameInstance::SetSelectedCharacter(static ConstructorHelpers::FClassFinder<AActor> CharacterClass)
-//{
-//	SelectedCharacterClass = CharacterClass;
-//}
+void UTSGameInstance::StoreStartTime()
+{
+	LevelStartTime = GetWorld()->TimeSeconds;
+}
+
+float UTSGameInstance::PlayTimeInCurrentLevel() const
+{
+	return GetWorld()->TimeSeconds - LevelStartTime;
+}
+
+void UTSGameInstance::AddKillCount(int32 Amount)
+{
+	TotalKillCount += Amount;
+}
+
