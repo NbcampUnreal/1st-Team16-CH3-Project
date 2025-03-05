@@ -5,18 +5,19 @@
 #include "AI/EnemyAIController.h"
 #include "AI/Animation/TSEnemyAnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Character.h"
 #include "Components/WidgetComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
+#include "Components/CapsuleComponent.h"
 #include "TSPlayerController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
-#include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "TSGameState.h"
 #include "Engine/TimerHandle.h"
+#include "Engine/HitResult.h"
+
 
 
 AEnemyCharacter::AEnemyCharacter()
@@ -38,8 +39,6 @@ AEnemyCharacter::AEnemyCharacter()
 
 	AttackRange = 40.f;
 
-	BeforeTakeDamage = MaxHP;
-	AfterTakeDamage = MaxHP;
 }
 
 void AEnemyCharacter::BeginPlay()
@@ -77,10 +76,7 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (CurrentHP > 0)
 	{
-		BeforeTakeDamage = AfterTakeDamage;
 		CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, 100);
-		AfterTakeDamage = CurrentHP;
-
 		if (CurrentHP <= 0)
 		{
 			AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
@@ -104,7 +100,8 @@ void AEnemyCharacter::OnCheckHit()
         {
 			ATSGameState* GameState = Cast<ATSGameState>(GetWorld()->GetGameState());
             FHitResult HitResult;
-            FCollisionQueryParams Params(NAME_None, false, this);
+            FCollisionQueryParams Params;
+			Params.AddIgnoredActor(this);
             const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
             const FVector End = Start + GetActorForwardVector() * AttackRange;
             const float Radius = 50.f;
@@ -119,10 +116,10 @@ void AEnemyCharacter::OnCheckHit()
                 Params
             );
 
+			UKismetSystemLibrary::PrintString(this, TEXT("OnCheckHit()"));
             // ApplyDamage() 호출
             if (bOnHit == true)
             {
-				UKismetSystemLibrary::PrintString(this, TEXT("OnCheckHit()"));
 				if (IsValid(GameState))
 				{
 					GameState->ReduceTime(Damage,true);
@@ -178,6 +175,7 @@ void AEnemyCharacter::EndAttack(UAnimMontage* InMontage, bool bInterruped)
 	}
 }
 
+
 void AEnemyCharacter::AIOnDeath()
 {
 	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
@@ -212,10 +210,9 @@ void AEnemyCharacter::UpdateOverheadHP()
 		{
 			UUserWidget* ShotEventWidgetInstance = OverheadHPBar->GetUserWidgetObject();
 			if (!ShotEventWidgetInstance) return;
-
-			//1) HP Bar
 			if (UProgressBar* HPBar = Cast<UProgressBar>(ShotEventWidgetInstance->GetWidgetFromName(TEXT("AI_HPBar"))))
 			{
+				
 				HPBar->SetPercent(CurrentHP / MaxHP);
 				OverheadHPBar->SetTranslucentSortPriority(-1);
 
