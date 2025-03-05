@@ -48,6 +48,18 @@ void AEnemyCharacter::BeginPlay()
 
 	UpdateOverheadHP();
 
+	GetWorldTimerManager().SetTimer( //Overhead Timer
+		UpdateHPBarTimerHandle,
+		this,
+		&AEnemyCharacter::UpdateOverheadHP,
+		0.1f, true);
+
+	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
+	if (IsValid(AnimInstance) == true)
+	{
+		
+	}
+
 	if (false == IsPlayerControlled())
 	{
 		bUseControllerRotationYaw = false;
@@ -81,7 +93,6 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	}
 	return DamageAmount;
 }
-
 
 void AEnemyCharacter::OnCheckHit()
 {
@@ -189,7 +200,6 @@ void AEnemyCharacter::AIOnDeath()
 	);
 }
 
-
 //about OverHead UI
 
 void AEnemyCharacter::UpdateOverheadHP()
@@ -215,7 +225,7 @@ void AEnemyCharacter::UpdateOverheadHP()
 
 				FVector HPBarLocation = OverheadHPBar->GetComponentLocation();
 
-				FRotator HPBarView = UKismetMathLibrary::FindLookAtRotation(HPBarLocation, CameraLocation); // AILocation or CameraLocation 
+				FRotator HPBarView = UKismetMathLibrary::FindLookAtRotation(HPBarLocation, CameraLocation);
 				OverheadHPBar->SetWorldRotation(HPBarView);
 				SetActorRotation(HPBarView);
 			}
