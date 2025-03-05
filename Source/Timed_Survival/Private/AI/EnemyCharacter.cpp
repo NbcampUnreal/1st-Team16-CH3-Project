@@ -98,6 +98,12 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 void AEnemyCharacter::AIOnDeath()
 {
 	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("AIDeath")));
+	ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
+	if (GameState)
+	{
+		GameState->IncreaseKillCount(1);
+	}
+
 	Destroy();
 }
 
