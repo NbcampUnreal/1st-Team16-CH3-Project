@@ -293,11 +293,14 @@ void ATSGameState::UpdateHUD()
 				// 5) Debuff
 				// 6) 피격 시 UI효과(지뢰, AI)(일시적)
 				// 7) 헤드샷 UI효과
+
+				
 			}
 		}
 	}
 
 }
+
 // 2] Popup HUD
 
 void ATSGameState::PickWidgetbyItemType(FName ItemType)
@@ -358,6 +361,45 @@ void ATSGameState::PopUpWidget(FName ItemType, UUserWidget* ItemWidget, float Vi
 		},
 		ViewTime, false);
 	
+}
+
+// 3) Clear Score UI
+void ATSGameState::PopUpClearScore()
+{
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController);
+		{
+			if (UUserWidget* HUDWidget = TSPlayerController->GetHUDWidget())
+			{
+				if (UGameInstance* GameInstance = GetGameInstance())
+				{
+					UTSGameInstance* TSGameInstance = Cast<UTSGameInstance>(GameInstance);
+					if (TSGameInstance)
+					{
+						if (UTextBlock* PlayTime = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("PlayTime01_data"))))
+						{
+							float TimeData = TSGameInstance->PlayTimeInCurrentLevel();
+							int32 Minutes = FMath::FloorToInt(TimeData / 60);
+							float Seconds = TimeData - (Minutes * 60);
+
+							PlayTime->SetText(FText::FromString(FString::Printf(TEXT("%02d:%05.2f"), Minutes, Seconds)));
+						}
+
+						if (UTextBlock* KillCount = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Killdata"))))
+						{
+							KillCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), TSGameInstance->TotalKillCount)));
+						}
+
+						if (UTextBlock* HealCount = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Healdata"))))
+						{
+							HealCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), TSGameInstance->TotalHealingCount)));
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 
@@ -513,6 +555,16 @@ void ATSGameState::SetM16BulletCount(int32 CurrentBullet)
 void ATSGameState::SetShotGunBulletCount(int32 CurrentBullet)
 {
 	BulletInShotGun = CurrentBullet;
+}
+
+// add Kill Count
+void ATSGameState::IncreaseKillCount(int32 Amount)
+{
+	UTSGameInstance* GameInstance = Cast<UTSGameInstance>(GetGameInstance());
+	if (GameInstance)
+	{
+		GameInstance->AddKillCount(Amount);
+	}
 }
 
 

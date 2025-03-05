@@ -27,9 +27,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float CurrentHealth;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Food")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "HealingItem")
 	int32 FoodCount;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Healing")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "HealingItem")
 	int32 HealingCount;
 	int32 GetRandomValue;
 
@@ -74,7 +74,7 @@ public:
 	void UpdateHUD();
 	void PickWidgetbyItemType(FName Type);
 	void PopUpWidget(FName ItemType, UUserWidget* ItemWidget, float ViewTime);
-	void WidgetsViewFront();
+	void PopUpClearScore();
 
 	// about Health(Timer) Function - with Item Class
 	void IncreaseTime(float Value);
@@ -115,5 +115,6 @@ public:
 	void UpdateMaskTimer(); // 마스크 타이머 업데이트 함수
 	void GetMaskDuration(float Value); // UI 세팅 위해서 받아오는 함수
 		
-
+	//about Kill Count
+	void IncreaseKillCount(int32 Amount);
 };
