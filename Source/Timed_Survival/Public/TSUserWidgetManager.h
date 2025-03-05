@@ -16,14 +16,6 @@ class TIMED_SURVIVAL_API UTSUserWidgetManager : public UUserWidget
 public:
 
 	
-
-	//static void AddWidget(UWidgetComponent* Widget);
-	//static void RemoveWidget(UWidgetComponent* Widget);
-
-	//static TArray<UWidgetComponent*> GetAllWidgets();
-
-	/*void SetWidgetsShowFront();*/
-
 	UFUNCTION()
 	virtual void NativeOnInitialized() override;
 };
