@@ -4,6 +4,7 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include <Kismet/GameplayStatics.h>
 
 UBTService_TSSightPlayer::UBTService_TSSightPlayer(const FObjectInitializer& ObjectInitializer)
@@ -28,13 +29,13 @@ void UBTService_TSSightPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
             AIStimulus = CanSenseActor(Player, ETS_AISenseT::E_Sight, OwnerComp);
 			if (AIStimulus.WasSuccessfullySensed())
 			{
-				OwnerComp.GetBlackboardComponent()->SetValueAsBool(AEnemyAIController::PlayerDetectedKey, true);
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(AEnemyAIController::TargetActorKey, Player);
+				Enemy->GetCharacterMovement()->MaxWalkSpeed = 300.f;
 			}
 			else
 			{
-				OwnerComp.GetBlackboardComponent()->SetValueAsBool(AEnemyAIController::PlayerDetectedKey, false);
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(AEnemyAIController::TargetActorKey, nullptr);
+				Enemy->GetCharacterMovement()->MaxWalkSpeed = 120.f;
 			}
 		}
 	}

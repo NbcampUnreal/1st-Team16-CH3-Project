@@ -8,6 +8,7 @@
 
 DECLARE_DELEGATE_TwoParams(FOnAttackMontageEnded, UAnimMontage*, bool /*bInterrupted*/)
 
+struct FTimerHandle;
 class UAnimMontage;
 class UWidgetComponent;
 
@@ -20,6 +21,7 @@ class TIMED_SURVIVAL_API AEnemyCharacter : public ATS_EnemyCharacterBase
 
 public:
 	AEnemyCharacter();
+	FTimerHandle DeathTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	UWidgetComponent* OverheadDamageNum;
@@ -39,7 +41,7 @@ public:
 	/*void SetOverheadWidgetViewFront();*/
 
 	void OnCheckHit();
-
+	void DestroyedAI();
 protected:
 	virtual void BeginAttack();
 	virtual void EndAttack(UAnimMontage* InMontage, bool bInterruped);
@@ -52,6 +54,9 @@ protected:
 	TObjectPtr<UAnimMontage> AttackMontage;
 
 	FOnAttackMontageEnded OnAttackMontageEndedDelegate;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess))
+	TObjectPtr<UAnimMontage> DeathMontage;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Stats")
 	int32 CurrentHP;
