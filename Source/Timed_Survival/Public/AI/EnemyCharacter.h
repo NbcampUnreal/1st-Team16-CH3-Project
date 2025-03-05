@@ -23,9 +23,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	UWidgetComponent* OverheadDamageNum;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	UWidgetComponent* OverheadHPBar;
 	FTimerHandle UpdateHPBarTimerHandle;
+	float BeforeTakeDamage;
+	float AfterTakeDamage;
 
 	virtual void BeginPlay() override;
 
