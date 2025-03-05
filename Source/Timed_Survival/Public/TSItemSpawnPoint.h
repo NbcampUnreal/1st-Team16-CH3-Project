@@ -49,9 +49,24 @@ public:
 
     void SpawnItem();
 
-    // 스폰된 아이템을 추적할 변수
+	// 스폰된 아이템을 저장하는 변수
     UPROPERTY()
     AActor* SpawnedItem;
+        
+	//------------------아이템 리스폰 함수-------------------
+    // 리스폰 가능 여부 (기본값: false)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn Settings")
+    bool bCanRespawn;
+        
+    void EnableRespawn(); // 리스폰 활성화 함수
+	void DisableRespawn(); // 리스폰 비활성화 함수
+    
+    // 아이템이 일정 시간이 지난 후 다시 스폰되도록 하는 함수
+    void RespawnItem();
+    
+    // 리스폰 타이머 핸들
+    FTimerHandle RespawnTimerHandle;
+	//------------------------------------------------------
 
 private:
     // 스폰할 아이템 클래스를 반환하는 함수
