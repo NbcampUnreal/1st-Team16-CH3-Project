@@ -38,7 +38,6 @@ ATSAmmo::ATSAmmo()
     ProjectileMovement->bSweepCollision = true;
     ProjectileMovement->bShouldBounce = false;
     ProjectileMovement->ProjectileGravityScale = 0.0f;
-    ProjectileMovement->bAutoActivate = true;
 }
 
 void ATSAmmo::BeginPlay()

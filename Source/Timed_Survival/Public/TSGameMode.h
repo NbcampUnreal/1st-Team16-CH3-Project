@@ -13,13 +13,20 @@ class TIMED_SURVIVAL_API ATSGameMode : public AGameMode
 public:
 	ATSGameMode();
 
+	// 맵에 배치된 모든 스폰 포인트에서 아이템 생성
+	void SpawnItemsFromActors();
+
+	// 적 리스폰 함수
+	void SpawnEnemies();
+
+	// 리스폰 실행 함수
+	void RespawnPlayer(AController* PlayerController);
+	
 protected:
 	virtual void BeginPlay() override;
 
 	void SpawnSelectedCharacter();
-
-	// 맵에 배치된 모든 스폰 포인트에서 아이템 생성
-	void SpawnItemsFromActors();
+		
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
