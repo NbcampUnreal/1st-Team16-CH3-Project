@@ -18,7 +18,7 @@ ATSAmmo::ATSAmmo()
     CollisionComponent->SetGenerateOverlapEvents(true);
 
     CollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);  //  모든 충돌 무시
-    CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+    CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
     CollisionComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Overlap); // 적과 충돌 감지
     CollisionComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Ignore); // 다른 총알과 충돌 방지
     CollisionComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);  // 벽이나 환경과 충돌 감지
@@ -48,6 +48,21 @@ void ATSAmmo::BeginPlay()
     if (GetOwner())
     {
         CollisionComponent->IgnoreActorWhenMoving(GetOwner(), true);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("BeginPlay(): GetOwner()가 nullptr입니다. 총알과의 충돌 무시 불가!"));
+    }
+
+    if (ProjectileMovement)
+    {
+        ProjectileMovement->SetVelocityInLocalSpace(FVector::ForwardVector * ProjectileMovement->InitialSpeed);
+        ProjectileMovement->Activate();
+        UE_LOG(LogTemp, Warning, TEXT("총알이 BeginPlay()에서 이동 시작! 속도: %f"), ProjectileMovement->InitialSpeed);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("ProjectileMovement가 nullptr입니다! 총알이 움직이지 않습니다."));
     }
 
     SetLifeSpan(5.0f);
