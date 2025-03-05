@@ -117,13 +117,18 @@ void AGunWeapon::FireBullet()
     DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (ShotDirection * 1000.0f),
         FColor::Red, false, 1.0f, 0, 3.0f);
 
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
     // 총알 스폰
-    AActor* Bullet = World->SpawnActor<AActor>(BulletClass, SpawnLocation, CameraRotation);
+    AActor* Bullet = World->SpawnActor<AActor>(BulletClass, SpawnLocation, CameraRotation, SpawnParams);
     if (!Bullet)
     {
         UE_LOG(LogTemp, Error, TEXT("FireBullet(): 총알 스폰 실패!"));
         return;
     }
+
+    Bullet->SetOwner(GetOwner());
 
     ATSAmmo* Ammo = Cast<ATSAmmo>(Bullet);
     if (Ammo)
@@ -167,10 +172,6 @@ void AGunWeapon::FireBullet()
             UE_LOG(LogTemp, Warning, TEXT("FireBullet(): 플레이어 탄약 개수 업데이트 - %d"), PlayerCharacter->GetCurrentBullet());
         }
     }
-
-    Bullet->SetOwner(this);
-
-    // 데미지 설정 (옵션)
 }
 
 
