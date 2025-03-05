@@ -203,7 +203,7 @@ void AEnemyCharacter::UpdateOverheadHP()
 
 				FVector HPBarLocation = OverheadHPBar->GetComponentLocation();
 
-				FRotator HPBarView = UKismetMathLibrary::FindLookAtRotation(HPBarLocation, CameraLocation); // AILocation or CameraLocation 
+				FRotator HPBarView = UKismetMathLibrary::FindLookAtRotation(HPBarLocation, CameraLocation);
 				OverheadHPBar->SetWorldRotation(HPBarView);
 				SetActorRotation(HPBarView);
 			}
