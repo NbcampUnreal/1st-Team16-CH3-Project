@@ -197,7 +197,6 @@ void ATSCharacter2::BeginPlay()
 	}
 
 	//테스트
-
 	if (!WeaponChildActor)
 	{
 		WeaponChildActor = FindComponentByClass<UChildActorComponent>();
@@ -209,12 +208,10 @@ void ATSCharacter2::BeginPlay()
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("WeaponChildActor가 정상적으로 설정되었습니다."));
-
 	AActor* ChildActor = WeaponChildActor->GetChildActor();
 	if (!ChildActor)
 	{
-		UE_LOG(LogTemp, Error, TEXT(" WeaponChildActor->GetChildActor()가 nullptr입니다! BP_M16이 제대로 설정되었는지 확인하세요."));
+		UE_LOG(LogTemp, Error, TEXT("WeaponChildActor->GetChildActor()가 nullptr입니다! 블루프린트에서 설정되었는지 확인하세요."));
 		return;
 	}
 
@@ -225,7 +222,7 @@ void ATSCharacter2::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("ChildActor를 AGunWeapon으로 캐스팅 실패! BP_M16이 AGunWeapon을 상속받았는지 확인하세요."));
+		UE_LOG(LogTemp, Error, TEXT("ChildActor를 AGunWeapon으로 캐스팅 실패! BP_ShotGun 또는 BP_M16이 AGunWeapon을 상속받았는지 확인하세요."));
 	}
 }
 
