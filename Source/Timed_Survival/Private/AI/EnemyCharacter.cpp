@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "TSGameState.h"
 
 
@@ -36,6 +37,8 @@ AEnemyCharacter::AEnemyCharacter()
 
 	AttackRange = 40.f;
 
+	BeforeTakeDamage = MaxHP;
+	AfterTakeDamage = MaxHP;
 }
 
 void AEnemyCharacter::BeginPlay()
@@ -44,6 +47,12 @@ void AEnemyCharacter::BeginPlay()
 
 
 	UpdateOverheadHP();
+
+	GetWorldTimerManager().SetTimer( //Overhead Timer
+		UpdateHPBarTimerHandle,
+		this,
+		&AEnemyCharacter::UpdateOverheadHP,
+		0.1f, true);
 
 	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	if (IsValid(AnimInstance) == true)
@@ -69,7 +78,10 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (CurrentHP > 0)
 	{
+		BeforeTakeDamage = AfterTakeDamage;
 		CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, 100);
+		AfterTakeDamage = CurrentHP;
+
 		if (CurrentHP <= 0)
 		{
 			AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
@@ -166,6 +178,8 @@ void AEnemyCharacter::EndAttack(UAnimMontage* InMontage, bool bInterruped)
 	}
 }
 
+//about OverHead UI
+
 void AEnemyCharacter::UpdateOverheadHP()
 {
 	if (!OverheadHPBar) return;
@@ -176,10 +190,30 @@ void AEnemyCharacter::UpdateOverheadHP()
 		{
 			UUserWidget* ShotEventWidgetInstance = OverheadHPBar->GetUserWidgetObject();
 			if (!ShotEventWidgetInstance) return;
+
+			//1) HP Bar
 			if (UProgressBar* HPBar = Cast<UProgressBar>(ShotEventWidgetInstance->GetWidgetFromName(TEXT("AI_HPBar"))))
 			{
-				
 				HPBar->SetPercent(CurrentHP / MaxHP);
+				OverheadHPBar->SetTranslucentSortPriority(-1);
+
+				ACharacter* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
+				APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(Player, 0);				
+				FVector CameraLocation = PlayerCamera->GetCameraLocation();
+
+				FVector HPBarLocation = OverheadHPBar->GetComponentLocation();
+
+				FRotator HPBarView = UKismetMathLibrary::FindLookAtRotation(HPBarLocation, CameraLocation); // AILocation or CameraLocation 
+				OverheadHPBar->SetWorldRotation(HPBarView);
+				SetActorRotation(HPBarView);
+			}
+
+			//2)Damage Num
+			if (UTextBlock* DamageNum = Cast<UTextBlock>(ShotEventWidgetInstance->GetWidgetFromName(TEXT("Damage"))))
+			{
+				float DamageValue = BeforeTakeDamage - AfterTakeDamage;
+				int32 Damageint32 = FMath::RoundToInt(DamageValue);
+				DamageNum->SetText(FText::FromString(FString::Printf(TEXT("%d"), Damageint32)));
 			}
 		}
 	}

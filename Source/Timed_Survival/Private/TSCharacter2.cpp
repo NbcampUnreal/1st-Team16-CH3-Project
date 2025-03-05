@@ -193,7 +193,7 @@ void ATSCharacter2::BeginPlay()
 	ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
 	if (GameState)
 	{
-		GameState->GetWeaponBulletData(CurrentShotGunBullet, MaxShotGunBullet); //GameState로 데이터 전송
+		GameState->SetShotGunBulletCount(CurrentShotGunBullet); //GameState로 데이터 전송
 	}
 
 	//테스트
@@ -407,7 +407,7 @@ void ATSCharacter2::Fire(const FInputActionValue& value)
 		ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
 		if (GameState)
 		{
-			GameState->UpdateBulletData(CurrentShotGunBullet); //GameState로 데이터 전송
+			GameState->SetShotGunBulletCount(CurrentShotGunBullet); //GameState로 데이터 전송
 		}
 		
 		// Test출력용
@@ -547,7 +547,7 @@ void ATSCharacter2::ResetReloadState()
 	ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
 	if (GameState)
 	{
-		GameState->UpdateBulletData(CurrentShotGunBullet); //GameState로 데이터 전송
+		GameState->SetShotGunBulletCount(CurrentShotGunBullet); //GameState로 데이터 전송
 	}
 	
 	// Test출력용
