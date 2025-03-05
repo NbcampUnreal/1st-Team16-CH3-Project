@@ -248,7 +248,7 @@ void ATSGameState::UpdateHUD()
 				}
 
 				// 2) About Bullet HUD========================================================================================
-				GetWeaponBulletData();
+				/*GetWeaponBulletData();*/
 
 				// 2)-1 AR Bullet
 				if (ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0))			
@@ -491,7 +491,7 @@ void ATSGameState::UpdateBulletCount()
 
 void ATSGameState::GetWeaponBulletData()
 {
-	// 지워야할 듯
+	// 삭제 필요
 	/*ATSCharacter2* ShotGunPlayer = GetWorld()->SpawnActor<ATSCharacter2>(ATSCharacter2::StaticClass());	
 	if (ShotGunPlayer)
 	{
