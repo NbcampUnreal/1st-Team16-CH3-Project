@@ -14,7 +14,6 @@ class TIMED_SURVIVAL_API ATSPlayerController : public APlayerController
 
 public:
 	ATSPlayerController();
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputMappingContext* InputMappingContext; // IMC
 
@@ -96,6 +95,10 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "HUD")
 	UUserWidget* GetHUDWidget() const;
+	UFUNCTION(BlueprintPure, Category = "Score")
+	UUserWidget* GetClearScoreWidget() const;
+	UFUNCTION(BlueprintPure, Category = "Score")
+	UUserWidget* GetGameOverWidget() const;
 
 	void ChangeToWidgetIMC();
 	void ChangeToIMC();
