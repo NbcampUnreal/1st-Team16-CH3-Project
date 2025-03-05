@@ -64,6 +64,11 @@ UUserWidget* ATSPlayerController::GetHUDWidget() const
 	return HUDWidgetInstance;
 }
 
+UUserWidget* ATSPlayerController::GetClearScoreWidget() const
+{
+	return ClearScoreWidgetInstance;
+}
+
 void ATSPlayerController::StartGame()
 {
 	ChangeToIMC();
