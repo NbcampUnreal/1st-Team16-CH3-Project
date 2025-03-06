@@ -40,6 +40,7 @@ ATSGameState::ATSGameState()
 	Maplist.Add(TEXT("ForestLevel")); // MapNumber 0
 	Maplist.Add(TEXT("OldHouseLevel")); // MapNumber 1
 
+	SpawnCount = 0;
 }
 
 void ATSGameState::BeginPlay()
@@ -116,15 +117,21 @@ void ATSGameState::StartLevel()
 	TArray<AActor*> FoundEnemyVolumes;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATS_EnemySpawnVolume::StaticClass(), FoundEnemyVolumes);
 
-
 	if (FoundEnemyVolumes.Num() > 0)
 	{
 		for (int32 i = 0; i < FoundEnemyVolumes.Num(); i++)
 		{
 			ATS_EnemySpawnVolume* SpawnVolume = Cast<ATS_EnemySpawnVolume>(FoundEnemyVolumes[i]);
-			for (int32 j = 0; j < 10; j++)
+			FActorSpawnParameters Params;
+			Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			for (int32 j = 0; j < SpawnCount; j++)
 			{
-				SpawnVolume->SpawnEnemy(Enemy);
+				GetWorld()->SpawnActor<AActor>(
+					Enemy,
+					SpawnVolume->GetRandomPointInVolume(),
+					FRotator::ZeroRotator,
+					Params
+				);
 			}
 		}
 	}

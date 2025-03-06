@@ -14,6 +14,13 @@ ATS_EnemySpawnVolume::ATS_EnemySpawnVolume()
 
 }
 
+void ATS_EnemySpawnVolume::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//SpawnEnemy();
+}
+
 FVector ATS_EnemySpawnVolume::GetRandomPointInVolume() const
 {
 	FVector BoxOrigin = BoxComp->GetComponentLocation();
@@ -25,17 +32,16 @@ FVector ATS_EnemySpawnVolume::GetRandomPointInVolume() const
 	);
 }
 
-AActor* ATS_EnemySpawnVolume::SpawnEnemy(TSubclassOf<AActor> EnemyClass)
+void ATS_EnemySpawnVolume::SpawnEnemy(AEnemyCharacter* SpawnEnemy)
 {
-	FActorSpawnParameters Params;
-	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(
-		EnemyClass,
-		GetRandomPointInVolume(),
-		FRotator::ZeroRotator,
-		Params
-	);
-
-	return SpawnedActor;
+    FActorSpawnParameters Params;
+    Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    Params.Owner = this;
+    GetWorld()->SpawnActor<AEnemyCharacter>(
+        SpawnEnemy->GetClass(),
+        GetRandomPointInVolume(),
+        FRotator::ZeroRotator,
+        Params
+    );
 }
 
