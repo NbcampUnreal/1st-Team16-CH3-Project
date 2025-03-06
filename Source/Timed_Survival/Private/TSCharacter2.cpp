@@ -634,3 +634,32 @@ void ATSCharacter2::ResetFootStep()
 {
 	bCanPlayFootstep = true;
 }
+
+void ATSCharacter2::TakeDamageAnim()
+{
+	if (TakeDamageAnimation)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance)
+		{
+			FName SlotName = TEXT("TakeDamageSlot");
+			AnimInstance->Montage_Play(TakeDamageAnimation);
+			AnimInstance->Montage_JumpToSection(SlotName, TakeDamageAnimation);
+		}
+	}
+
+	// 이동 중지 (0.7초)
+	GetCharacterMovement()->DisableMovement();
+	GetWorldTimerManager().SetTimer(
+		DamageMoveTimerHandle,
+		this,
+		&ATSCharacter2::EnableMovementAfterDamage,
+		0.7f,
+		false
+	);
+}
+
+void ATSCharacter2::EnableMovementAfterDamage()
+{
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+}

@@ -579,6 +579,7 @@ void ATSGameState::ReduceTime(float Value, bool bIgnoreMask)
 	if (bIsStopTimeReductionEnabled || bIgnoreMask)
 	{
 		ItemHealth -= Value;
+
 		UpdateHealth();
 	}
 }
