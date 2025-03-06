@@ -38,6 +38,10 @@ public:
     TSubclassOf<class ATSBaseItem> MiddleHealingBP;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Healing Settings")
     TSubclassOf<class ATSBaseItem> SmallHealingBP;
+    UPROPERTY(EditAnywhere, Category = "Item Spawn")
+    TSubclassOf<class ATSBaseItem> MineBP;
+    UPROPERTY(EditAnywhere, Category = "Item Spawn")
+    TSubclassOf<class ATSBaseItem> MaskBP;
 
     // 힐링 아이템 개별 확률
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Healing Settings")
