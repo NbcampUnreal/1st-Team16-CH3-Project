@@ -21,9 +21,9 @@
 ATSGameState::ATSGameState()
 {	
 	HealthBarMax = 180.0;
-	BaseHealth = 15.0f; // unit of time : min
+	BaseHealth = 3.0f; // unit of time : min
 	ItemHealth = 0.0f;
-	CurrentHealth = BaseHealth * 1.0f; // change unit of time : sec
+	CurrentHealth = BaseHealth * 60.0f; // change unit of time : sec
 		
 	HealingCount = 0;
 	CurrentM16BulletCount = 0;
@@ -221,6 +221,7 @@ void ATSGameState::OnHPZero()
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
+		PopUpGameOver();
 		// 라이플 캐릭터 죽음애니메이션처리
 		ATSCharacter* PlayerCharacter = Cast<ATSCharacter>(PlayerController->GetPawn());
 		if (PlayerCharacter)
@@ -571,7 +572,7 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 
 void ATSGameState::UpdateHealth()
 {
-	CurrentHealth = BaseHealth * 60.f + ItemHealth;
+	CurrentHealth = BaseHealth + ItemHealth;
 }
 
 void ATSGameState::SubtractHealthOnSecond()
