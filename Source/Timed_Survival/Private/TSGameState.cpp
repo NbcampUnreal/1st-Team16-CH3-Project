@@ -119,33 +119,22 @@ void ATSGameState::StartLevel()
 
 	if (FoundEnemyVolumes.Num() > 0)
 	{
-		ATS_EnemySpawnVolume* SpawnVolume = Cast<ATS_EnemySpawnVolume>(FoundEnemyVolumes[0]);
-		FActorSpawnParameters Params;
-		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-		for (int32 i = 0; i < SpawnCount; i++)
+		for (int32 i = 0; i < FoundEnemyVolumes.Num(); i++)
 		{
-			GetWorld()->SpawnActor<AActor>(
-				Enemy,
-				SpawnVolume->GetRandomPointInVolume(),
-				FRotator::ZeroRotator,
-				Params
-			);
+			ATS_EnemySpawnVolume* SpawnVolume = Cast<ATS_EnemySpawnVolume>(FoundEnemyVolumes[i]);
+			FActorSpawnParameters Params;
+			Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			for (int32 j = 0; j < SpawnCount; j++)
+			{
+				GetWorld()->SpawnActor<AActor>(
+					Enemy,
+					SpawnVolume->GetRandomPointInVolume(),
+					FRotator::ZeroRotator,
+					Params
+				);
+			}
 		}
 	}
-
-
-	//if (FoundEnemyVolumes.Num() > 0)
-	//{
-	//	for (int32 i = 0; i < FoundEnemyVolumes.Num(); i++)
-	//	{
-	//		ATS_EnemySpawnVolume* SpawnVolume = Cast<ATS_EnemySpawnVolume>(FoundEnemyVolumes[i]);
-	//		for (int32 j = 0; j < 10; j++)
-	//		{
-	//			SpawnVolume->SpawnEnemy(Enemy);
-	//		}
-	//	}
-	//}
 
 	GetWorldTimerManager().SetTimer( // Subtract Time
 		SubtractHealthTimerHandle,
