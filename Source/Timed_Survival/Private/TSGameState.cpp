@@ -262,7 +262,7 @@ void ATSGameState::UpdateHUD()
 				//1)-1 Health Text
 				if (UTextBlock* HealthText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("HealthText"))))
 				{
-					HealthText->SetText(FText::FromString(FString::Printf(TEXT("HealthTest : %d"), HealthNum)));
+					HealthText->SetText(FText::FromString(FString::Printf(TEXT("Last Time %d"), HealthNum)));
 				}
 
 				// 1)-2 Health Bar percent
@@ -277,6 +277,23 @@ void ATSGameState::UpdateHUD()
 					HealthBundle->SetText(FText::FromString(FString::Printf(TEXT("X %d"), Bundle)));
 				}
 
+				// 1)-4 Health Num Text
+				int32 HealthValueInt = FMath::FloorToInt(HealthValue);
+				if (UTextBlock* BigHealth = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("BigHealing"))))
+				{
+					BigHealth->SetText(FText::FromString(FString::Printf(TEXT("+ %d"), HealthValueInt)));
+				}
+
+				if (UTextBlock* BigHealth = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("MiddleHealing"))))
+				{
+					BigHealth->SetText(FText::FromString(FString::Printf(TEXT("+ %d"), HealthValueInt)));
+				}
+
+				if (UTextBlock* BigHealth = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("SmallHealing"))))
+				{
+					BigHealth->SetText(FText::FromString(FString::Printf(TEXT("+ %d"), HealthValueInt)));
+				}
+
 				// 2) About Bullet HUD========================================================================================
 				
 				// 2)-1 AR Bullet
@@ -288,6 +305,11 @@ void ATSGameState::UpdateHUD()
 						{
 							CountM16Bullet->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentM16BulletCount, MaxM16)));
 							CountM16Bullet->SetVisibility(ESlateVisibility::Visible);
+						}
+
+						if (UTextBlock* TextM16Bullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("M16Bullet"))))
+						{	
+							TextM16Bullet->SetVisibility(ESlateVisibility::Visible);
 						}
 					}
 				}
@@ -301,6 +323,11 @@ void ATSGameState::UpdateHUD()
 						{
 							CountShotGunBullet->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentShotGunBulletCount, MaxShotGun)));
 							CountShotGunBullet->SetVisibility(ESlateVisibility::Visible);
+						}
+
+						if (UTextBlock* TextShotGunBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ShotGun"))))
+						{
+							TextShotGunBullet->SetVisibility(ESlateVisibility::Visible);
 						}
 					}
 				}
@@ -535,6 +562,7 @@ bool ATSGameState::IsMaskActive() const
 // 시간(체력) 증가함수
 void ATSGameState::IncreaseTime(float Value)
 {
+	HealthValue = Value;
 	ItemHealth += Value;
 	UpdateHealth();
 }
