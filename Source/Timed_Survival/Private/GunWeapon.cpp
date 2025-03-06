@@ -114,8 +114,6 @@ void AGunWeapon::FireBullet()
 
     FVector SpawnLocation = GetActorLocation() + (ShotDirection * 50.f);
 
-    DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation + (ShotDirection * 1000.0f),
-        FColor::Red, false, 1.0f, 0, 3.0f);
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
