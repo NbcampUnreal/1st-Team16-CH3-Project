@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Animation/AnimMontage.h"
 #include "GunWeapon.h"
+#include "Sound/SoundCue.h"
 #include "TSCharacter2.generated.h"
 
 
@@ -12,6 +13,7 @@ class UCameraComponent;
 class ABaseWeapon;
 class UAniMontage;
 class FTimerhandle;
+class USoundCue;
 struct FInputActionValue;
 
 UCLASS()
@@ -106,7 +108,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MovementSpeed")
 	float SprintSpeed;
 
+	// 사격 사운드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundCue* FireSound;
+	// 걷는 사운드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundCue* WalkSound;
+	// 뛰는 사운드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundCue* SprintSound;
 
+	// ==============================================================================================================
 	// about Health
 	void TakeDamage();
 
@@ -180,4 +192,7 @@ public:
 	// 캐릭터 애니메이션 블루프린트사용하기위해 현재 총알수를 반환하는 함수
 	UFUNCTION(BlueprintCallable, Category = "Animation")
 	int32 GetCurrentShotGunBullet() const;
+
+	// 이동 사운드 추가용 함수
+	void PlayFootstepSound();
 };
