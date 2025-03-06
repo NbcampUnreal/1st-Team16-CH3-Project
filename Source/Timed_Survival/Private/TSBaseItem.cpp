@@ -107,8 +107,6 @@ void ATSBaseItem::OnItemOverlap(
 {
 	if (OtherActor && OtherActor->ActorHasTag("Player"))
 	{
-		// 디버깅 메시지 출력
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Overlap!")));
 		ActivateItem(OtherActor);
 	}
 }
