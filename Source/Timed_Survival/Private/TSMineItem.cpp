@@ -57,15 +57,32 @@ void ATSMineItem::Explode()
 {
     bHasExploded = true; // 중복 폭발 방지
 
+    UParticleSystemComponent* ParticleComponent = nullptr;
+
     // 폭발 파티클 효과 생성 (한 번 재생 후 자동 제거)
     if (ExplosionParticle)
     {
-        UGameplayStatics::SpawnEmitterAtLocation(
+        ParticleComponent = UGameplayStatics::SpawnEmitterAtLocation(
             GetWorld(),
             ExplosionParticle,
             GetActorLocation(),
             GetActorRotation(),
             true
+        );
+    }
+
+    if (ParticleComponent)
+    {
+        // 2초 후에 파티클 시스템 비활성화
+        FTimerHandle ParticleDestroyTimerHandle;
+        GetWorld()->GetTimerManager().SetTimer(
+            ParticleDestroyTimerHandle,
+            [ParticleComponent]()
+            {
+                ParticleComponent->DeactivateSystem();
+            },
+            2.0f,
+            false
         );
     }
 
