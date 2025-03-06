@@ -77,11 +77,13 @@ public:
 	UTSUserWidgetManager* WidgetManager;
 	void UpdateHUD();
 	void PickWidgetbyItemType(FName Type);
+	UFUNCTION(BlueprintCallable, Category = "widget")
 	void PopUpWidget(FName ItemType, UUserWidget* ItemWidget, float ViewTime);
 	void PopUpClearScore();
 	void PopUpGameOver();
 
 	// about Health(Timer) Function - with Item Class
+	float HealthValue;
 	void IncreaseTime(float Value);
 	void ReduceTime(float Value, bool bIgnoreMask = false); // 방독면 무시 여부
 		
