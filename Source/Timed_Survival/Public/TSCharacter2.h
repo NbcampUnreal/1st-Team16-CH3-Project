@@ -56,7 +56,7 @@ private:
 	// 아래를 쳐다볼 수 있는 최대각도 (AO_Down 최대각도)
 	float MaxLookDownAngle = -30.0f;
 
-protected:
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -81,6 +81,12 @@ protected:
 	FTimerHandle FireTimerHandle;
 	// 샷건 나가는 시간 멈춰주는 타이머핸들
 	FTimerHandle ShotgunCooldownTimerHandle;
+	FTimerHandle FootsetpTimerHandle;
+
+
+	// 걷기 재생사운드용 타이머핸들
+	FTimerHandle FootstepTimerHandle;
+
 
 public:
 
@@ -90,7 +96,8 @@ public:
 	// 장전하는 애니메이션 계속 안나오게하는 bool변수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	bool bIsReloading = false;
-
+	// 달리는지 확인하기위한 bool
+	bool bCanPlayFootstep = true;
 
 	// 최대 총알
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ShotGun")
@@ -195,4 +202,6 @@ public:
 
 	// 이동 사운드 추가용 함수
 	void PlayFootstepSound();
+
+	void ResetFootStep();
 };

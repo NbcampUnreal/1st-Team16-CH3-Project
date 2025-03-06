@@ -583,7 +583,12 @@ int32 ATSCharacter2::GetCurrentShotGunBullet() const
 
 void ATSCharacter2::PlayFootstepSound()
 {
-	if (!GetCharacterMovement()) return;
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+
+	if (!GetCharacterMovement() || !bCanPlayFootstep) return;
 
 	float CurrentSpeed = GetCharacterMovement()->Velocity.Size();
 
@@ -609,5 +614,20 @@ void ATSCharacter2::PlayFootstepSound()
 	if (FootstepSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FootstepSound, GetActorLocation());
+
+		// 🔹 다음 발소리가 일정 시간 후에만 재생되도록 타이머 설정
+		bCanPlayFootstep = false;
+		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.23f : 0.5f; // 뛰는 경우 0.3초, 걷는 경우 0.5초
+		GetWorld()->GetTimerManager().SetTimer(
+			FootstepTimerHandle,
+			this,
+			&ATSCharacter2::ResetFootStep,
+			FootstepDelay,
+			false);
 	}
+}
+
+void ATSCharacter2::ResetFootStep()
+{
+	bCanPlayFootstep = true;
 }
