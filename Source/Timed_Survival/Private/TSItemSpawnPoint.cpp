@@ -39,7 +39,7 @@ void ATSItemSpawnPoint::SpawnItem()
     ATSBaseItem* BaseItem = Cast<ATSBaseItem>(SpawnedItem);
     if (BaseItem && ItemType != ETSItemType::Mine)  // 지뢰는 예외 처리
     {
-        BaseItem->EnableOutline(true);
+        BaseItem->EnableOutline(false);
     }
 
 	// 아이템을 일정시간 후 리스폰 하고싶다면 아래 코드 사용
