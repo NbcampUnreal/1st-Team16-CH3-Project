@@ -80,25 +80,6 @@ void ATSGameMode::BeginPlay()
 // 기본 PlayerStart에서 시작, 이후 리스폰지점에서 시작
 void ATSGameMode::SpawnSelectedCharacter()
 {
-
-	//UTSGameInstance* GameInstance = Cast<UTSGameInstance>(GetGameInstance());
-	//if (!GameInstance || !GameInstance->SelectedCharacterClass) return;
-
-	//APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	//if (!PlayerController) return;
-
-	//// 캐릭터 스폰 위치 지정 (임시로 (0,0,0)에서 스폰)
-	//FVector SpawnLocation = FVector(0.0f, 0.0f, 0.0f);
-	//FRotator SpawnRotation = FRotator::ZeroRotator;
-
-	//// 캐릭터 스폰
-	//ACharacter* NewCharacter = GetWorld()->SpawnActor<ACharacter>(GameInstance->SelectedCharacterClass, SpawnLocation, SpawnRotation);
-	//if (NewCharacter)
-	//{
-	//	// 플레이어 컨트롤러가 새로운 캐릭터를 조종하도록 설정
-	//	PlayerController->Possess(NewCharacter);
-	//}
-
 	UTSGameInstance* TSGameInstance = Cast<UTSGameInstance>(GetGameInstance());
 	if (!TSGameInstance || !TSGameInstance->SelectedCharacterClass) return;
 
@@ -196,10 +177,17 @@ void ATSGameMode::RespawnPlayer(AController* PlayerController)
 		TSGameStateRef->CurrentHealth = TSGameStateRef->GetRespawnHealth();
 		UE_LOG(LogTemp, Warning, TEXT("Respawn successful! Health restored to: %f"), TSGameStateRef->CurrentHealth);
 
-		//// UI 갱신
-		//if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
-		//{
-		//	TSPlayerController->ShowHUD();
-		//}
+		// 체력 감소 타이머 다시 시작
+		TSGameStateRef->GetWorldTimerManager().ClearTimer(TSGameStateRef->SubtractHealthTimerHandle);
+		TSGameStateRef->GetWorldTimerManager().SetTimer(
+			TSGameStateRef->SubtractHealthTimerHandle,
+			TSGameStateRef,
+			&ATSGameState::SubtractHealthOnSecond,
+			0.1f,
+			true
+		);
+
+		// UI 갱신
+		TSGameStateRef->UpdateHUD();
 	}
 }
