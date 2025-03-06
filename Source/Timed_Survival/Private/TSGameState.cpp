@@ -169,49 +169,47 @@ void ATSGameState::EndLevel() // 스테이지 클리어
 		{
 			TSPlayerController->ShowClearScore();
 			PopUpClearScore();
-			//EnterShelter();
-			//Game instance로 저장할 데이터 넘기기
 		}
 	}
 }
 
-void ATSGameState::EnterShelter() // 셸터 다음 레벨로 넘겨주냐 엔딩으로 보내냐
-{
-	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
-	{
-		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
-		{
-			if (Maplist.Num() > 0)
-			{
-				if (ClearLevelNum != (Maplist.Num() - 1))
-				{
-					CurrentMapNum++;
-					TSPlayerController->ShowShelterMenu();										
-					if (Maplist.IsValidIndex(CurrentMapNum))
-					{
-						OpenNextLevel();
-					}
-				}
+//void ATSGameState::EnterShelter() // 셸터 다음 레벨로 넘겨주냐 엔딩으로 보내냐
+//{
+//	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+//	{
+//		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
+//		{
+//			if (Maplist.Num() > 0)
+//			{
+//				if (ClearLevelNum != (Maplist.Num() - 1))
+//				{
+//					CurrentMapNum++;
+//					TSPlayerController->ShowShelterMenu();										
+//					if (Maplist.IsValidIndex(CurrentMapNum))
+//					{
+//						OpenNextLevel();
+//					}
+//				}
+//
+//				else
+//				{
+//					TSPlayerController->ShowClearScore();
+//				}
+//			}
+//		}
+//	}
+//	// 초기화 되는 거 초기화
+//	// 중간에 스코어 표기 되나요?
+//	
+//}
 
-				else
-				{
-					TSPlayerController->ShowClearScore();
-				}
-			}
-		}
-	}
-	// 초기화 되는 거 초기화
-	// 중간에 스코어 표기 되나요?
-	
-}
-
-void ATSGameState::OpenNextLevel()
-{			
-	if (Maplist.IsValidIndex(CurrentMapNum))
-	{
-		UGameplayStatics::OpenLevel(GetWorld(), Maplist[CurrentMapNum]);
-	}		
-}
+//void ATSGameState::OpenNextLevel()
+//{			
+//	if (Maplist.IsValidIndex(CurrentMapNum))
+//	{
+//		UGameplayStatics::OpenLevel(GetWorld(), Maplist[CurrentMapNum]);
+//	}		
+//}
 
 void ATSGameState::OnHPZero()
 {
