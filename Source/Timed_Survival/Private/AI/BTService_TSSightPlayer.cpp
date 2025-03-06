@@ -24,7 +24,7 @@ void UBTService_TSSightPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(AIController->GetPawn());
 		if (IsValid(Enemy) == true)
 		{
-            ACharacter* Player = Cast<ACharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+           ACharacter* Player = Cast<ACharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 			FAIStimulus AIStimulus;
             AIStimulus = CanSenseActor(Player, ETS_AISenseT::E_Sight, OwnerComp);
 			if (AIStimulus.WasSuccessfullySensed())
