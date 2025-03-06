@@ -1,4 +1,6 @@
 #include "TSMineItem.h"
+#include "TSCharacter.h"
+#include "TSCharacter2.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -111,6 +113,19 @@ void ATSMineItem::Explode()
             if (ATSGameState* GameState = GetWorld()->GetGameState<ATSGameState>())
             {
                 GameState->ReduceTime(ExplosionPlayerDamage, true);
+
+                // 플레이어가 맞았을 때 피격 애니메이션 실행
+                ATSCharacter* PlayerCharacter1 = Cast<ATSCharacter>(Actor);
+                if (PlayerCharacter1)
+                {
+                    PlayerCharacter1->TakeDamageAnim();
+                }
+
+                ATSCharacter2* PlayerCharacter2 = Cast<ATSCharacter2>(Actor);
+                if (PlayerCharacter2)
+                {
+                    PlayerCharacter2->TakeDamageAnim();
+                }
             }
         }
         // AI의 경우, ApplyDamage를 통해 피해 적용 --- (AI상호작용 확인 필요)

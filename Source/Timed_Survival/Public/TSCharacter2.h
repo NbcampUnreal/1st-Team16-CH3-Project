@@ -75,7 +75,6 @@ public:
 	UAnimMontage* TakeDamageAnimation;
 
 
-
 	// Aim Rotation
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aiming")
 	FRotator AimRotation;
@@ -131,6 +130,9 @@ public:
 	// 뛰는 사운드
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	USoundCue* SprintSound;
+	// 체력이 감소될때 사운드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundCue* GruntSound;
 
 	// ==============================================================================================================
 	// about Health
