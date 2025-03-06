@@ -28,10 +28,10 @@ ATSGameState::ATSGameState()
 	HealingCount = 0;
 	CurrentM16BulletCount = 0;
 	CurrentShotGunBulletCount = 0;
-	BulletInM16 = 10;
+	BulletInM16 = 20;
 	BulletInShotGun = 2;
 	MaxShotGun = 2;
-	MaxM16 = 10;
+	MaxM16 = 20;
 
 	SetMaskEffectTime = 0.0f;
 	MaskTimeRemaining = 0.0f;
