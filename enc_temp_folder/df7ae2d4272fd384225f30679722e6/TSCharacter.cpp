@@ -591,7 +591,7 @@ void ATSCharacter::PlayFootstepSound()
 	float CurrentSpeed = GetCharacterMovement()->Velocity.Size();
 
 	// 속도가 10 이하이면 정지 상태로 판단하고 재생 X
-	if (CurrentSpeed <= 10.0f)
+	if (CurrentSpeed <= 100.0f)
 	{
 		return;
 	}
@@ -615,7 +615,7 @@ void ATSCharacter::PlayFootstepSound()
 
 		// 🔹 다음 발소리가 일정 시간 후에만 재생되도록 타이머 설정
 		bCanPlayFootstep = false;
-		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.23f : 0.5f; // 뛰는 경우 0.3초, 걷는 경우 0.5초
+		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.16f : 0.5f; // 뛰는 경우 0.16초, 걷는 경우 0.5초
 		GetWorld()->GetTimerManager().SetTimer(FootsetpTimerHandle,
 			this,
 			&ATSCharacter::ResetFootStep,

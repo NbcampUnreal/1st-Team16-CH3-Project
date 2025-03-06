@@ -620,7 +620,7 @@ void ATSCharacter2::PlayFootstepSound()
 
 		// 다음 발소리가 일정 시간 후에만 재생되도록 타이머 설정
 		bCanPlayFootstep = false;
-		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.23f : 0.5f; // 뛰는 경우 0.23초, 걷는 경우 0.5초
+		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.18f : 0.45f; // 뛰는 경우 0.18초, 걷는 경우 0.45초로 발과 맞춤
 		GetWorld()->GetTimerManager().SetTimer(
 			FootstepTimerHandle,
 			this,
