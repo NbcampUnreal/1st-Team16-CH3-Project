@@ -70,9 +70,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* ReloadAnimation;
 
-	// TakeDamage Animation
-	UPROPERTY(EditAnywhere, Category = "Animation")
-	UAnimMontage* TakeDamageAnim;
 
 	// Aim Rotation
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aiming")
@@ -86,8 +83,6 @@ public:
 	FTimerHandle ShotgunCooldownTimerHandle;
 	FTimerHandle FootsetpTimerHandle;
 
-	// 맞는동안 캐릭터 멈추게하는 타이머핸들
-	FTimerHandle TakeDamageTimerHandle;
 
 	// 걷기 재생사운드용 타이머핸들
 	FTimerHandle FootstepTimerHandle;
@@ -209,10 +204,4 @@ public:
 	void PlayFootstepSound();
 
 	void ResetFootStep();
-
-	// 데미지받으면 실행
-	void TakeDamageAnimation();
-
-	// 맞고난뒤에 다시 움직이게하는 함수
-	void SetMovement();
 };

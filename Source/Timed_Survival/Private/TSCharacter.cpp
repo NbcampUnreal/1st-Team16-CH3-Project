@@ -628,30 +628,3 @@ void ATSCharacter::ResetFootStep()
 {
 	bCanPlayFootstep = true;
 }
-
-void ATSCharacter::TakeDamageAnimation()
-{
-	if (TakeDamageAnim)
-	{
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance)
-		{
-			FName SlotName = TEXT("TakeDamageSlot");
-			AnimInstance->Montage_Play(TakeDamageAnim);
-			AnimInstance->Montage_JumpToSection(SlotName, TakeDamageAnim);
-		}
-	}
-
-	GetWorld()->GetTimerManager().SetTimer(
-		TakeDamageTimerHandle,
-		this,
-		&ATSCharacter::SetMovement,
-		0.5f,
-		false
-	);
-}
-
-void ATSCharacter::SetMovement()
-{
-	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-}

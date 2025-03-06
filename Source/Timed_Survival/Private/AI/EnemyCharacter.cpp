@@ -115,16 +115,15 @@ void AEnemyCharacter::OnCheckHit()
                 Params
             );
 
-			// 플레이어 캐릭터인지 확인하고 데미지 적용
-			if (bOnHit && HitResult.GetActor()->ActorHasTag("Player"))
-			{
+            // ApplyDamage() 호출
+            if (bOnHit == true)
+            {
 				UKismetSystemLibrary::PrintString(this, TEXT("OnCheckHit()"));
 				if (IsValid(GameState))
 				{
-					GameState->ReduceTime(Damage, true);
+					GameState->ReduceTime(Damage,true);
 				}
-			}
-
+            }
             if (AEnemyAIController::ShowAIDebug == 1)
             {
                 FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
