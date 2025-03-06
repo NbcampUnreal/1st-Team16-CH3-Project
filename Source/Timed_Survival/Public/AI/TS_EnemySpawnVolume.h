@@ -29,5 +29,7 @@ public:
 	UFUNCTION(BlueprintCallable,Category = "Spawn")
 	FVector GetRandomPointInVolume() const;
 	UFUNCTION(BlueprintCallable, Category = "Spawn")
+	FRotator GetRandomRotation() const;
+	UFUNCTION(BlueprintCallable, Category = "Spawn")
 	void SpawnEnemy(AEnemyCharacter* SpawnEnemy);
 };

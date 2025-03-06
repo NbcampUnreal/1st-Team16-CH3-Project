@@ -40,13 +40,13 @@ private:
 	bool bIsReloading = false;
 
 	// 마지막 입력된 이동 값 저장
-	FVector2D LastMoveInput; 
+	FVector2D LastMoveInput;
 
 	// 마지막 입력된 이동 방향 저정
 	FVector LastMoveDirection;
 
 	// 기본 FOV 저장
-	float DefaultFOV;   
+	float DefaultFOV;
 
 	// 기본 카메라 위치 저장
 	FVector DefaultCameraOffset;
@@ -65,7 +65,7 @@ public:
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* CameraComp;
-	
+
 	// Death Aniamtion
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* DeathAnimation;
@@ -125,6 +125,9 @@ public:
 	// 뛰는 사운드
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	USoundCue* SprintSound;
+	// 체력이 감소될때 사운드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundCue* GruntSound;
 	// =============================================================================================================================
 
 	// about Health
@@ -133,15 +136,16 @@ public:
 	// 무기 리스트 담을 배열
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TArray<AGunWeapon*> Weapons;
-	
+
 	// 무기 타입으로 무기 찾는 함수(총알 추가용)
 	AGunWeapon* FindWeaponByType(FName WeaponType);
+
 
 
 protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void BeginPlay() override;	
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 protected:
@@ -182,7 +186,7 @@ public:
 
 	// 다시 이동할 수 있는 함수(Reload시에 이동이 불가하여)
 	UFUNCTION()
-	void EnableMovementAfterReload(); 
+	void EnableMovementAfterReload();
 
 	// 캐릭터가 바라보는곳을 마우스로 설정하는 함수
 	void FaceMouseDirection();
