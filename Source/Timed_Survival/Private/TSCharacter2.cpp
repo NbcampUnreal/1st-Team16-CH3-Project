@@ -246,6 +246,9 @@ void ATSCharacter2::Tick(float DeltaTime)
 	{
 		AddMovementInput(LastMoveDirection, 1.0f);
 	}
+
+	// 이동 사운드 재생
+	PlayFootstepSound();
 }
 
 void ATSCharacter2::Move(const FInputActionValue& value)
@@ -427,6 +430,12 @@ void ATSCharacter2::Fire(const FInputActionValue& value)
 			}
 		}
 
+		// 총 발사 사운드 실행
+		if (FireSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+		}
+
 		// 총쏘는 애니메이션 0.3초 설정 -> 1초로하면 왼손이 재장전하는데 샷건 재장전 메쉬를 움직일수가없음
 		GetWorld()->GetTimerManager().SetTimer(
 			ShotgunCooldownTimerHandle,
@@ -438,26 +447,37 @@ void ATSCharacter2::Fire(const FInputActionValue& value)
 	}
 }
 
-
-
 void ATSCharacter2::StartAiming(const FInputActionValue& value)
 {
-	if (GetCharacterMovement()->IsFalling())
-	{
-		return;
-	}
-
-	if (GetCharacterMovement()->MaxWalkSpeed == 1000)
-	{
-		return;
-	}
+	if (GetCharacterMovement()->IsFalling()) return;
+	if (GetCharacterMovement()->MaxWalkSpeed == SprintSpeed) return;
 
 	bIsAiming = true;
-	CameraComp->SetFieldOfView(AimFOV);
-	SpringArmComp->SocketOffset = FVector(180, -50, 0);
-	SpringArmComp->SetRelativeRotation(FRotator(-5, 6, 0));
-}
 
+	// 카메라 시야각 적용
+	CameraComp->SetFieldOfView(AimFOV);
+
+	// 카메라의 위치
+	SpringArmComp->SocketOffset = FVector(200.0f, -50.0f, -20.0f);
+
+	// 카메라 각도를 약간 아래로 기울여 조준 시 총이 중앙으로 오도록 조정
+	SpringArmComp->SetRelativeRotation(FRotator(-8.0f, 5.0f, 0.0f));
+
+	// 캐릭터의 조준 방향을 마우스 커서 방향으로 회전
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		FVector CameraLocation;
+		FRotator CameraRotation;
+		PlayerController->GetPlayerViewPoint(CameraLocation, CameraRotation);
+
+		// 카메라의 방향을 따라 정렬하도록 설정
+		FRotator NewAimRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), CameraLocation + CameraRotation.Vector() * 1000.0f);
+		NewAimRotation.Pitch = 0.0f; // 피치는 고정하여 위아래 각도 영향을 최소화
+		NewAimRotation.Roll = 0.0f;
+		SetActorRotation(NewAimRotation);
+	}
+}
 
 void ATSCharacter2::StopAiming(const FInputActionValue& value)
 {
@@ -558,4 +578,56 @@ void ATSCharacter2::ResetReloadState()
 int32 ATSCharacter2::GetCurrentShotGunBullet() const
 {
 	return CurrentShotGunBullet;
+}
+
+
+void ATSCharacter2::PlayFootstepSound()
+{
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+
+	if (!GetCharacterMovement() || !bCanPlayFootstep) return;
+
+	float CurrentSpeed = GetCharacterMovement()->Velocity.Size();
+
+	// 속도가 10 이하이면 정지 상태로 판단하고 재생 X
+	if (CurrentSpeed <= 10.0f)
+	{
+		return;
+	}
+
+	USoundCue* FootstepSound = nullptr;
+
+	// 속도에 따라 걷는 소리 또는 뛰는 소리 선택
+	if (CurrentSpeed > 300.0f)
+	{
+		FootstepSound = SprintSound; // 뛰는 사운드
+	}
+	else
+	{
+		FootstepSound = WalkSound; // 걷는 사운드
+	}
+
+	// 사운드가 존재하면 실행
+	if (FootstepSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, FootstepSound, GetActorLocation());
+
+		// 다음 발소리가 일정 시간 후에만 재생되도록 타이머 설정
+		bCanPlayFootstep = false;
+		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.23f : 0.5f; // 뛰는 경우 0.23초, 걷는 경우 0.5초
+		GetWorld()->GetTimerManager().SetTimer(
+			FootstepTimerHandle,
+			this,
+			&ATSCharacter2::ResetFootStep,
+			FootstepDelay,
+			false);
+	}
+}
+
+void ATSCharacter2::ResetFootStep()
+{
+	bCanPlayFootstep = true;
 }
