@@ -128,6 +128,7 @@ void ATSGameState::OnGameOver()
 		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
 		{
 			TSPlayerController->ShowGameOver();
+			PopUpGameOver();
 
 			// 죽는 애니메이션이 끝나는 3초 뒤에 SetPause(true)가 실행하도록함.
 			GetWorld()->GetTimerManager().SetTimer(
@@ -410,7 +411,7 @@ void ATSGameState::PopUpClearScore()
 	}
 }
 
-//Game Over UI
+// 4) Game Over UI
 void ATSGameState::PopUpGameOver()
 {
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
