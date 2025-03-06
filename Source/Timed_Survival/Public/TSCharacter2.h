@@ -130,6 +130,9 @@ public:
 	// 뛰는 사운드
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	USoundCue* SprintSound;
+	// 체력이 감소될때 사운드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundCue* GruntSound;
 
 	// ==============================================================================================================
 	// about Health

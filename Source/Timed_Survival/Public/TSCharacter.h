@@ -125,6 +125,9 @@ public:
 	// 뛰는 사운드
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	USoundCue* SprintSound;
+	// 체력이 감소될때 사운드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundCue* GruntSound;
 	// =============================================================================================================================
 
 	// about Health
@@ -136,6 +139,7 @@ public:
 
 	// 무기 타입으로 무기 찾는 함수(총알 추가용)
 	AGunWeapon* FindWeaponByType(FName WeaponType);
+
 
 
 protected:

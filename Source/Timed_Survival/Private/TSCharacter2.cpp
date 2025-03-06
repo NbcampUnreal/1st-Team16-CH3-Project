@@ -643,6 +643,12 @@ void ATSCharacter2::TakeDamageAnim()
 		AnimInstance->Montage_Play(TakeDamageAnimation);
 	}
 
+	// 피격 사운드 한 번만 실행
+	if (GruntSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, GruntSound, GetActorLocation());
+	}
+
 	// 이동 중지 (0.7초)
 	GetCharacterMovement()->DisableMovement();
 	GetWorldTimerManager().SetTimer(
