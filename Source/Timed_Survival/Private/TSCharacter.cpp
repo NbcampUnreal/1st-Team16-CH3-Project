@@ -591,7 +591,7 @@ void ATSCharacter::PlayFootstepSound()
 	float CurrentSpeed = GetCharacterMovement()->Velocity.Size();
 
 	// 속도가 10 이하이면 정지 상태로 판단하고 재생 X
-	if (CurrentSpeed <= 10.0f)
+	if (CurrentSpeed <= 100.0f)
 	{
 		return;
 	}
