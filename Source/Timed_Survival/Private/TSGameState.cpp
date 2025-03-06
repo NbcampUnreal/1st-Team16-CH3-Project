@@ -522,11 +522,33 @@ void ATSGameState::IncreaseTime(float Value)
 // 시간(체력) 감소함수
 void ATSGameState::ReduceTime(float Value, bool bIgnoreMask)
 {
-	// bIgnoreMask가 true일 떄 지뢰 같은 강제 피해는 적용되도록 예외 처리
+	float PreviousHealth = CurrentHealth; // ✅ 감소 전 체력 저장
+
+	// bIgnoreMask가 true이면 무시하고 데미지를 적용
 	if (bIsStopTimeReductionEnabled || bIgnoreMask)
 	{
-		ItemHealth -= Value;
-		UpdateHealth();
+		CurrentHealth -= Value;
+		UpdateHealth();  // UI 업데이트
+	}
+
+	// 체력이 감소한 경우에만 플레이어 애니메이션 실행 -- 허공에 공격해서 캐릭터체력이 안닳았으면 실행 X
+	if (PreviousHealth > CurrentHealth)
+	{
+		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+		if (PlayerController)
+		{
+			ATSCharacter* PlayerCharacter = Cast<ATSCharacter>(PlayerController->GetPawn());
+			if (PlayerCharacter)
+			{
+				PlayerCharacter->TakeDamageAnimation();
+			}
+
+			ATSCharacter2* PlayerCharacter2 = Cast<ATSCharacter2>(PlayerController->GetPawn());
+			if (PlayerCharacter2)
+			{
+				PlayerCharacter2->TakeDamageAnimation();
+			}
+		}
 	}
 }
 

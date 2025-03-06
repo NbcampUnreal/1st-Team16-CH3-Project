@@ -617,7 +617,7 @@ void ATSCharacter2::PlayFootstepSound()
 
 		// 다음 발소리가 일정 시간 후에만 재생되도록 타이머 설정
 		bCanPlayFootstep = false;
-		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.23f : 0.5f; // 뛰는 경우 0.23초, 걷는 경우 0.5초
+		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.2f : 0.5f; // 뛰는 경우 0.2초, 걷는 경우 0.5초
 		GetWorld()->GetTimerManager().SetTimer(
 			FootstepTimerHandle,
 			this,
@@ -630,4 +630,31 @@ void ATSCharacter2::PlayFootstepSound()
 void ATSCharacter2::ResetFootStep()
 {
 	bCanPlayFootstep = true;
+}
+
+void ATSCharacter2::TakeDamageAnimation()
+{
+	if (TakeDamageAnim)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance)
+		{
+			FName SlotName = TEXT("TakeDamageSlot");
+			AnimInstance->Montage_Play(TakeDamageAnim);
+			AnimInstance->Montage_JumpToSection(SlotName, TakeDamageAnim);
+		}
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(
+		TakeDamageTimerHandle,
+		this,
+		&ATSCharacter2::SetMovement,  // ✅ 함수 포인터로 전달
+		0.5f,
+		false
+	);
+}
+
+void ATSCharacter2::SetMovement()
+{
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 }
