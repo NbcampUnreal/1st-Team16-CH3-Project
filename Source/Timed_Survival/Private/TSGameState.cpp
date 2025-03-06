@@ -13,6 +13,8 @@
 #include "Blueprint/UserWidget.h"
 #include "EngineUtils.h"
 #include "TSUserWidgetManager.h"
+#include "AI/TS_EnemySpawnVolume.h"
+#include "AI/EnemyCharacter.h"
 #include <Components/WidgetComponent.h>
 
 
@@ -109,6 +111,23 @@ void ATSGameState::StartLevel()
 	}
 	//아이템 초기화 될 것들 변수 넣어야함
 	//아이템 스포너 넣어야함
+
+	// 몬스터 스포너
+	TArray<AActor*> FoundEnemyVolumes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATS_EnemySpawnVolume::StaticClass(), FoundEnemyVolumes);
+
+
+	if (FoundEnemyVolumes.Num() > 0)
+	{
+		for (int32 i = 0; i < FoundEnemyVolumes.Num(); i++)
+		{
+			ATS_EnemySpawnVolume* SpawnVolume = Cast<ATS_EnemySpawnVolume>(FoundEnemyVolumes[i]);
+			for (int32 j = 0; j < 10; j++)
+			{
+				SpawnVolume->SpawnEnemy(Enemy);
+			}
+		}
+	}
 
 	GetWorldTimerManager().SetTimer( // Subtract Time
 		SubtractHealthTimerHandle,
@@ -552,7 +571,7 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 
 void ATSGameState::UpdateHealth()
 {
-	CurrentHealth = BaseHealth * 60.0f + ItemHealth;
+	CurrentHealth = BaseHealth * 60.f + ItemHealth;
 }
 
 void ATSGameState::SubtractHealthOnSecond()
