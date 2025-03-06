@@ -13,15 +13,17 @@
 #include "Blueprint/UserWidget.h"
 #include "EngineUtils.h"
 #include "TSUserWidgetManager.h"
+#include "AI/TS_EnemySpawnVolume.h"
+#include "AI/EnemyCharacter.h"
 #include <Components/WidgetComponent.h>
 
 
 ATSGameState::ATSGameState()
 {	
 	HealthBarMax = 180.0;
-	BaseHealth = 15.0f; // unit of time : min
+	BaseHealth = 3.0f; // unit of time : min
 	ItemHealth = 0.0f;
-	CurrentHealth = BaseHealth * 1.0f; // change unit of time : sec
+	CurrentHealth = BaseHealth * 60.0f; // change unit of time : sec
 		
 	HealingCount = 0;
 	CurrentM16BulletCount = 0;
@@ -109,6 +111,23 @@ void ATSGameState::StartLevel()
 	}
 	//아이템 초기화 될 것들 변수 넣어야함
 	//아이템 스포너 넣어야함
+
+	// 몬스터 스포너
+	TArray<AActor*> FoundEnemyVolumes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATS_EnemySpawnVolume::StaticClass(), FoundEnemyVolumes);
+
+
+	if (FoundEnemyVolumes.Num() > 0)
+	{
+		for (int32 i = 0; i < FoundEnemyVolumes.Num(); i++)
+		{
+			ATS_EnemySpawnVolume* SpawnVolume = Cast<ATS_EnemySpawnVolume>(FoundEnemyVolumes[i]);
+			for (int32 j = 0; j < 10; j++)
+			{
+				SpawnVolume->SpawnEnemy(Enemy);
+			}
+		}
+	}
 
 	GetWorldTimerManager().SetTimer( // Subtract Time
 		SubtractHealthTimerHandle,
@@ -202,6 +221,7 @@ void ATSGameState::OnHPZero()
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
+		PopUpGameOver();
 		// 라이플 캐릭터 죽음애니메이션처리
 		ATSCharacter* PlayerCharacter = Cast<ATSCharacter>(PlayerController->GetPawn());
 		if (PlayerCharacter)
@@ -574,7 +594,7 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 
 void ATSGameState::UpdateHealth()
 {
-	CurrentHealth = BaseHealth * 60.0f + ItemHealth;
+	CurrentHealth = BaseHealth + ItemHealth;
 }
 
 void ATSGameState::SubtractHealthOnSecond()
