@@ -21,7 +21,7 @@
 ATSGameState::ATSGameState()
 {	
 	HealthBarMax = 180.0;
-	BaseHealth = 60.0f;
+	BaseHealth = 180.0f;
 	ItemHealth = 0.0f;
 	CurrentHealth = BaseHealth;
 		
