@@ -7,6 +7,7 @@
 class ATSBaseItem;
 class UTSWidgetManager;
 class UTSUserWidgetManager;
+class AEnemyCharacter;
 
 UCLASS()
 class TIMED_SURVIVAL_API ATSGameState : public AGameState
@@ -39,6 +40,9 @@ public:
 	float RespawnHealth; // 리스폰 시 복구 할 체력 저장
 	float GetRespawnHealth() const; // 반환 함수
 	void SetRespawnPoint(const FVector& NewLocation, float NewHealth); // 리스폰 데이터 저장 함수
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> Enemy;
 
 
 	FTimerHandle SubtractHealthTimerHandle;

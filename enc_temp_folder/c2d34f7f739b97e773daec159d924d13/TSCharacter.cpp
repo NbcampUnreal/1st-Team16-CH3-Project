@@ -1,4 +1,4 @@
-#include "TSCharacter2.h"
+#include "TSCharacter.h"
 #include "TSGameState.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
@@ -10,7 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/SkeletalMeshComponent.h"
 
-ATSCharacter2::ATSCharacter2()
+ATSCharacter::ATSCharacter() 
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -34,49 +34,49 @@ ATSCharacter2::ATSCharacter2()
 }
 
 // 무기 타입으로 무기 찾는 함수(총알 추가용)
-AGunWeapon* ATSCharacter2::FindWeaponByType(FName WeaponType)
+AGunWeapon* ATSCharacter::FindWeaponByType(FName WeaponType)
 {
 	for (AGunWeapon* Weapon : Weapons)
 	{
 		if (Weapon && Weapon->GetWeaponType() == WeaponType)
 		{
-			return Weapon;
+			return Weapon; 
 		}
 	}
-	return nullptr;
+	return nullptr; 
 }
 
-void ATSCharacter2::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ATSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
+	{   
 		if (ATSPlayerController* PlayerController = Cast<ATSPlayerController>(GetController()))
-		{
+		{  
 			if (PlayerController->MoveAction)
 			{
 				EnhancedInput->BindAction(
-					PlayerController->MoveAction,
-					ETriggerEvent::Triggered,
-					this,
-					&ATSCharacter2::Move
+					PlayerController->MoveAction, 
+					ETriggerEvent::Triggered,     
+					this,                         
+					&ATSCharacter::Move        
 				);
 			}
 
 			if (PlayerController->JumpAction)
 			{
 				EnhancedInput->BindAction(
-					PlayerController->JumpAction,
-					ETriggerEvent::Triggered,
-					this,
-					&ATSCharacter2::StartJump
+					PlayerController->JumpAction, 
+					ETriggerEvent::Triggered,   
+					this,                       
+					&ATSCharacter::StartJump     
 				);
 				EnhancedInput->BindAction(
-					PlayerController->JumpAction,
-					ETriggerEvent::Completed,
-					this,
-					&ATSCharacter2::StopJump
+					PlayerController->JumpAction, 
+					ETriggerEvent::Completed,     
+					this,                        
+					&ATSCharacter::StopJump     
 				);
 			}
 
@@ -84,10 +84,10 @@ void ATSCharacter2::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 			if (PlayerController->LookAction)
 			{
 				EnhancedInput->BindAction(
-					PlayerController->LookAction,
-					ETriggerEvent::Triggered,
-					this,
-					&ATSCharacter2::Look
+					PlayerController->LookAction, 
+					ETriggerEvent::Triggered,    
+					this,                       
+					&ATSCharacter::Look         
 				);
 			}
 
@@ -96,15 +96,15 @@ void ATSCharacter2::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 			{
 				EnhancedInput->BindAction(
 					PlayerController->SprintAction,
-					ETriggerEvent::Triggered,
-					this,
-					&ATSCharacter2::StartSprint
+					ETriggerEvent::Triggered,    
+					this,                        
+					&ATSCharacter::StartSprint   
 				);
 				EnhancedInput->BindAction(
-					PlayerController->SprintAction,
-					ETriggerEvent::Completed,
-					this,
-					&ATSCharacter2::StopSprint
+					PlayerController->SprintAction,  
+					ETriggerEvent::Completed,       
+					this,                           
+					&ATSCharacter::StopSprint      
 				);
 			}
 
@@ -115,14 +115,14 @@ void ATSCharacter2::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 					PlayerController->CrouchAction,
 					ETriggerEvent::Triggered,
 					this,
-					&ATSCharacter2::StartCrouch
+					&ATSCharacter::StartCrouch
 				);
 
 				EnhancedInput->BindAction(
 					PlayerController->CrouchAction,
 					ETriggerEvent::Completed,
 					this,
-					&ATSCharacter2::StopCrouch
+					&ATSCharacter::StopCrouch
 				);
 			}
 
@@ -132,7 +132,7 @@ void ATSCharacter2::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 					PlayerController->ReloadAction,
 					ETriggerEvent::Triggered,
 					this,
-					&ATSCharacter2::Reload
+					&ATSCharacter::Reload
 				);
 			}
 
@@ -142,7 +142,13 @@ void ATSCharacter2::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 					PlayerController->FireAction,
 					ETriggerEvent::Triggered,
 					this,
-					&ATSCharacter2::Fire
+					&ATSCharacter::StartFire
+				);
+				EnhancedInput->BindAction(
+					PlayerController->FireAction,
+					ETriggerEvent::Completed,
+					this,
+					&ATSCharacter::StopFire
 				);
 			}
 
@@ -152,52 +158,31 @@ void ATSCharacter2::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 					PlayerController->AimingAction,
 					ETriggerEvent::Triggered,
 					this,
-					&ATSCharacter2::StartAiming
+					&ATSCharacter::StartAiming
 				);
 				EnhancedInput->BindAction(
 					PlayerController->AimingAction,
 					ETriggerEvent::Completed,
 					this,
-					&ATSCharacter2::StopAiming
+					&ATSCharacter::StopAiming
 				);
 			}
 		}
 	}
 }
 
-void ATSCharacter2::BeginPlay()
+void ATSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// 기본적으로 총을 안쏘는 상태로 시작하게 false로 설정
 	bFire = false;
 
-	// 기본적으로 장전하는 애니메이션이 안나오도록 false로 설정
-	bIsReloading = false;
-
 	DefaultFOV = CameraComp->FieldOfView;
 	DefaultCameraOffset = SpringArmComp->SocketOffset; // 카메라 컴포넌트 기본 위치를 저장한다.
 
-	MaxShotGunBullet = 2;
-	CurrentShotGunBullet = MaxShotGunBullet;
-
-	
-	if (CurrentShotGunBullet <= 0)
-	{
-		CurrentShotGunBullet = 0;
-	}
-	else if (CurrentShotGunBullet >= 2)
-	{
-		CurrentShotGunBullet = 2;
-	}
-
-	ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
-	if (GameState)
-	{
-		GameState->SetShotGunBulletCount(CurrentShotGunBullet); //GameState로 데이터 전송
-	}
-
 	//테스트
+	
 	if (!WeaponChildActor)
 	{
 		WeaponChildActor = FindComponentByClass<UChildActorComponent>();
@@ -209,10 +194,12 @@ void ATSCharacter2::BeginPlay()
 		return;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("WeaponChildActor가 정상적으로 설정되었습니다."));
+
 	AActor* ChildActor = WeaponChildActor->GetChildActor();
 	if (!ChildActor)
 	{
-		UE_LOG(LogTemp, Error, TEXT("WeaponChildActor->GetChildActor()가 nullptr입니다! 블루프린트에서 설정되었는지 확인하세요."));
+		UE_LOG(LogTemp, Error, TEXT(" WeaponChildActor->GetChildActor()가 nullptr입니다! BP_M16이 제대로 설정되었는지 확인하세요."));
 		return;
 	}
 
@@ -223,13 +210,13 @@ void ATSCharacter2::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("ChildActor를 AGunWeapon으로 캐스팅 실패! BP_ShotGun 또는 BP_M16이 AGunWeapon을 상속받았는지 확인하세요."));
+		UE_LOG(LogTemp, Error, TEXT("ChildActor를 AGunWeapon으로 캐스팅 실패! BP_M16이 AGunWeapon을 상속받았는지 확인하세요."));
 	}
 }
 
-void ATSCharacter2::Tick(float DeltaTime)
+void ATSCharacter::Tick(float DeltaTime)
 {
-
+	
 	Super::Tick(DeltaTime);
 
 	FaceMouseDirection();
@@ -251,11 +238,14 @@ void ATSCharacter2::Tick(float DeltaTime)
 	PlayFootstepSound();
 }
 
-void ATSCharacter2::Move(const FInputActionValue& value)
+void ATSCharacter::Move(const FInputActionValue& value)
 {
-	if (!Controller || bIsReloading) return; // 재장전 중이면 이동 불가
-
+	if (!Controller || bFire)
+	{
+		return;
+	}
 	FVector2D MoveInput = value.Get<FVector2D>();
+
 	if (FMath::IsNearlyZero(MoveInput.X) && FMath::IsNearlyZero(MoveInput.Y))
 	{
 		return;
@@ -274,29 +264,29 @@ void ATSCharacter2::Move(const FInputActionValue& value)
 
 	IsMovingForward = (MoveInput.X > 0.0f && FMath::IsNearlyZero(MoveInput.Y));
 
-	LastMoveDirection = MoveDirection;
+	LastMoveDirection = MoveDirection; 
 
 	SetActorRotation(YawRotation);
 	AddMovementInput(MoveDirection, 1.0f);
 }
 
-void ATSCharacter2::StartJump(const FInputActionValue& value)
+void ATSCharacter::StartJump(const FInputActionValue& value)
 {
-	if (value.Get<bool>())
+	if (value.Get<bool>()) 
 	{
 		Jump();
 	}
 }
 
-void ATSCharacter2::StopJump(const FInputActionValue& value)
+void ATSCharacter::StopJump(const FInputActionValue& value)
 {
-	if (!value.Get<bool>())
+	if (!value.Get<bool>()) 
 	{
 		StopJumping();
 	}
 }
 
-void ATSCharacter2::Look(const FInputActionValue& value)
+void ATSCharacter::Look(const FInputActionValue& value)
 {
 	FVector2D LookInput = value.Get<FVector2D>();
 
@@ -307,17 +297,16 @@ void ATSCharacter2::Look(const FInputActionValue& value)
 	// 보기편하게 C++에 ControlRotation에 Pitch값에 ' - '를 넣어서 축반전을 넣음
 	float NewPitch = ControlRotation.Pitch - LookInput.Y;
 
-	// Pitch 각도를 -30 ~ 40도로 제한
+	// Pitch 각도를 -30 ~ 30도로 제한
 	NewPitch = FMath::Clamp(NewPitch, MaxLookDownAngle, MaxLookUpAngle);
 
 	// 제한된 Pitch값을 적용하고, Yaw값은 그대로두어 Pitch값에 Max치만 적용함
 	Controller->SetControlRotation(FRotator(NewPitch, ControlRotation.Yaw + LookInput.X, 0.0f));
 }
 
-void ATSCharacter2::StartSprint(const FInputActionValue& value)
+void ATSCharacter::StartSprint(const FInputActionValue& value)
 {
-	// 재장전 중이면 Sprint 불가하게 만듬
-	if (!GetCharacterMovement() || bIsReloading) return;
+	if (!GetCharacterMovement()) return;
 
 	// 조준 중이면 StopAiming으로 조준 해제
 	if (bIsAiming)
@@ -332,122 +321,148 @@ void ATSCharacter2::StartSprint(const FInputActionValue& value)
 }
 
 
-void ATSCharacter2::StopSprint(const FInputActionValue& value)
+void ATSCharacter::StopSprint(const FInputActionValue& value)
 {
 	if (GetCharacterMovement())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
-
-	// 조준과 장전중이 아니면 기본 속도로 돌아간다.
-	if (!bIsReloading && !bIsAiming) 
-	{
-		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
-	}
 }
 
-void ATSCharacter2::StartCrouch(const FInputActionValue& value)
+void ATSCharacter::StartCrouch(const FInputActionValue& value)
 {
 	if (GetCharacterMovement()->IsFalling())
 	{
 		return;
 	}
-
+	
 	Crouch();
 }
 
-void ATSCharacter2::StopCrouch(const FInputActionValue& value)
+void ATSCharacter::StopCrouch(const FInputActionValue& value)
 {
 	UnCrouch();
 }
 
-void ATSCharacter2::Reload(const FInputActionValue& value)
+
+void ATSCharacter::Reload(const FInputActionValue& value)
 {
-	if (bIsReloading || GetCharacterMovement()->IsFalling()) // 연속 입력 방지 및 점프 중 재장전 금지
+	if (GetCharacterMovement()->IsFalling()) return;
+
+	// 이미 재장전 중이면 return
+	if (bIsReloading) return;
+
+	if (bFire)
 	{
-		return;
+		StopFire(value);
 	}
 
-	if (CurrentShotGunBullet < MaxShotGunBullet)
+	bIsReloading = true;
+
+	UAnimInstance* AnimInstance = Cast<UAnimInstance>(GetMesh()->GetAnimInstance());
+	if (IsValid(AnimInstance) == true && IsValid(ReloadAnimation) == true && AnimInstance->Montage_IsPlaying(ReloadAnimation) == false)
 	{
-		bIsReloading = true; // 재장전 중 상태 설정
+		GetCharacterMovement()->DisableMovement();
 
-		GetCharacterMovement()->DisableMovement(); // 이동 완전 차단
+		AnimInstance->Montage_Play(ReloadAnimation);
 
-		// 재장전 쿨다운 3초
+		float ReloadTime = ReloadAnimation->GetPlayLength();
 		GetWorld()->GetTimerManager().SetTimer(
-			ShotgunCooldownTimerHandle,
+			ReloadTimerHandle,
 			this,
-			&ATSCharacter2::ResetReloadState,
-			3.0f,
+			&ATSCharacter::EnableMovementAfterReload,
+			ReloadTime,
 			false
 		);
 
-	}
-}
-
-void ATSCharacter2::Fire(const FInputActionValue& value)
-{
-	if (GetCharacterMovement()->IsFalling() || !bIsAiming) // 점프나 조준중이 아니면 발사 금지
-	{
-		return;
-	}
-
-	if (GetCharacterMovement())
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
-	}
-
-	if (!bFire && CurrentShotGunBullet > 0) // 연속 발사 방지 및 총알이 있을 때만 실행
-	{
-		bFire = true; // 발사 중 상태 설정
-
-		// 탄약 감소
-		CurrentShotGunBullet = FMath::Clamp(CurrentShotGunBullet - 1, 0, MaxShotGunBullet);
-
-		ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
-		if (GameState)
-		{
-			GameState->SetShotGunBulletCount(CurrentShotGunBullet); //GameState로 데이터 전송
-		}
-		
-		// Test출력용
-		// ================================================================================
-		// ================================================================================
-		UE_LOG(LogTemp, Warning, TEXT("총알 발사 현재 남은 총알 : %d"), CurrentShotGunBullet);
-
-		// 무기 발사 처리
+		//Gunweapon 함수 호출
 		if (WeaponChildActor)
 		{
 			AActor* ChildActor = WeaponChildActor->GetChildActor();
-			if (ChildActor)
+			AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
+			if (EquippedWeapon)
 			{
-				AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
-				if (EquippedWeapon)
-				{
-					EquippedWeapon->FireBullet();
-				}
+				EquippedWeapon->Reload();
 			}
 		}
-
-		// 총 발사 사운드 실행
-		if (FireSound)
-		{
-			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-		}
-
-		// 총쏘는 애니메이션 0.3초 설정 -> 1초로하면 왼손이 재장전하는데 샷건 재장전 메쉬를 움직일수가없음
-		GetWorld()->GetTimerManager().SetTimer(
-			ShotgunCooldownTimerHandle,
-			this,
-			&ATSCharacter2::ResetFireState,
-			0.3f,
-			false
-		);
 	}
 }
 
-void ATSCharacter2::StartAiming(const FInputActionValue& value)
+void ATSCharacter::StartFire(const FInputActionValue& value)
+{
+	// 떨어지고있거단 조준중이아니면 return;
+	if (GetCharacterMovement()->IsFalling() || !bIsAiming) return;
+	// 장전중이면 return;
+	if (bIsReloading) return;
+
+	// ChildActor가없으면 return;
+	if (!WeaponChildActor)
+	{
+		return;
+	}
+
+	AActor* ChildActor = WeaponChildActor->GetChildActor();
+	if (!ChildActor)
+	{
+		return;
+	}
+
+	AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
+	if (!EquippedWeapon)
+	{
+		return;
+	}
+
+	// 현재 탄약 개수 저장할 변수
+	int32 PreviousBulletCount = CurrentBullet;
+
+	// 현재 탄약 개수를 CurrentBullet에 업데이트
+	CurrentBullet = EquippedWeapon->GetBulletCount();
+
+	if (CurrentBullet <= 0)
+	{
+		bFire = false;
+		return;
+	}
+
+	EquippedWeapon->StartFire();
+
+	// 총 발사 후 탄약 개수 다시 가져오기 (변경 후)
+	int32 NewBulletCount = EquippedWeapon->GetBulletCount();
+
+	// 이전 탄약 개수보다 현재 탄약 개수가 감소했을 때만 사운드 실행
+	if (NewBulletCount < PreviousBulletCount && FireSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+	}
+
+	// 발사상태 true;
+	bFire = true;
+}
+
+
+void ATSCharacter::StopFire(const FInputActionValue& value)
+{
+	// 캐릭터 이동속도 원상 복귀
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+	}
+
+	// GunWeapon에 StopFire()호출해서 타이머핸들 Clear해준다.
+	AActor* ChildActor = WeaponChildActor->GetChildActor();
+	AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->StopFire();
+	}
+
+	// Fire 변수를 false로 설정하여 애니메이션 블루프린트에서 감지 가능하게 함
+	bFire = false;
+}
+
+
+void ATSCharacter::StartAiming(const FInputActionValue& value)
 {
 	if (GetCharacterMovement()->IsFalling()) return;
 	if (GetCharacterMovement()->MaxWalkSpeed == SprintSpeed) return;
@@ -479,18 +494,24 @@ void ATSCharacter2::StartAiming(const FInputActionValue& value)
 	}
 }
 
-void ATSCharacter2::StopAiming(const FInputActionValue& value)
+void ATSCharacter::StopAiming(const FInputActionValue& value)
 {
 	bIsAiming = false;
 	CameraComp->SetFieldOfView(DefaultFOV);
 	SpringArmComp->SocketOffset = DefaultCameraOffset;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+
+	// 조준 중 발사할때 조준을 그만해도 발사하는 버그때문에 조준 해제시 발사중이면 StopFire함수 호출
+	if (bFire)
+	{
+		StopFire(value);
+	}
 }
 
 
 
-void ATSCharacter2::Death()
+void ATSCharacter::Death()
 {
 	if (DeathAnimation)
 	{
@@ -509,28 +530,42 @@ void ATSCharacter2::Death()
 
 
 // About Health
-void ATSCharacter2::TakeDamage()
+float ATSCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	float ResultDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
+	//if (CurrentHP > 0)
+	//{
+	//	CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, 100);
+	//	UE_LOG(LogTemp, Warning, TEXT("남은 체력 : %f"), CurrentHP);
+
+	//	if (CurrentHP <= 0)
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("사망"), CurrentHP);
+	//		Death();
+	//	}
+	//}
+	return ResultDamage;
 }
 
-void ATSCharacter2::EnableMovementAfterReload()
+void ATSCharacter::EnableMovementAfterReload()
 {
+	bIsReloading = false;
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 }
 
-void ATSCharacter2::FaceMouseDirection()
+void ATSCharacter::FaceMouseDirection()
 {
 	if (!Controller) return;
 
 	FRotator NewRotation = Controller->GetControlRotation();
-	NewRotation.Pitch = 0.0f;
+	NewRotation.Pitch = 0.0f; 
 	NewRotation.Roll = 0.0f;
 
 	SetActorRotation(NewRotation);
 }
 
-void ATSCharacter2::ResetMovementAfterFire()
+void ATSCharacter::ResetMovementAfterFire()
 {
 	if (GetCharacterMovement())
 	{
@@ -539,49 +574,12 @@ void ATSCharacter2::ResetMovementAfterFire()
 
 	IsFiring = false;
 }
-void ATSCharacter2::ResetFireState()
+void ATSCharacter::ResetFireState()
 {
 	bFire = false; // Fire 상태 해제
 }
 
-void ATSCharacter2::ResetReloadState()
-{
-	bIsReloading = false; // 재장전 상태 해제
-
-	GetCharacterMovement()->SetMovementMode(MOVE_Walking); // 이동 가능하게 복구
-	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
-
-
-	// 탄약 증가 로직
-	if (CurrentShotGunBullet == 0)
-	{
-		CurrentShotGunBullet = 2; // 0이면 2로 증가
-	}
-	else if (CurrentShotGunBullet == 1)
-	{
-		CurrentShotGunBullet = 2; // 1이면 2로 증가
-	}
-
-	ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
-	if (GameState)
-	{
-		GameState->SetShotGunBulletCount(CurrentShotGunBullet); //GameState로 데이터 전송
-	}
-	
-	// Test출력용
-	// ================================================================================
-	// ================================================================================
-	UE_LOG(LogTemp, Warning, TEXT("샷건 장전 현재 총알 : %d"), CurrentShotGunBullet);
-
-}
-
-int32 ATSCharacter2::GetCurrentShotGunBullet() const
-{
-	return CurrentShotGunBullet;
-}
-
-
-void ATSCharacter2::PlayFootstepSound()
+void ATSCharacter::PlayFootstepSound()
 {
 	if (GetCharacterMovement()->IsFalling())
 	{
@@ -593,7 +591,7 @@ void ATSCharacter2::PlayFootstepSound()
 	float CurrentSpeed = GetCharacterMovement()->Velocity.Size();
 
 	// 속도가 10 이하이면 정지 상태로 판단하고 재생 X
-	if (CurrentSpeed <= 100.0f)
+	if (CurrentSpeed <= 10.0f)
 	{
 		return;
 	}
@@ -615,19 +613,18 @@ void ATSCharacter2::PlayFootstepSound()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FootstepSound, GetActorLocation());
 
-		// 다음 발소리가 일정 시간 후에만 재생되도록 타이머 설정
+		// 🔹 다음 발소리가 일정 시간 후에만 재생되도록 타이머 설정
 		bCanPlayFootstep = false;
-		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.23f : 0.5f; // 뛰는 경우 0.23초, 걷는 경우 0.5초
-		GetWorld()->GetTimerManager().SetTimer(
-			FootstepTimerHandle,
+		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.23f : 0.5f; // 뛰는 경우 0.3초, 걷는 경우 0.5초
+		GetWorld()->GetTimerManager().SetTimer(FootsetpTimerHandle,
 			this,
-			&ATSCharacter2::ResetFootStep,
+			&ATSCharacter::ResetFootStep,
 			FootstepDelay,
 			false);
 	}
 }
 
-void ATSCharacter2::ResetFootStep()
+void ATSCharacter::ResetFootStep()
 {
 	bCanPlayFootstep = true;
 }
