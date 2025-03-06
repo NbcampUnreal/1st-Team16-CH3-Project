@@ -1,7 +1,7 @@
 #include "GunWeapon.h"
 #include "TSGameState.h"
 #include "TSAmmo.h"
-#include "TSCharacter.h"  // 🔹 여기에서만 포함하면 순환 종속 문제 해결
+#include "TSCharacter.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -220,15 +220,20 @@ void AGunWeapon::StartFire()
     if (bIsFiring || BulletCount <= 0 || bIsReload) return;
 
     bIsFiring = true; 
+
     FireBullet(); // 즉시 1발 발사
 
-    GetWorld()->GetTimerManager().SetTimer(
-        FireTimerHandle,
-        this,
-        &AGunWeapon::FireBullet,
-        0.14f, // 0.14초 간격으로 반복해서 총쏘는 애니메이션이랑 비슷하게 발사되게 설정
-        true // 반복 실행설정
-    );
+    // 남은 탄약이 있으면 0.14초 간격으로 반복 발사 (사운드는 FireBullet에서만 실행됨)
+    if (BulletCount > 0)
+    {
+        GetWorld()->GetTimerManager().SetTimer(
+            FireTimerHandle,
+            this,
+            &AGunWeapon::FireBullet,
+            0.14f,
+            true // 반복 실행 설정
+        );
+    }
 }
 
 void AGunWeapon::StopFire()
