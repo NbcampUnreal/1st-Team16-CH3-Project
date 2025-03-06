@@ -578,7 +578,8 @@ void ATSGameState::ReduceTime(float Value, bool bIgnoreMask)
 	// bIgnoreMask가 true일 떄 지뢰 같은 강제 피해는 적용되도록 예외 처리
 	if (bIsStopTimeReductionEnabled || bIgnoreMask)
 	{
-		ItemHealth -= Value * 60.0f ;
+
+		ItemHealth -= Value;
 		UpdateHealth();
 	}
 }
