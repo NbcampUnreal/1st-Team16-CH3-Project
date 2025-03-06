@@ -604,6 +604,7 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 
 }
 
+//
 void ATSGameState::UpdateHealth()
 {
 	CurrentHealth += ItemHealth;
