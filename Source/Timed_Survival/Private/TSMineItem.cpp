@@ -9,8 +9,8 @@ ATSMineItem::ATSMineItem()
     // 폭발 데미지 관련 초기화
     ExplosionRadius = 300.0f; // 폭발 피해 적용 범위
     TriggerRadius = 50.0f; // 트리거 영역 반지름
-    ExplosionAIDamage = 30.0f;
-    ExplosionPlayerDamage = 10.0f;
+	ExplosionAIDamage = 30.0f; // AI에게 줄 폭발 피해량
+	ExplosionPlayerDamage = 30.0f; // 플레이어에게 줄 폭발 피해량
     ItemType = "Mine";
     bHasExploded = false;
     bEnableOutline = false; // 아웃라인 표시 안함

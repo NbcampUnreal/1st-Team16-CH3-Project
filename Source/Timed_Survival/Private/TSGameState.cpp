@@ -21,9 +21,9 @@
 ATSGameState::ATSGameState()
 {	
 	HealthBarMax = 180.0;
-	BaseHealth = 3.0f; // unit of time : min
+	BaseHealth = 60.0f;
 	ItemHealth = 0.0f;
-	CurrentHealth = BaseHealth * 60.0f; // change unit of time : sec
+	CurrentHealth = BaseHealth;
 		
 	HealingCount = 0;
 	CurrentM16BulletCount = 0;
