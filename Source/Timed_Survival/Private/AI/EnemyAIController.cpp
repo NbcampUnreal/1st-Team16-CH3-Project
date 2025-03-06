@@ -65,9 +65,10 @@ void AEnemyAIController::BeginPlay()
 	}
 }
 
+
+
 void AEnemyAIController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	EndAI();
 
 	Super::EndPlay(EndPlayReason);
 }
@@ -98,7 +99,7 @@ void AEnemyAIController::EndAI()
 	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(BehaviorTree);
 	if (IsValid(BehaviorTreeComponent) == true)
 	{
-		BehaviorTreeComponent->StopTree();
+		BehaviorTreeComponent->StopLogic("AIDeath");
 
 		if (ShowAIDebug == 1)
 		{
