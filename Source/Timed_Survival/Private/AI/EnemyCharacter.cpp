@@ -4,6 +4,8 @@
 #include "AI/EnemyCharacter.h"
 #include "AI/EnemyAIController.h"
 #include "AI/Animation/TSEnemyAnimInstance.h"
+#include "TSCharacter.h"
+#include "TSCharacter2.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/TextBlock.h"
@@ -22,7 +24,7 @@
 AEnemyCharacter::AEnemyCharacter()
 	: bIsNowAttacking(false)
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	AIControllerClass = AEnemyAIController::StaticClass();
 
@@ -55,12 +57,6 @@ void AEnemyCharacter::BeginPlay()
 		&AEnemyCharacter::UpdateOverheadHP,
 		0.1f, true);
 
-	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(AnimInstance) == true)
-	{
-		
-	}
-
 	if (false == IsPlayerControlled())
 	{
 		bUseControllerRotationYaw = false;
@@ -92,48 +88,69 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 
 void AEnemyCharacter::OnCheckHit()
 {
-    AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
-    if (IsValid(AIController) == true)
-    {
-        ACharacter* Player = Cast<ACharacter>(AIController->GetBlackboardComponent()->GetValueAsObject(AIController->TargetActorKey));
-        if (IsValid(Player) == true)
-        {
+	AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
+	if (IsValid(AIController) == true)
+	{
+		ACharacter* Player = Cast<ACharacter>(AIController->GetBlackboardComponent()->GetValueAsObject(AIController->TargetActorKey));
+		if (IsValid(Player) == true)
+		{
 			ATSGameState* GameState = Cast<ATSGameState>(GetWorld()->GetGameState());
-            FHitResult HitResult;
-            FCollisionQueryParams Params(NAME_None, false, this);
-            const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
-            const FVector End = Start + GetActorForwardVector() * AttackRange;
-            const float Radius = 50.f;
-            // 콜리전 오버랩 체크
-            bool bOnHit = GetWorld()->SweepSingleByChannel(
-                HitResult,
-                Start,
-                End,
-                FQuat::Identity,
-                ECollisionChannel::ECC_GameTraceChannel2,
-                FCollisionShape::MakeSphere(Radius),
-                Params
-            );
+			FHitResult HitResult;
+			FCollisionQueryParams Params;
+			Params.AddIgnoredActor(this);
 
-            // ApplyDamage() 호출
-            if (bOnHit == true)
-            {
+			const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
+			const FVector End = Start + GetActorForwardVector() * AttackRange;
+			const float Radius = 50.f;
+
+			// 콜리전 오버랩 체크
+			bool bOnHit = GetWorld()->SweepSingleByChannel(
+				HitResult,
+				Start,
+				End,
+				FQuat::Identity,
+				ECollisionChannel::ECC_Pawn,
+				FCollisionShape::MakeSphere(Radius),
+				Params
+			);
+
+			// 체력 감소 & 피격 애니메이션 실행
+			if (bOnHit == true)
+			{
 				UKismetSystemLibrary::PrintString(this, TEXT("OnCheckHit()"));
+
 				if (IsValid(GameState))
 				{
-					GameState->ReduceTime(Damage,true);
+					GameState->ReduceTime(Damage, true);
 				}
-            }
-            if (AEnemyAIController::ShowAIDebug == 1)
-            {
-                FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
-                float CapsuleHalfHeight = AttackRange * 0.5f;
 
-                DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, Radius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), FColor::Red, false, 5.0f);
-            }
-        }
-    }
+				// 플레이어가 맞았을 때 애니메이션 실행
+				ATSCharacter* PlayerCharacter = Cast<ATSCharacter>(Player);
+				if (PlayerCharacter)
+				{
+					PlayerCharacter->TakeDamageAnim();
+				}
+
+				ATSCharacter2* PlayerCharacter2 = Cast<ATSCharacter2>(Player);
+				if (PlayerCharacter2)
+				{
+					PlayerCharacter2->TakeDamageAnim();
+				}
+			}
+
+			if (AEnemyAIController::ShowAIDebug == 1)
+			{
+				FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
+				float CapsuleHalfHeight = AttackRange * 0.5f;
+
+				DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, Radius,
+					FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+					FColor::Red, false, 5.0f);
+			}
+		}
+	}
 }
+
 
 void AEnemyCharacter::DestroyedAI()
 {
@@ -181,15 +198,12 @@ void AEnemyCharacter::EndAttack(UAnimMontage* InMontage, bool bInterruped)
 
 void AEnemyCharacter::AIOnDeath()
 {
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	checkf(IsValid(AnimInstance) == true, TEXT("Invalid AnimInstance"));
 
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+
 	AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
-	if (true == ::IsValid(AIController))
-	{
-		AIController->EndAI();
-	}
 
 	if (IsValid(AnimInstance) == true && IsValid(DeathMontage) == true && AnimInstance->Montage_IsPlaying(DeathMontage) == false)
 	{
@@ -197,6 +211,10 @@ void AEnemyCharacter::AIOnDeath()
 		AnimInstance->Montage_JumpToSection(TEXT("DeathMontage"), DeathMontage);
 	}
 
+	if (true == ::IsValid(AIController))
+	{
+		AIController->EndAI();
+	}
 
 	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("AIDeath")));
 	GetWorldTimerManager().SetTimer(
@@ -228,7 +246,9 @@ void AEnemyCharacter::UpdateOverheadHP()
 				OverheadHPBar->SetTranslucentSortPriority(-1);
 
 				ACharacter* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
-				APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(Player, 0);				
+				checkf(IsValid(Player) == true, (TEXT("Invalid Player")));
+				APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(Player, 0);		
+				checkf(IsValid(PlayerCamera) == true, (TEXT("Invalid PlayerCamera")));
 				FVector CameraLocation = PlayerCamera->GetCameraLocation();
 
 				FVector HPBarLocation = OverheadHPBar->GetComponentLocation();

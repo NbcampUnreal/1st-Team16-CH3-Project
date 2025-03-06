@@ -28,10 +28,10 @@ ATSGameState::ATSGameState()
 	HealingCount = 0;
 	CurrentM16BulletCount = 0;
 	CurrentShotGunBulletCount = 0;
-	BulletInM16 = 10;
+	BulletInM16 = 20;
 	BulletInShotGun = 2;
 	MaxShotGun = 2;
-	MaxM16 = 10;
+	MaxM16 = 20;
 
 	SetMaskEffectTime = 0.0f;
 	MaskTimeRemaining = 0.0f;
@@ -40,6 +40,7 @@ ATSGameState::ATSGameState()
 	Maplist.Add(TEXT("ForestLevel")); // MapNumber 0
 	Maplist.Add(TEXT("OldHouseLevel")); // MapNumber 1
 
+	SpawnCount = 0;
 }
 
 void ATSGameState::BeginPlay()
@@ -116,15 +117,21 @@ void ATSGameState::StartLevel()
 	TArray<AActor*> FoundEnemyVolumes;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATS_EnemySpawnVolume::StaticClass(), FoundEnemyVolumes);
 
-
 	if (FoundEnemyVolumes.Num() > 0)
 	{
 		for (int32 i = 0; i < FoundEnemyVolumes.Num(); i++)
 		{
 			ATS_EnemySpawnVolume* SpawnVolume = Cast<ATS_EnemySpawnVolume>(FoundEnemyVolumes[i]);
-			for (int32 j = 0; j < 10; j++)
+			FActorSpawnParameters Params;
+			Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			for (int32 j = 0; j < SpawnCount; j++)
 			{
-				SpawnVolume->SpawnEnemy(Enemy);
+				GetWorld()->SpawnActor<AActor>(
+					Enemy,
+					SpawnVolume->GetRandomPointInVolume(),
+					FRotator::ZeroRotator,
+					Params
+				);
 			}
 		}
 	}
@@ -571,6 +578,7 @@ void ATSGameState::ReduceTime(float Value, bool bIgnoreMask)
 	// bIgnoreMask가 true일 떄 지뢰 같은 강제 피해는 적용되도록 예외 처리
 	if (bIsStopTimeReductionEnabled || bIgnoreMask)
 	{
+
 		ItemHealth -= Value;
 		UpdateHealth();
 	}

@@ -24,7 +24,7 @@ ATSCharacter2::ATSCharacter2()
 	CameraComp->bUsePawnControlRotation = false;
 
 	NormalSpeed = 300.0f;
-	SprintSpeed = 1000.0f;
+	SprintSpeed = 700.0f;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -620,7 +620,7 @@ void ATSCharacter2::PlayFootstepSound()
 
 		// 다음 발소리가 일정 시간 후에만 재생되도록 타이머 설정
 		bCanPlayFootstep = false;
-		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.23f : 0.5f; // 뛰는 경우 0.23초, 걷는 경우 0.5초
+		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.22f : 0.45f; // 뛰는 경우 0.2초, 걷는 경우 0.45초로 발과 맞춤
 		GetWorld()->GetTimerManager().SetTimer(
 			FootstepTimerHandle,
 			this,
@@ -633,4 +633,33 @@ void ATSCharacter2::PlayFootstepSound()
 void ATSCharacter2::ResetFootStep()
 {
 	bCanPlayFootstep = true;
+}
+
+void ATSCharacter2::TakeDamageAnim()
+{
+	if (TakeDamageAnimation)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance)
+		{
+			FName SlotName = TEXT("TakeDamageSlot");
+			AnimInstance->Montage_Play(TakeDamageAnimation);
+			AnimInstance->Montage_JumpToSection(SlotName, TakeDamageAnimation);
+		}
+	}
+
+	// 이동 중지 (0.7초)
+	GetCharacterMovement()->DisableMovement();
+	GetWorldTimerManager().SetTimer(
+		DamageMoveTimerHandle,
+		this,
+		&ATSCharacter2::EnableMovementAfterDamage,
+		0.7f,
+		false
+	);
+}
+
+void ATSCharacter2::EnableMovementAfterDamage()
+{
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 }

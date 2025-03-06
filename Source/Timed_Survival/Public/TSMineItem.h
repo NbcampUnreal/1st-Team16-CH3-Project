@@ -51,11 +51,11 @@ protected:
     float ExplosionPlayerDamage;
 
     // 폭발 파티클 효과
-    UPROPERTY(EditDefaultsOnly, Category = "Mine")
+    UPROPERTY(EditDefaultsOnly, Category = "effect|Mine")
     class UParticleSystem* ExplosionParticle;
 
     // 폭발 사운드 효과
-    UPROPERTY(EditDefaultsOnly, Category = "Mine")
+    UPROPERTY(EditDefaultsOnly, Category = "effect|Mine")
     class USoundBase* ExplosionSound;
 
     // 지뢰 폭발 여부

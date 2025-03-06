@@ -15,14 +15,19 @@ class TIMED_SURVIVAL_API ATS_EnemySpawnVolume : public AActor
 public:	
 	ATS_EnemySpawnVolume();
 
+	virtual void BeginPlay() override;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawn")
 	USceneComponent* Scene;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawn")
 	UBoxComponent* BoxComp;
 
+	UPROPERTY()
+	TSubclassOf<AEnemyCharacter> Enemy;
+
 	UFUNCTION(BlueprintCallable,Category = "Spawn")
 	FVector GetRandomPointInVolume() const;
 	UFUNCTION(BlueprintCallable, Category = "Spawn")
-	AActor* SpawnEnemy(TSubclassOf<AActor> EnemyClass);
+	void SpawnEnemy(AEnemyCharacter* SpawnEnemy);
 };

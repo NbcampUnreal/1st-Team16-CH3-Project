@@ -41,8 +41,12 @@ public:
 	float GetRespawnHealth() const; // 반환 함수
 	void SetRespawnPoint(const FVector& NewLocation, float NewHealth); // 리스폰 데이터 저장 함수
 
+	// 에너미 스폰 관련
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AActor> Enemy;
+	TSubclassOf<AActor> Enemy;	// 스폰될 에너미
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemySpawn")
+	int32 SpawnCount;
 
 
 	FTimerHandle SubtractHealthTimerHandle;

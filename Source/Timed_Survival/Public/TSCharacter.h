@@ -74,6 +74,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* ReloadAnimation;
 
+	// TakeDamage Animation
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	UAnimMontage* TakeDamageAnimation;
+
 
 	// Aim Rotation
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aiming")
@@ -86,6 +90,9 @@ public:
 
 	// 걷기 재생사운드용 타이머핸들
 	FTimerHandle FootsetpTimerHandle;
+
+	// 캐릭터가 맞으면 0.7초간 멈추게하기위한 타이머핸들
+	FTimerHandle DamageMoveTimerHandle;
 
 
 public:
@@ -194,6 +201,12 @@ public:
 	void PlayFootstepSound();
 
 	void ResetFootStep();
+
+	// 데미지 받으면 맞는 애니메이션 실행
+	void TakeDamageAnim();
+
+	// 캐릭터가 데미지를 받고 다시 움직이게하는 함수
+	void EnableMovementAfterDamage();
 
 	// CurrentBullet 값을 설정하는 함수 추가
 	void SetCurrentBullet(int32 NewBulletCount)
