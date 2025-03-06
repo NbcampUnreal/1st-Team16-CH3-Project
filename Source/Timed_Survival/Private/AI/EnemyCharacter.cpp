@@ -4,6 +4,8 @@
 #include "AI/EnemyCharacter.h"
 #include "AI/EnemyAIController.h"
 #include "AI/Animation/TSEnemyAnimInstance.h"
+#include "TSCharacter.h"
+#include "TSCharacter2.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/TextBlock.h"
@@ -86,49 +88,69 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 
 void AEnemyCharacter::OnCheckHit()
 {
-    AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
-    if (IsValid(AIController) == true)
-    {
-        ACharacter* Player = Cast<ACharacter>(AIController->GetBlackboardComponent()->GetValueAsObject(AIController->TargetActorKey));
-        if (IsValid(Player) == true)
-        {
+	AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
+	if (IsValid(AIController) == true)
+	{
+		ACharacter* Player = Cast<ACharacter>(AIController->GetBlackboardComponent()->GetValueAsObject(AIController->TargetActorKey));
+		if (IsValid(Player) == true)
+		{
 			ATSGameState* GameState = Cast<ATSGameState>(GetWorld()->GetGameState());
-            FHitResult HitResult;
+			FHitResult HitResult;
 			FCollisionQueryParams Params;
 			Params.AddIgnoredActor(this);
-            const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
-            const FVector End = Start + GetActorForwardVector() * AttackRange;
-            const float Radius = 50.f;
-            // 콜리전 오버랩 체크
-            bool bOnHit = GetWorld()->SweepSingleByChannel(
-                HitResult,
-                Start,
-                End,
-                FQuat::Identity,
-                ECollisionChannel::ECC_Pawn,
-                FCollisionShape::MakeSphere(Radius),
-                Params
-            );
 
-            // ApplyDamage() 호출
-            if (bOnHit == true)
-            {
+			const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
+			const FVector End = Start + GetActorForwardVector() * AttackRange;
+			const float Radius = 50.f;
+
+			// 콜리전 오버랩 체크
+			bool bOnHit = GetWorld()->SweepSingleByChannel(
+				HitResult,
+				Start,
+				End,
+				FQuat::Identity,
+				ECollisionChannel::ECC_Pawn,
+				FCollisionShape::MakeSphere(Radius),
+				Params
+			);
+
+			// 체력 감소 & 피격 애니메이션 실행
+			if (bOnHit == true)
+			{
 				UKismetSystemLibrary::PrintString(this, TEXT("OnCheckHit()"));
+
 				if (IsValid(GameState))
 				{
-					GameState->ReduceTime(Damage,true);
+					GameState->ReduceTime(Damage, true);
 				}
-            }
-            if (AEnemyAIController::ShowAIDebug == 1)
-            {
-                FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
-                float CapsuleHalfHeight = AttackRange * 0.5f;
 
-                DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, Radius, FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), FColor::Red, false, 5.0f);
-            }
-        }
-    }
+				// 플레이어가 맞았을 때 애니메이션 실행
+				ATSCharacter* PlayerCharacter = Cast<ATSCharacter>(Player);
+				if (PlayerCharacter)
+				{
+					PlayerCharacter->TakeDamageAnim();
+				}
+
+				ATSCharacter2* PlayerCharacter2 = Cast<ATSCharacter2>(Player);
+				if (PlayerCharacter2)
+				{
+					PlayerCharacter2->TakeDamageAnim();
+				}
+			}
+
+			if (AEnemyAIController::ShowAIDebug == 1)
+			{
+				FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
+				float CapsuleHalfHeight = AttackRange * 0.5f;
+
+				DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, Radius,
+					FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(),
+					FColor::Red, false, 5.0f);
+			}
+		}
+	}
 }
+
 
 void AEnemyCharacter::DestroyedAI()
 {
