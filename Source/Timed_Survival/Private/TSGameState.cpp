@@ -21,9 +21,9 @@
 ATSGameState::ATSGameState()
 {	
 	HealthBarMax = 180.0;
-	BaseHealth = 3.0f; // unit of time : min
+	BaseHealth = 180.0f;
 	ItemHealth = 0.0f;
-	CurrentHealth = BaseHealth * 60.0f; // change unit of time : sec
+	CurrentHealth = BaseHealth;
 		
 	HealingCount = 0;
 	CurrentM16BulletCount = 0;
@@ -578,8 +578,8 @@ void ATSGameState::ReduceTime(float Value, bool bIgnoreMask)
 	// bIgnoreMask가 true일 떄 지뢰 같은 강제 피해는 적용되도록 예외 처리
 	if (bIsStopTimeReductionEnabled || bIgnoreMask)
 	{
-
 		ItemHealth -= Value;
+
 		UpdateHealth();
 	}
 }
@@ -606,7 +606,7 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 
 void ATSGameState::UpdateHealth()
 {
-	CurrentHealth = BaseHealth + ItemHealth;
+	CurrentHealth += ItemHealth;
 }
 
 void ATSGameState::SubtractHealthOnSecond()

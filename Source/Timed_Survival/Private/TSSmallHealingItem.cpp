@@ -6,7 +6,7 @@
 ATSSmallHealingItem::ATSSmallHealingItem()
 {
 	count = 1; // 아이템 수집 카운트
-	HealingAmount = 60.0f; // 기본 회복량
+	HealingAmount = 20.0f; // 기본 회복량
 	ItemType = FName(TEXT("SmallHealing")); // 아이템 타입
 }
 
