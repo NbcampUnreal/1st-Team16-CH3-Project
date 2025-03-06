@@ -22,7 +22,7 @@
 AEnemyCharacter::AEnemyCharacter()
 	: bIsNowAttacking(false)
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	AIControllerClass = AEnemyAIController::StaticClass();
 
@@ -233,7 +233,7 @@ void AEnemyCharacter::UpdateOverheadHP()
 
 				FRotator HPBarView = UKismetMathLibrary::FindLookAtRotation(HPBarLocation, CameraLocation);
 				OverheadHPBar->SetWorldRotation(HPBarView);
-				SetActorRotation(HPBarView);
+				//SetActorRotation(HPBarView);
 			}
 
 			//2)Damage Num

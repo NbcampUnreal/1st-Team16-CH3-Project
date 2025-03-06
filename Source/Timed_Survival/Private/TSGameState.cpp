@@ -114,7 +114,7 @@ void ATSGameState::StartLevel()
 	//아이템 스포너 넣어야함
 
 	// 몬스터 스포너
-	TArray<AActor*> FoundEnemyVolumes;
+	/*TArray<AActor*> FoundEnemyVolumes;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATS_EnemySpawnVolume::StaticClass(), FoundEnemyVolumes);
 
 	if (FoundEnemyVolumes.Num() > 0)
@@ -134,7 +134,7 @@ void ATSGameState::StartLevel()
 				);
 			}
 		}
-	}
+	}*/
 
 	GetWorldTimerManager().SetTimer( // Subtract Time
 		SubtractHealthTimerHandle,
@@ -578,7 +578,7 @@ void ATSGameState::ReduceTime(float Value, bool bIgnoreMask)
 	// bIgnoreMask가 true일 떄 지뢰 같은 강제 피해는 적용되도록 예외 처리
 	if (bIsStopTimeReductionEnabled || bIgnoreMask)
 	{
-		ItemHealth -= Value * 60.0f ;
+		ItemHealth -= Value ;
 		UpdateHealth();
 	}
 }
@@ -605,7 +605,7 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 
 void ATSGameState::UpdateHealth()
 {
-	CurrentHealth = BaseHealth + ItemHealth;
+	CurrentHealth = BaseHealth * 60.0f + ItemHealth;
 }
 
 void ATSGameState::SubtractHealthOnSecond()
