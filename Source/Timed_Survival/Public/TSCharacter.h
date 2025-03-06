@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Animation/AnimMontage.h"
 #include "GunWeapon.h"
+#include "Sound/SoundCue.h"
 #include "TSCharacter.generated.h"
 
 
@@ -13,6 +14,7 @@ class ABaseWeapon;
 class UAniMontage;
 class FTimerhandle;
 class AGunWeapon;
+class USoundCue;
 struct FInputActionValue;
 
 UCLASS()
@@ -58,7 +60,7 @@ private:
 	// 아래를 쳐다볼 수 있는 최대각도 (AO_Down 최대각도)
 	float MaxLookDownAngle = -30.0f;
 
-protected:
+public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -81,14 +83,19 @@ protected:
 	FTimerHandle ReloadTimerHandle;
 	// Reset Fire
 	FTimerHandle FireTimerHandle;
-	// 발사속도 타이머핸들
+
+	// 걷기 재생사운드용 타이머핸들
+	FTimerHandle FootsetpTimerHandle;
+
 
 public:
 
 	// 발사하는지 애니메이션 확인용 -- 변경 가능하게
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	bool bFire = false;
-	
+	// 달리는지 확인하기위한 bool
+	bool bCanPlayFootstep = true;
+
 	// 조준 시 적용할 FOV
 	float AimFOV = 80.0f;
 
@@ -102,6 +109,16 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MovementSpeed")
 	float SprintSpeed;
 
+	// 사격 사운드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundCue* FireSound;
+	// 걷는 사운드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundCue* WalkSound;
+	// 뛰는 사운드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundCue* SprintSound;
+	// =============================================================================================================================
 
 	// about Health
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -172,6 +189,11 @@ public:
 
 	// 총 발사상태를 안쏘는 상태로 초기화해주는 함수
 	void ResetFireState();
+
+	// 이동 사운드 추가용 함수
+	void PlayFootstepSound();
+
+	void ResetFootStep();
 
 	// CurrentBullet 값을 설정하는 함수 추가
 	void SetCurrentBullet(int32 NewBulletCount)

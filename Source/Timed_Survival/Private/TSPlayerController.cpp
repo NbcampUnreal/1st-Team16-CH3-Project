@@ -4,6 +4,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "TSGameMode.h"
 
 ATSPlayerController::ATSPlayerController()
 	: InputMappingContext(nullptr),
@@ -354,5 +355,17 @@ void ATSPlayerController::ChangeToIMC()
 			bShowMouseCursor = false;
 			SetInputMode(FInputModeGameOnly());
 		}
+	}
+}
+
+// 리스폰 버튼을 누르면 호출되는 함수
+void ATSPlayerController::RequestRespawn()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Respawn Button Pressed!"));
+
+	ATSGameMode* GameMode = Cast<ATSGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GameMode)
+	{
+		GameMode->RespawnPlayer(this);
 	}
 }
