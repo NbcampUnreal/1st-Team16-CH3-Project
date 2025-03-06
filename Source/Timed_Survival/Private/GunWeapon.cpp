@@ -11,9 +11,9 @@
 
 AGunWeapon::AGunWeapon()
 {
-	ReserveBullet = 30; // 예비 탄약
-	BulletCount = 30;
-	MaxBulletCount = 30;
+	ReserveBullet = 20; // 예비 탄약
+	BulletCount = 20;
+	MaxBulletCount = 20;
 	Damage = 10;
 	MinDamage = 10.0f;
 	MaxDamage = 20.0f;
