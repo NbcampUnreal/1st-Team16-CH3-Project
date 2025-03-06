@@ -19,6 +19,10 @@ ATSItemSpawnPoint::ATSItemSpawnPoint()
     MiddleHealingProbability = 35.0f;
     SmallHealingProbability = 40.0f;
 
+    // 블루프린트 변수 초기화
+    MineBP = nullptr;
+    MaskBP = nullptr;
+
     bCanRespawn = false; // 기본값: 리스폰 비활성화
 }
 
@@ -53,11 +57,11 @@ TSubclassOf<ATSBaseItem> ATSItemSpawnPoint::GetItemClass()
     switch (ItemType)
     {
     case ETSItemType::Mine:
-        return ATSMineItem::StaticClass();
+        return MineBP ? MineBP : TSubclassOf<ATSBaseItem>(ATSMineItem::StaticClass());
     case ETSItemType::Healing:
         return GetHealingItemClass();
     case ETSItemType::Mask:
-        return ATSMaskItem::StaticClass();
+        return MaskBP ? MaskBP : TSubclassOf<ATSBaseItem>(ATSMaskItem::StaticClass());
     default:
         return nullptr;
     }
