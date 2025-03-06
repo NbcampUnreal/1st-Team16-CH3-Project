@@ -606,7 +606,7 @@ void ATSGameState::IncreaseHealingCount(int32 Amount)
 
 void ATSGameState::UpdateHealth()
 {
-	CurrentHealth = BaseHealth + ItemHealth;
+	CurrentHealth += ItemHealth;
 }
 
 void ATSGameState::SubtractHealthOnSecond()
