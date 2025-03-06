@@ -615,9 +615,9 @@ void ATSCharacter2::PlayFootstepSound()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FootstepSound, GetActorLocation());
 
-		// 🔹 다음 발소리가 일정 시간 후에만 재생되도록 타이머 설정
+		// 다음 발소리가 일정 시간 후에만 재생되도록 타이머 설정
 		bCanPlayFootstep = false;
-		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.23f : 0.5f; // 뛰는 경우 0.3초, 걷는 경우 0.5초
+		float FootstepDelay = (CurrentSpeed > 300.0f) ? 0.23f : 0.5f; // 뛰는 경우 0.23초, 걷는 경우 0.5초
 		GetWorld()->GetTimerManager().SetTimer(
 			FootstepTimerHandle,
 			this,
