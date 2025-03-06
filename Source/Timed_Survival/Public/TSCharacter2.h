@@ -75,7 +75,6 @@ public:
 	UAnimMontage* TakeDamageAnimation;
 
 
-
 	// Aim Rotation
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aiming")
 	FRotator AimRotation;
