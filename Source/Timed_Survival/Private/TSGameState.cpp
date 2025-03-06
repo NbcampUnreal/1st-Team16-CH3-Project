@@ -169,49 +169,47 @@ void ATSGameState::EndLevel() // 스테이지 클리어
 		{
 			TSPlayerController->ShowClearScore();
 			PopUpClearScore();
-			//EnterShelter();
-			//Game instance로 저장할 데이터 넘기기
 		}
 	}
 }
 
-void ATSGameState::EnterShelter() // 셸터 다음 레벨로 넘겨주냐 엔딩으로 보내냐
-{
-	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
-	{
-		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
-		{
-			if (Maplist.Num() > 0)
-			{
-				if (ClearLevelNum != (Maplist.Num() - 1))
-				{
-					CurrentMapNum++;
-					TSPlayerController->ShowShelterMenu();										
-					if (Maplist.IsValidIndex(CurrentMapNum))
-					{
-						OpenNextLevel();
-					}
-				}
+//void ATSGameState::EnterShelter() // 셸터 다음 레벨로 넘겨주냐 엔딩으로 보내냐
+//{
+//	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+//	{
+//		if (ATSPlayerController* TSPlayerController = Cast<ATSPlayerController>(PlayerController))
+//		{
+//			if (Maplist.Num() > 0)
+//			{
+//				if (ClearLevelNum != (Maplist.Num() - 1))
+//				{
+//					CurrentMapNum++;
+//					TSPlayerController->ShowShelterMenu();										
+//					if (Maplist.IsValidIndex(CurrentMapNum))
+//					{
+//						OpenNextLevel();
+//					}
+//				}
+//
+//				else
+//				{
+//					TSPlayerController->ShowClearScore();
+//				}
+//			}
+//		}
+//	}
+//	// 초기화 되는 거 초기화
+//	// 중간에 스코어 표기 되나요?
+//	
+//}
 
-				else
-				{
-					TSPlayerController->ShowClearScore();
-				}
-			}
-		}
-	}
-	// 초기화 되는 거 초기화
-	// 중간에 스코어 표기 되나요?
-	
-}
-
-void ATSGameState::OpenNextLevel()
-{			
-	if (Maplist.IsValidIndex(CurrentMapNum))
-	{
-		UGameplayStatics::OpenLevel(GetWorld(), Maplist[CurrentMapNum]);
-	}		
-}
+//void ATSGameState::OpenNextLevel()
+//{			
+//	if (Maplist.IsValidIndex(CurrentMapNum))
+//	{
+//		UGameplayStatics::OpenLevel(GetWorld(), Maplist[CurrentMapNum]);
+//	}		
+//}
 
 void ATSGameState::OnHPZero()
 {
@@ -262,7 +260,7 @@ void ATSGameState::UpdateHUD()
 				//1)-1 Health Text
 				if (UTextBlock* HealthText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("HealthText"))))
 				{
-					HealthText->SetText(FText::FromString(FString::Printf(TEXT("HealthTest : %d"), HealthNum)));
+					HealthText->SetText(FText::FromString(FString::Printf(TEXT("Last Time %d"), HealthNum)));
 				}
 
 				// 1)-2 Health Bar percent
@@ -277,6 +275,23 @@ void ATSGameState::UpdateHUD()
 					HealthBundle->SetText(FText::FromString(FString::Printf(TEXT("X %d"), Bundle)));
 				}
 
+				// 1)-4 Health Num Text
+				int32 HealthValueInt = FMath::FloorToInt(HealthValue);
+				if (UTextBlock* BigHealth = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("BigHealing"))))
+				{
+					BigHealth->SetText(FText::FromString(FString::Printf(TEXT("+ %d"), HealthValueInt)));
+				}
+
+				if (UTextBlock* BigHealth = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("MiddleHealing"))))
+				{
+					BigHealth->SetText(FText::FromString(FString::Printf(TEXT("+ %d"), HealthValueInt)));
+				}
+
+				if (UTextBlock* BigHealth = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("SmallHealing"))))
+				{
+					BigHealth->SetText(FText::FromString(FString::Printf(TEXT("+ %d"), HealthValueInt)));
+				}
+
 				// 2) About Bullet HUD========================================================================================
 				
 				// 2)-1 AR Bullet
@@ -288,6 +303,11 @@ void ATSGameState::UpdateHUD()
 						{
 							CountM16Bullet->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentM16BulletCount, MaxM16)));
 							CountM16Bullet->SetVisibility(ESlateVisibility::Visible);
+						}
+
+						if (UTextBlock* TextM16Bullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("M16Bullet"))))
+						{	
+							TextM16Bullet->SetVisibility(ESlateVisibility::Visible);
 						}
 					}
 				}
@@ -301,6 +321,11 @@ void ATSGameState::UpdateHUD()
 						{
 							CountShotGunBullet->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentShotGunBulletCount, MaxShotGun)));
 							CountShotGunBullet->SetVisibility(ESlateVisibility::Visible);
+						}
+
+						if (UTextBlock* TextShotGunBullet = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("ShotGun"))))
+						{
+							TextShotGunBullet->SetVisibility(ESlateVisibility::Visible);
 						}
 					}
 				}
@@ -535,6 +560,7 @@ bool ATSGameState::IsMaskActive() const
 // 시간(체력) 증가함수
 void ATSGameState::IncreaseTime(float Value)
 {
+	HealthValue = Value;
 	ItemHealth += Value;
 	UpdateHealth();
 }
