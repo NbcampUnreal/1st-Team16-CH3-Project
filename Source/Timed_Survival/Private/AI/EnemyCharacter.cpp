@@ -44,6 +44,7 @@ AEnemyCharacter::AEnemyCharacter()
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
 
 	UpdateOverheadHP();
 
@@ -67,11 +68,6 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 		CurrentHP = FMath::Clamp(CurrentHP - DamageAmount, 0, 100);
 		if (CurrentHP <= 0)
 		{
-			AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
-			if (true == ::IsValid(AIController))
-			{
-				AIController->EndAI();
-			}
 			AIOnDeath();
 		}
 	}
@@ -135,19 +131,24 @@ void AEnemyCharacter::BeginAttack()
 	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	checkf(IsValid(AnimInstance) == true, TEXT("Invalid AnimInstance"));
 
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-	if (IsValid(AnimInstance) == true && IsValid(AttackMontage) == true && AnimInstance->Montage_IsPlaying(AttackMontage) == false)
+	if (CurrentHP > 0)
 	{
-		AnimInstance->Montage_Play(AttackMontage);
 
-		bIsNowAttacking = true;
-
-		if (OnAttackMontageEndedDelegate.IsBound() == false)
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+		if (IsValid(AnimInstance) == true && IsValid(AttackMontage) == true && AnimInstance->Montage_IsPlaying(AttackMontage) == false)
 		{
-			OnAttackMontageEndedDelegate.BindUObject(this, &ThisClass::EndAttack);
-			AnimInstance->Montage_SetEndDelegate(OnAttackMontageEndedDelegate, AttackMontage);
+			AnimInstance->Montage_Play(AttackMontage);
+
+			bIsNowAttacking = true;
+
+			if (OnAttackMontageEndedDelegate.IsBound() == false)
+			{
+				OnAttackMontageEndedDelegate.BindUObject(this, &ThisClass::EndAttack);
+				AnimInstance->Montage_SetEndDelegate(OnAttackMontageEndedDelegate, AttackMontage);
+			}
 		}
 	}
+
 }
 
 
@@ -167,15 +168,22 @@ void AEnemyCharacter::EndAttack(UAnimMontage* InMontage, bool bInterruped)
 
 void AEnemyCharacter::AIOnDeath()
 {
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	checkf(IsValid(AnimInstance) == true, TEXT("Invalid AnimInstance"));
 
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
+	if (true == ::IsValid(AIController))
+	{
+		AIController->EndAI();
+	}
+
 	if (IsValid(AnimInstance) == true && IsValid(DeathMontage) == true && AnimInstance->Montage_IsPlaying(DeathMontage) == false)
 	{
 		AnimInstance->Montage_Play(DeathMontage);
 		AnimInstance->Montage_JumpToSection(TEXT("DeathMontage"), DeathMontage);
 	}
+
 
 	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("AIDeath")));
 	GetWorldTimerManager().SetTimer(
