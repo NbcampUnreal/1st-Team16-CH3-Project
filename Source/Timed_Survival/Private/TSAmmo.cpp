@@ -1,6 +1,7 @@
 
 #include "TSAmmo.h"
 #include "TSCharacter.h"
+#include "TSCharacter2.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -12,10 +13,11 @@ ATSAmmo::ATSAmmo()
 	PrimaryActorTick.bCanEverTick = false;
 
     CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
-    CollisionComponent->InitSphereRadius(5.0f);
+    CollisionComponent->InitSphereRadius(50.0f);
     CollisionComponent->SetCollisionProfileName(TEXT("Projectile"));
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     CollisionComponent->SetGenerateOverlapEvents(true);
+    CollisionComponent->SetUseCCD(true);
 
     CollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);  //  모든 충돌 무시
     CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
@@ -96,6 +98,11 @@ void ATSAmmo::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
         UE_LOG(LogTemp, Warning, TEXT("OnOverlap(): 플레이어 캐릭터와 충돌 -> 무시"));
         return;
     }
+        // 캐릭터 2면 무시
+        if (OtherActor->IsA(ATSCharacter2::StaticClass()))
+        {
+            return;
+        }
 
     if (OtherComp == CollisionComponent)
     {

@@ -129,4 +129,8 @@ public:
 	void QuitGame();
 
 	virtual void BeginPlay() override;
+
+	// 리스폰 요청 함수
+	UFUNCTION(BlueprintCallable, Category = "Respawn")
+	void RequestRespawn();
 };
