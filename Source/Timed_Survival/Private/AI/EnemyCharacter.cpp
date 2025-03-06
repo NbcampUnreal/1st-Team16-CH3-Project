@@ -22,7 +22,7 @@
 AEnemyCharacter::AEnemyCharacter()
 	: bIsNowAttacking(false)
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	AIControllerClass = AEnemyAIController::StaticClass();
 
@@ -54,12 +54,6 @@ void AEnemyCharacter::BeginPlay()
 		this,
 		&AEnemyCharacter::UpdateOverheadHP,
 		0.1f, true);
-
-	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
-	if (IsValid(AnimInstance) == true)
-	{
-		
-	}
 
 	if (false == IsPlayerControlled())
 	{
@@ -100,7 +94,8 @@ void AEnemyCharacter::OnCheckHit()
         {
 			ATSGameState* GameState = Cast<ATSGameState>(GetWorld()->GetGameState());
             FHitResult HitResult;
-            FCollisionQueryParams Params(NAME_None, false, this);
+			FCollisionQueryParams Params;
+			Params.AddIgnoredActor(this);
             const FVector Start = GetActorLocation() + GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
             const FVector End = Start + GetActorForwardVector() * AttackRange;
             const float Radius = 50.f;
@@ -110,7 +105,7 @@ void AEnemyCharacter::OnCheckHit()
                 Start,
                 End,
                 FQuat::Identity,
-                ECollisionChannel::ECC_GameTraceChannel2,
+                ECollisionChannel::ECC_Pawn,
                 FCollisionShape::MakeSphere(Radius),
                 Params
             );
@@ -181,15 +176,12 @@ void AEnemyCharacter::EndAttack(UAnimMontage* InMontage, bool bInterruped)
 
 void AEnemyCharacter::AIOnDeath()
 {
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	UTSEnemyAnimInstance* AnimInstance = Cast<UTSEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	checkf(IsValid(AnimInstance) == true, TEXT("Invalid AnimInstance"));
 
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+
 	AEnemyAIController* AIController = Cast<AEnemyAIController>(GetController());
-	if (true == ::IsValid(AIController))
-	{
-		AIController->EndAI();
-	}
 
 	if (IsValid(AnimInstance) == true && IsValid(DeathMontage) == true && AnimInstance->Montage_IsPlaying(DeathMontage) == false)
 	{
@@ -197,6 +189,10 @@ void AEnemyCharacter::AIOnDeath()
 		AnimInstance->Montage_JumpToSection(TEXT("DeathMontage"), DeathMontage);
 	}
 
+	if (true == ::IsValid(AIController))
+	{
+		AIController->EndAI();
+	}
 
 	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("AIDeath")));
 	GetWorldTimerManager().SetTimer(
@@ -228,7 +224,9 @@ void AEnemyCharacter::UpdateOverheadHP()
 				OverheadHPBar->SetTranslucentSortPriority(-1);
 
 				ACharacter* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
-				APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(Player, 0);				
+				checkf(IsValid(Player) == true, (TEXT("Invalid Player")));
+				APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(Player, 0);		
+				checkf(IsValid(PlayerCamera) == true, (TEXT("Invalid PlayerCamera")));
 				FVector CameraLocation = PlayerCamera->GetCameraLocation();
 
 				FVector HPBarLocation = OverheadHPBar->GetComponentLocation();
