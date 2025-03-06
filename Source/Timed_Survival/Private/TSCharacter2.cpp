@@ -425,6 +425,9 @@ void ATSCharacter2::Fire(const FInputActionValue& value)
 				AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
 				if (EquippedWeapon)
 				{
+					EquippedWeapon->MinDamage = 100;
+					EquippedWeapon->MaxDamage = 150;
+
 					EquippedWeapon->FireBullet();
 				}
 			}
