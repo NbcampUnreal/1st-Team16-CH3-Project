@@ -32,6 +32,16 @@ FVector ATS_EnemySpawnVolume::GetRandomPointInVolume() const
 	);
 }
 
+FRotator ATS_EnemySpawnVolume::GetRandomRotation() const
+{
+	FRotator RandRot = FRotator(
+		FMath::RandRange(0.f, 0.f),
+		FMath::RandRange(-180.f, 180.f),
+		FMath::RandRange(-180.f, 180.f)
+	);
+	return RandRot;
+}
+
 void ATS_EnemySpawnVolume::SpawnEnemy(AEnemyCharacter* SpawnEnemy)
 {
     FActorSpawnParameters Params;
