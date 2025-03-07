@@ -44,7 +44,7 @@ void UTSWeaponSelectWidget::SetStartWeapon(UWidget* Widget)
 				}
 								
 				TSPlayerController->SetInputMode(FInputModeGameOnly());
-				UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("AITest"))); //시작 맵 설정 임시
+				UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("PlayLevel"))); //시작 맵 설정 임시
 				RemoveFromParent();
 			}
 		}
