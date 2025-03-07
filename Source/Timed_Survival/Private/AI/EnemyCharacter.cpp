@@ -247,11 +247,12 @@ void AEnemyCharacter::UpdateOverheadHP()
 
 				ACharacter* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
 				APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(Player, 0);		
-				FVector CameraLocation = PlayerCamera->GetCameraLocation();
+				//FVector CameraLocation = PlayerCamera->GetCameraLocation();
 
+				FVector PlayerLocation = Player->GetActorLocation();
 				FVector HPBarLocation = OverheadHPBar->GetComponentLocation();
 
-				FRotator HPBarView = UKismetMathLibrary::FindLookAtRotation(HPBarLocation, CameraLocation);
+				FRotator HPBarView = UKismetMathLibrary::FindLookAtRotation(HPBarLocation, PlayerLocation);
 				OverheadHPBar->SetWorldRotation(HPBarView);
 				//SetActorRotation(HPBarView);
 			}
