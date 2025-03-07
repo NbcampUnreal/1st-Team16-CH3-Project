@@ -34,7 +34,7 @@ void UTSWeaponSelectWidget::SetStartWeapon(UWidget* Widget)
 					}
 				}
 
-				if (Widget == GetWidgetFromName(TEXT("M16Button")))
+				if (Widget == GetWidgetFromName(TEXT("M16Button"))) 
 				{
 					if (TSubclassOf<ACharacter> M16Character = LoadClass<ACharacter>(nullptr, TEXT("/Game/TSProject/Blueprints/BP_TS_M16_Character.BP_TS_M16_Character_C")))
 					{

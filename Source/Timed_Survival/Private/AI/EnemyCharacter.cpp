@@ -216,6 +216,12 @@ void AEnemyCharacter::AIOnDeath()
 		AIController->EndAI();
 	}
 
+	ATSGameState* GameState = Cast<ATSGameState>(UGameplayStatics::GetGameState(GetWorld()));
+	if (GameState)
+	{
+		GameState->IncreaseKillCount(1);
+	}
+
 	UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("AIDeath")));
 	GetWorldTimerManager().SetTimer(
 		DeathTimer,
