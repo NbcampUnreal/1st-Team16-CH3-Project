@@ -16,7 +16,7 @@ void UTSUserWidgetManager::CallMainMenu()
 
 void UTSUserWidgetManager::CallGameStage()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("AITest"))); // 게임 시작 맵 현재 임시로 test 맵 넣어둠
+	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("PlayLevel"))); // 게임 시작 맵 현재 임시로 test 맵 넣어둠
 }
 
 void UTSUserWidgetManager::QuitGame()
