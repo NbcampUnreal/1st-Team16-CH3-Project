@@ -390,55 +390,39 @@ void ATSCharacter::Reload(const FInputActionValue& value)
 
 void ATSCharacter::StartFire(const FInputActionValue& value)
 {
-	// 떨어지고있거단 조준중이아니면 return;
+	// 떨어지고 있거나 조준 중이 아니면 return;
 	if (GetCharacterMovement()->IsFalling() || !bIsAiming) return;
-	// 장전중이면 return;
+	// 장전 중이면 return;
 	if (bIsReloading) return;
 
-	// ChildActor가없으면 return;
-	if (!WeaponChildActor)
-	{
-		return;
-	}
+	// ChildActor가 없으면 return;
+	if (!WeaponChildActor) return;
 
 	AActor* ChildActor = WeaponChildActor->GetChildActor();
-	if (!ChildActor)
-	{
-		return;
-	}
+	if (!ChildActor) return;
 
 	AGunWeapon* EquippedWeapon = Cast<AGunWeapon>(ChildActor);
-	if (!EquippedWeapon)
-	{
-		return;
-	}
+	if (!EquippedWeapon) return;
 
-	// 현재 탄약 개수 저장할 변수
+	// 현재 탄약 개수 저장
 	int32 PreviousBulletCount = CurrentBullet;
 
-	// 현재 탄약 개수를 CurrentBullet에 업데이트
-	CurrentBullet = EquippedWeapon->GetBulletCount();
-
-	if (CurrentBullet <= 0)
-	{
-		bFire = false;
-		return;
-	}
-
+	// 총 발사
 	EquippedWeapon->StartFire();
 
-	// 총 발사 후 탄약 개수 다시 가져오기 (변경 후)
-	int32 NewBulletCount = EquippedWeapon->GetBulletCount();
+	// 현재 탄약 개수 다시 가져오기 (발사 후 업데이트됨)
+	CurrentBullet = EquippedWeapon->GetBulletCount();
 
 	// 이전 탄약 개수보다 현재 탄약 개수가 감소했을 때만 사운드 실행
-	if (NewBulletCount < PreviousBulletCount && FireSound)
+	if (CurrentBullet < PreviousBulletCount && FireSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 	}
 
-	// 발사상태 true;
+	// 발사 상태 true
 	bFire = true;
 }
+
 
 
 void ATSCharacter::StopFire(const FInputActionValue& value)
@@ -631,15 +615,16 @@ void ATSCharacter::ResetFootStep()
 
 void ATSCharacter::TakeDamageAnim()
 {
-	if (TakeDamageAnimation)
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (IsValid(AnimInstance) && IsValid(TakeDamageAnimation) && !AnimInstance->Montage_IsPlaying(TakeDamageAnimation))
 	{
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance)
-		{
-			FName SlotName = TEXT("TakeDamageSlot");
-			AnimInstance->Montage_Play(TakeDamageAnimation);
-			AnimInstance->Montage_JumpToSection(SlotName, TakeDamageAnimation);
-		}
+		AnimInstance->Montage_Play(TakeDamageAnimation);
+	}
+
+	// 피격 사운드 한 번만 실행
+	if (GruntSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, GruntSound, GetActorLocation());
 	}
 
 	// 이동 중지 (0.7초)

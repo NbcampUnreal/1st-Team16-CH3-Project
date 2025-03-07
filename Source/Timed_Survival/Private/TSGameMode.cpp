@@ -155,7 +155,7 @@ void ATSGameMode::RespawnPlayer(AController* PlayerController)
 	if (OldPlayer && OldPlayer->ActorHasTag(TEXT("Player")))
 	{
 		PlayerClass = OldPlayer->GetClass(); // 기존 캐릭터 클래스 저장
-		UE_LOG(LogTemp, Warning, TEXT("Destroying old player...")); // 테스트 로그 ------
+		//UE_LOG(LogTemp, Warning, TEXT("Destroying old player...")); // 테스트 로그 ------
 		OldPlayer->Destroy(); // 기존 캐릭터 삭제
 	}
 
@@ -163,7 +163,7 @@ void ATSGameMode::RespawnPlayer(AController* PlayerController)
 	ACharacter* NewCharacter = nullptr;
 	if (PlayerClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Spawning new player at: %s"), *RespawnLocation.ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("Spawning new player at: %s"), *RespawnLocation.ToString());
 		NewCharacter = GetWorld()->SpawnActor<ACharacter>(PlayerClass, RespawnLocation, RespawnRotation);
 	}
 
@@ -175,7 +175,7 @@ void ATSGameMode::RespawnPlayer(AController* PlayerController)
 
 		// 리스폰 후 GameState의 CurrentHealth를 리스폰 체력으로 설정
 		TSGameStateRef->CurrentHealth = TSGameStateRef->GetRespawnHealth();
-		UE_LOG(LogTemp, Warning, TEXT("Respawn successful! Health restored to: %f"), TSGameStateRef->CurrentHealth);
+		//UE_LOG(LogTemp, Warning, TEXT("Respawn successful! Health restored to: %f"), TSGameStateRef->CurrentHealth);
 
 		// 체력 감소 타이머 다시 시작
 		TSGameStateRef->GetWorldTimerManager().ClearTimer(TSGameStateRef->SubtractHealthTimerHandle);

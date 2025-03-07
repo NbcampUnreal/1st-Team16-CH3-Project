@@ -637,15 +637,16 @@ void ATSCharacter2::ResetFootStep()
 
 void ATSCharacter2::TakeDamageAnim()
 {
-	if (TakeDamageAnimation)
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (IsValid(AnimInstance) && IsValid(TakeDamageAnimation) && !AnimInstance->Montage_IsPlaying(TakeDamageAnimation))
 	{
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance)
-		{
-			FName SlotName = TEXT("TakeDamageSlot");
-			AnimInstance->Montage_Play(TakeDamageAnimation);
-			AnimInstance->Montage_JumpToSection(SlotName, TakeDamageAnimation);
-		}
+		AnimInstance->Montage_Play(TakeDamageAnimation);
+	}
+
+	// 피격 사운드 한 번만 실행
+	if (GruntSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, GruntSound, GetActorLocation());
 	}
 
 	// 이동 중지 (0.7초)

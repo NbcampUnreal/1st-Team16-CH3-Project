@@ -246,9 +246,7 @@ void AEnemyCharacter::UpdateOverheadHP()
 				OverheadHPBar->SetTranslucentSortPriority(-1);
 
 				ACharacter* Player = UGameplayStatics::GetPlayerCharacter(this, 0);
-				checkf(IsValid(Player) == true, (TEXT("Invalid Player")));
 				APlayerCameraManager* PlayerCamera = UGameplayStatics::GetPlayerCameraManager(Player, 0);		
-				checkf(IsValid(PlayerCamera) == true, (TEXT("Invalid PlayerCamera")));
 				FVector CameraLocation = PlayerCamera->GetCameraLocation();
 
 				FVector HPBarLocation = OverheadHPBar->GetComponentLocation();

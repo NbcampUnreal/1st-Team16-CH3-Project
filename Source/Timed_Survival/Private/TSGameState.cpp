@@ -129,7 +129,7 @@ void ATSGameState::StartLevel()
 				GetWorld()->SpawnActor<AActor>(
 					Enemy,
 					SpawnVolume->GetRandomPointInVolume(),
-					FRotator::ZeroRotator,
+					SpawnVolume->GetRandomRotation(),
 					Params
 				);
 			}

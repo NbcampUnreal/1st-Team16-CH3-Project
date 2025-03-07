@@ -27,6 +27,7 @@ protected:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	UFUNCTION(BlueprintCallable)
 	void BeginAI(APawn* InPawn);
 
 
