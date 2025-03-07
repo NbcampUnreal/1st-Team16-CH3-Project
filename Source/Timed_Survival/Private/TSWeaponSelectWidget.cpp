@@ -26,7 +26,7 @@ void UTSWeaponSelectWidget::SetStartWeapon(UWidget* Widget)
 			{
 				if (Widget == GetWidgetFromName(TEXT("ShotGunButton")))
 				{
-					if (TSubclassOf<ACharacter> ShotGunCharacter = LoadClass<ACharacter>(nullptr, TEXT("/Game/TSProject/Blueprints/BP_ShotGun_Character.BP_ShotGun_Character")))
+					if (TSubclassOf<ACharacter> ShotGunCharacter = LoadClass<ACharacter>(nullptr, TEXT("/Game/TSProject/Blueprints/BP_ShotGun_Character.BP_ShotGun_Character_C")))
 					{
 						TSGameInstance->SetSelectedCharacter(ShotGunCharacter);
 
@@ -35,7 +35,7 @@ void UTSWeaponSelectWidget::SetStartWeapon(UWidget* Widget)
 
 				if (Widget == GetWidgetFromName(TEXT("M16Button")))
 				{
-					if (TSubclassOf<ACharacter> M16Character = LoadClass<ACharacter>(nullptr, TEXT("/Game/TSProject/Blueprints/BP_TS_M16_Character.BP_TS_M16_Character")))
+					if (TSubclassOf<ACharacter> M16Character = LoadClass<ACharacter>(nullptr, TEXT("/Game/TSProject/Blueprints/BP_TS_M16_Character.BP_TS_M16_Character_C")))
 					{
 						TSGameInstance->SetSelectedCharacter(M16Character);
 
