@@ -11,12 +11,12 @@ void UTSUserWidgetManager::NativeOnInitialized()
 
 void UTSUserWidgetManager::CallMainMenu()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("MainMenuLevel")));
+	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("/Game/Maps/MainMenuLevel.MainMenuLevel")));
 }
 
 void UTSUserWidgetManager::CallGameStage()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("PlayLevel"))); // 게임 시작 맵 현재 임시로 test 맵 넣어둠
+	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("/Game/Maps/PlayLevel.PlayLevel"))); // 게임 시작 맵 현재 임시로 test 맵 넣어둠
 }
 
 void UTSUserWidgetManager::QuitGame()
